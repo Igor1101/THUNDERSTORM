@@ -25,3 +25,10 @@ run:
 	@qemu-system-x86_64 -m 12M -cdrom os.iso
 debug:
 	@qemu-system-x86_64 -S -s -m 12M -cdrom os.iso
+initialize: # add directories
+	@if ! [ -e src ]; then mkdir src;fi
+	@if ! [ -e arch ]; then mkdir arch; fi
+	@if ! [ -e bin ]; then mkdir bin; fi
+	@if ! [ -e boot ]; then mkdir boot; fi
+	@if ! [ -e build ]; then mkdir build; fi
+	@if ! [ -e kernel ]; then mkdir kernel; fi

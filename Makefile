@@ -9,7 +9,7 @@ CC_FLAGS:=-ffreestanding -Ikernel -Wall -Wextra -O2
 LD_FLAGS:=-nostdlib
 
 KERNEL_OBJECTS:=
-all: kernel iso
+all: initialize kernel iso
 
 clean:
 	@rm -r bin/*

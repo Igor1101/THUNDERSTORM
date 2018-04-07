@@ -2,7 +2,7 @@ ENTRY(_start)
 
 	offset = 0x00000000;
 SECTIONS {
-	. = 0x00100000;
+	. = 1M;
 	kernel_phys_base = . - offset;
 	kernel_virt_base = .;
 

@@ -1,11 +1,17 @@
-; long mode initialization
-VGA equ 0xb8000
+; CPU initialization for THUNDERSTORM kernel 
+; constants:
+extern kputstr_to
+extern kputchar_to
+extern kernel_phys_base
+extern kernel_init
+OS_STK_SIZE equ 102400; 100K for os stack
 GREEN equ 0x2
 RED equ 0x4f
-VGAROWS equ 25
+PG_SIZE equ 512*8; in bytes
+PG_SIZE_QW equ PG_SIZE/8
 global _start
-section .text
 bits 32
+section .text
 _start:
     mov esp,  stk_top ; creating stack:
     mov cl,   GREEN ;<- <cl> color info;
@@ -23,7 +29,72 @@ section .text
     mov eax,  chk_cpuid
     call kputstr_to
     call check_long_mode
+    ;start cpu reinitialization
+    call set_paging
+    call init_paging
+    jmp  gdt.code:.init64; update CS
+.init64:
+    lgdt [gdt.desc]
+    mov ax, 0
+    ;mov ss, ax
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    jmp kernel_init
+section .rodata
+; GDT long mode initialization
+gdt: 
+    dq 0
+    ; executable, code and data segm, valid selector, 64-bit:
+    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) 
+.code: \
+    equ $ - gdt
+.desc:  
+    dw $ - gdt - 1
+    dq gdt
+section .text
     hlt
+
+init_paging:
+  mov eax, p4_table
+  mov cr3, eax
+  ; PAE for huge pages use
+  mov eax, cr4
+  or eax, 1<<5
+  mov cr4, eax
+  mov ecx, 0xC0000080
+  rdmsr
+  or eax, 1<<8
+  wrmsr
+  mov eax, cr0
+  or eax, 1<<31
+  mov cr0, eax
+  ret
+set_paging:
+; p4[0] -> p3[0] -> p2[0...PG_SIZE] -> 2GB memory
+
+;p4[0] -> p3[0]
+    mov eax,  p3_table
+    or  eax,  0b11; writable, exists
+    mov [p4_table], eax
+
+;p3[0] -> p2[0]
+    mov eax,  p2_table
+    or  eax,  0b11; writable, exists
+    mov [p3_table], eax
+
+;p2[0...PG_SIZE] => address space[0; 2GB];
+    mov ebx,  0; map 1st region to p2[0], 2MB to the second...
+.map:
+    mov eax,  2<<20; 2MB
+    mul ebx
+    or  eax,  0b10000011; writable, exists, extended
+    mov [p2_table + ebx], eax
+    add ebx,  8; sizeof QW
+    cmp ebx,  PG_SIZE
+    jne .map
+    ret
 
 check_multiboot:
     cmp eax, 0x36d76289; magic bootloader value
@@ -102,59 +173,21 @@ error:
     call kputstr_to
     hlt
 
-;print str to row
-kputstr_to:
-; eax <- pointer to str;
-; cl <- colormode;
-section .rodata
-.row:   dq 0;for row info
-section .text
-   push eax
-   push ecx
-   push edx
-   push ebx
-; string row manipulation
-    mov edx, [.row] ; row
-    cmp edx, VGAROWS
-    jnae .notfilled
-    mov edx, 1 ; real crutch!!! start put 
-               ; into beginning of console( just after COPYRIGHT)
-.notfilled:
-    add edx, 1
-    mov ebx, edx
-    mov [.row], edx
-; put str
-    mov edx, eax
-    mov ah, cl; color
-    mov ecx, 0   ; column
-.kputstr_to_jmp:
-    mov al, [edx]; char
-    call kputchar_to ;print al
-    add ecx, 1
-    add edx, 1
-    cmp al, 0 ; while str is not empty
-    jne .kputstr_to_jmp
-   pop ebx
-   pop edx
-   pop ecx
-   pop eax
-   ret
-
-; print char to VGA + 2*(row * 80 + col)
-kputchar_to:; print value
-; ax <- char
-; ebx <- row
-; ecx <- col
-   push ebx
-    imul ebx, 80
-    add ebx, ecx
-    shl ebx, 1
-    mov word [VGA + ebx], ax
-   pop ebx
-   ret
- ; memory, reserved for STACK:
+;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;
+;pgs info:
 section .bss
-stk_bottom:
-  resb 1024
+align PG_SIZE
+p4_table:
+  resb PG_SIZE
+p3_table:
+  resb PG_SIZE
+p2_table:
+  resb PG_SIZE
+p1_table:
+  resb PG_SIZE
+ ; memory, reserved for STACK:
+align PG_SIZE
+stk_bottom: ; 
+  resb OS_STK_SIZE
 stk_top:
    

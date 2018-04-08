@@ -4,7 +4,7 @@ extern kputstr_to
 extern kputchar_to
 extern kernel_phys_base
 extern kernel_init
-OS_STK_SIZE equ 102400; 100K for os stack
+OS_STK_SIZE equ 1024000; 1000K for os stack
 GREEN equ 0x2
 RED equ 0x4f
 PG_SIZE equ 512*8; in bytes
@@ -31,28 +31,49 @@ section .text
     call check_long_mode
     ;start cpu reinitialization
     call set_paging
+    cli
     call init_paging
-    jmp  gdt.code:.init64; update CS
+    lgdt [GDT64.Pointer]
+    jmp  GDT64.Code:.init64; update CS
 .init64:
-    lgdt [gdt.desc]
+bits 64
     mov ax, 0
-    ;mov ss, ax
+    mov ss, ax
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
     jmp kernel_init
+bits 32
 section .rodata
 ; GDT long mode initialization
-gdt: 
+GDT64:                           ; Global Descriptor Table (64-bit).
+    .Null: equ $ - GDT64         ; The null descriptor.
+    dw 0xFFFF                    ; Limit (low).
+    dw 0                         ; Base (low).
+    db 0                         ; Base (middle)
+    db 0                         ; Access.
+    db 1                         ; Granularity.
+    db 0                         ; Base (high).
+    .Code: equ $ - GDT64         ; The code descriptor.
+    dw 0                         ; Limit (low).
+    dw 0                         ; Base (low).
+    db 0                         ; Base (middle)
+    db 10011010b                 ; Access (exec/read).
+    db 10101111b                 ; Granularity, 64 bits flag, limit19:16.
+    db 0                         ; Base (high).
+    .Data: equ $ - GDT64         ; The data descriptor.
+    dw 0                         ; Limit (low).
+    dw 0                         ; Base (low).
+    db 0                         ; Base (middle)
+    db 10010010b                 ; Access (read/write).
+    db 00000000b                 ; Granularity.
+    db 0                         ; Base (high).
+    .Pointer:                    ; The GDT-pointer.
+    dw $ - GDT64 - 1             ; Limit.
+    dq GDT64                     ; Base.
     dq 0
     ; executable, code and data segm, valid selector, 64-bit:
-    dq (1<<43) | (1<<44) | (1<<47) | (1<<53) 
-.code: \
-    equ $ - gdt
-.desc:  
-    dw $ - gdt - 1
-    dq gdt
 section .text
     hlt
 
@@ -189,5 +210,8 @@ p1_table:
 align PG_SIZE
 stk_bottom: ; 
   resb OS_STK_SIZE
+align PG_SIZE
 stk_top:
-   
+align PG_SIZE
+  resb PG_SIZE
+section .text

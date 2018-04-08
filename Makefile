@@ -1,7 +1,9 @@
 .PHONY: kernel
 .PHONY: ksize
+.PHONY: libc
 ARCH ?= x86_64
 kernel=TH
+KERNEL_ABS_PATH=$(PWD)
 CC=gcc
 AS=as# now we aren`t really use it
 LD=ld
@@ -19,9 +21,11 @@ LLD_PORTS += VGA
 KERN_SOURCES = main
 KERNEL_OBJECTS:=
 
-DIRECTORIES:=src arch bin boot include build kernel 
+LIBC_DIRECTORIES=libc libc/string
+
+DIRECTORIES:=src arch bin boot include build kernel libc
 all: initialize kernel iso ksize
-kernel: ports hld
+kernel: ports hld libc
 	for cfile in $(KERN_SOURCES); do \
 		$(CC) -c kernel/$$cfile.c -o build/$$cfile.o $(CC_FLAGS) \
 	; done
@@ -42,6 +46,16 @@ hld: ports
 		$(CC) -c $(HLD_PATH)/$$cfile.c -o build/$$cfile.o $(CC_FLAGS) \
 	; done
 
+# compile libraries:
+libc:
+	for libdir in $(LIBC_DIRECTORIES);do \
+		cd $$libdir ;\
+		for cfile in *.c; do \
+			$(CC) -c $$cfile -o $(KERNEL_ABS_PATH)/build/$$cfile.o $(CC_FLAGS) \
+		; done ;\
+		cd - \
+	;done
+
 iso: kernel
 	if [ -e os.iso ]; then rm os.iso ; fi
 	grub-mkrescue -o os.iso ./ 2> /dev/null
@@ -55,9 +69,11 @@ initialize: # add directories
  	done
 ksize: kernel
 	@size boot/$(kernel).elf
-	@printf "cd size: "
+	@printf "ISO size: "
 	@du -h os.iso
 dis: kernel
 	@objdump -D boot/$(kernel).elf | less
 nm: kernel
 	@nm --numeric-sort boot/$(kernel).elf|less
+
+

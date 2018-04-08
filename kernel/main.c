@@ -1,20 +1,29 @@
-/* TH kernel initialization */
+/* High level TH kernel initialization */
+/*
+ _____ _   _ _   _ _   _ ____  _____ ____  ____ _____ ___  ____  __  __        __
+|_   _| | | | | | | \ | |  _ \| ____|  _ \/ ___|_   _/ _ \|  _ \|  \/  |  __  /  \_  _
+  | | | |_| | | | |  \| | | | |  _| | |_) \___ \ | || | | | |_) | |\/| |_/  \/     \/ \
+  | | |  _  | |_| | |\  | |_| | |___|  _ < ___) || || |_| |  _ <| |  | |\_ ___________/
+  |_| |_| |_|\___/|_| \_|____/|_____|_| \_\____/ |_| \___/|_| \_\_|  |_|   /
+                                                                          /\_
+                                                                          \  \
+__________________________________________________________________________/___________
+*/
 #include <TH/lld.h>
+#include <TH/sysinfo.h>
 int main()
 {
-  static long int jk;
-  jk=0x1122334455667788;
-  if(jk!=0x1122334455667788)
+  static char verifier=100;
+  if(verifier != 100)
   {
-    return (-1);/*GOT is not working */
+    return (1);/* GOT is not working, 
+                  smth wrong with bss */
   }
-  vga_init(Cyan);
-  kputchar_to('?', 0, 0, Green);
-  kputchar('+');
-  kputchar('+');
-  kputchar('+');
-  kputchar('+');
-  kputchar('+');
+  tui_init(Cyan);
+  kputs((int8_t*)"\n\n\nTHUNDERSTORM Embedded system\n\
+ COPYRIGHT Igor Muravyov 2018");
+  kputs((int8_t*)SMALL_SYS_EMBLEM);
+  make_newline();
   asm("hlt");
   while(1);
 }

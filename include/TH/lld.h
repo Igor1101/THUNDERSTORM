@@ -30,7 +30,9 @@ struct Text_mode_pointer
   uint8_t volatile col;
   int volatile color;
 };
-void vga_init(int color);
+void tui_init(int color);
 void kputchar_to(int8_t chr, uint8_t row, uint8_t col, int color);
 void kputchar(int8_t chr);
+void kputs(int8_t* str);
+void make_newline(void);
 #endif

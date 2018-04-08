@@ -17,8 +17,9 @@ SECTIONS {
 	}
 	
 	.bss BLOCK(4K) : AT(ADDR(.bss) - offset) ALIGN(4K) {
-		*(COMMON)
 		*(.bss)
+    *(.noinit)
+		*(COMMON)
 	}
 	
 }

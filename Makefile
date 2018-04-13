@@ -32,7 +32,7 @@ DIRECTORIES:=src arch bin boot include kernel libc \
 	$(LIBC_BUILD_PATH)
 all: initialize kernel iso ksize
 kernel: ports libc
-	for cfile in $(KERNEL_C_SOURCES); do \
+	@for cfile in $(KERNEL_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
 		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \
@@ -46,12 +46,12 @@ clean:
 	rm os.iso
 ports:
 	# compile NASM syntax ports sorces
-	for cfile in $(LLD_NASM_SOURCES);do \
+	@for cfile in $(LLD_NASM_SOURCES);do \
 	CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 	printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
 	nasm -f elf64  -o $$CFILE $$cfile; \
 	done
-	for cfile in $(LLD_C_SOURCES); do \
+	@for cfile in $(LLD_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
 		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \
@@ -59,7 +59,7 @@ ports:
 
 # compile libraries:
 libc:
-	for cfile in $(LIBC_C_SOURCES); do \
+	@for cfile in $(LIBC_C_SOURCES); do \
 		CFILE=$(LIBC_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
 		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \

@@ -11,6 +11,8 @@ __________________________________________________________________________/_____
 */
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
+#include <kstdlib.h>
+#include <kstdio.h>
 int main()
 {
   static char verifier=100;
@@ -23,7 +25,7 @@ int main()
   kputs((int8_t*)"\n\n\nTHUNDERSTORM Embedded system\n\
  COPYRIGHT Igor Muravyov 2018");
   kputs((int8_t*)SMALL_SYS_EMBLEM);
-  make_newline();
+  kprintf("DEC: %dHEX: 0x%x", 255, 255);
   asm("hlt");
   while(1);
 }

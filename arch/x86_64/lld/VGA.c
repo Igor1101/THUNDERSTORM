@@ -1,4 +1,5 @@
 /* THUNDERSTORM VGA LL DRIVER */
+#ifdef USE_VGA
 #include <stdint.h>
 #include <TH/lld.h>
 #include <string.h>
@@ -15,3 +16,5 @@ void make_newline(void)
 {
   memcpy(VGAADDR, VGAADDR + 2 * ( 1 * 80 + 0 ), ROWS*COLUMNS*2);
 }
+
+#endif

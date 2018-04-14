@@ -1,9 +1,8 @@
-/* THUNDERSTORM VGA LL DRIVER */
+/* THUNDERSTORM VGA HL DRIVER */
 #include <stdint.h>
 #include <TH/lld.h>
 static volatile 
-struct Text_mode_pointer vga 
-/*__attribute__((section(".rodata")))*/=
+struct Text_mode_pointer vga =
 {
   1, 1, Green
 };

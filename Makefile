@@ -1,6 +1,7 @@
 .PHONY: kernel
 .PHONY: ksize
 .PHONY: libc
+KERNEL_OPTIONS += -D USE_VGA
 ARCH ?= x86_64
 kernel=TH
 TH_ABS_PATH=$(PWD)
@@ -9,7 +10,7 @@ AS = as# now we aren`t really use it
 LD = ld
 AR = ar
 AS_FLAGS:=
-CC_FLAGS:= -Os -g -ffreestanding -Wall -Wextra -static -nostdlib -I include 
+CC_FLAGS:= -O0 -g -fno-stack-protector -ffreestanding -Wall -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
 LD_FLAGS:=-nostdlib -static 
 BOOT_PORTS_PATH:=arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
@@ -68,7 +69,7 @@ libc:
 
 iso: kernel
 	if [ -e os.iso ]; then rm os.iso ; fi
-	grub-mkrescue -o os.iso ./ 2> /dev/null
+	grub-mkrescue  -o os.iso ./ 2> /dev/null
 run:
 	@qemu-system-x86_64 -m 256M -cdrom os.iso
 debug:

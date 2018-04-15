@@ -10,7 +10,7 @@ AS = as# now we aren`t really use it
 LD = ld
 AR = ar
 AS_FLAGS:=
-CC_FLAGS:= -O0 -g -fno-stack-protector -ffreestanding -Wall -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
+CC_FLAGS:= -Os -g -fno-stack-protector -ffreestanding -Wall -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
 LD_FLAGS:=-nostdlib -static 
 BOOT_PORTS_PATH:=arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
@@ -33,6 +33,7 @@ DIRECTORIES:=src arch bin boot include kernel libc \
 	$(LIBC_BUILD_PATH)
 all: initialize kernel iso ksize
 kernel: ports libc
+	# KERNEL COMPILATION
 	@for cfile in $(KERNEL_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
@@ -60,11 +61,12 @@ ports:
 
 # compile libraries:
 libc:
+	# LIBC BUILDING
 	@for cfile in $(LIBC_C_SOURCES); do \
 		CFILE=$(LIBC_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \
-	; done
+		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS); \
+	done; \
 	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*
 
 iso: kernel
@@ -76,7 +78,7 @@ debug:
 	@qemu-system-x86_64 -S -s -m 120M -cdrom os.iso 
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \
-	if ! [ -e $$dir ]; then mkdir $$dir; fi;\
+		if ! [ -e $$dir ]; then mkdir $$dir; fi;\
  	done
 ksize: kernel
 	@size boot/$(kernel).elf

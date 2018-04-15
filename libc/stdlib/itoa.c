@@ -5,14 +5,14 @@
 
 static const char *s_itoa_chars = "0123456789abcdef";
 
-void itoa(char *buf, int base, int val) {
+void itoa(char *buf, intptr_t base, intptr_t val) {
     if (!val) {
         buf[0] = '0';
         buf[1] = 0;
         return;
     }
-    int sign = 0;
-    uint32_t value;
+    intptr_t sign = 0;
+    uintptr_t value;
 
     if (base == 10 && val < 0) {
         sign = 1;
@@ -21,7 +21,7 @@ void itoa(char *buf, int base, int val) {
         value = val;
     }
 
-    int r, c, j;
+    intptr_t r, c, j;
     c = 0;
     while (value) {
         buf[c++] = s_itoa_chars[value % base];
@@ -47,10 +47,10 @@ void itoa(char *buf, int base, int val) {
     buf[r] = 0;
 }
 
-void itoap(char *buf, size_t width, int base, uint32_t value) {
+void itoap(char *buf, size_t width, intptr_t base, uintptr_t value) {
     memset(buf, '0', width);
     buf[width] = 0;
-    int i = 0;
+    intptr_t i = 0;
     while (value) {
         buf[width - i - 1] = s_itoa_chars[value % base];
         value /= base;
@@ -58,14 +58,14 @@ void itoap(char *buf, size_t width, int base, uint32_t value) {
     }
 }
 
-void utoa(char *buf, uint32_t value) {
+void utoa(char *buf, uintptr_t value) {
     if (!value) {
         buf[0] = '0';
         buf[1] = 0;
         return;
     }
 
-    int r, c, j;
+    intptr_t r, c, j;
     c = 0;
     while (value) {
         buf[c++] = s_itoa_chars[value % 10];

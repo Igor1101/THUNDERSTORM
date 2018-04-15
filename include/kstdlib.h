@@ -3,6 +3,6 @@
 
 #define ITOA_BUF_SIZE 33
 
-void itoa(char *buf, int base, int value);
-void itoap(char *buf, size_t width, int base, uint32_t value);
-void utoa(char *buf, uint32_t value);
+void itoa(char *buf, intptr_t base, intptr_t value);
+void itoap(char *buf, size_t width, intptr_t base, uintptr_t value);
+void utoa(char *buf, uintptr_t value);

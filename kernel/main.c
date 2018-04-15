@@ -24,8 +24,9 @@ int main()
   tui_init(Cyan);
   kputs((int8_t*)"\n\n\nTHUNDERSTORM Embedded system\n\
  COPYRIGHT Igor Muravyov 2018");
+  tui_init(Green);
   kputs((int8_t*)SMALL_SYS_EMBLEM);
-  kprintf("DEC: %dHEX: 0x%x", 255, 255);
+  kprintf("\n\n\n\nDEC: %xHEX: 0x%x %s", 18446744073709551615, 18446744073709551615, "SIMPLY");
   asm("hlt");
   while(1);
 }

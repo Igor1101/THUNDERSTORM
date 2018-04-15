@@ -1,28 +1,12 @@
 /* copied from x86k system */
-/*
-#include "debug.h"
-#include "../algo/itoa.h"
-#ifdef DEBUG_SERIAL
-#include "../dev/rs232.h"
-#endif
-#include "algo/string.h"
-#include <sys/ttyctl.h>
-*/
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <TH/lld.h>
-/*
-void kputc(char c) {
-#ifdef DEBUG_SERIAL
-    rs232_send(RS232_COM1, c);
-#endif
-    tty_putchar(0, c);
-}
-*/
 #define kputc kputchar
+
 void dputs(const char *s) {
     while (*s) {
         kputc(*s++);
@@ -80,7 +64,7 @@ void kprintf(const char *fmt, ...) {
 void kvprintf(const char *fmt, va_list args) {
     char c;
     uintptr_t vp;
-    char cbuf[128];
+    char cbuf[256];
     char padc;
     int padn;
 

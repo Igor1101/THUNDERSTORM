@@ -1,4 +1,5 @@
 ; CPU initialization for THUNDERSTORM kernel 
+; USES MULTIBOOT 2 SPEC
 ; constants:
 extern kputstr_to
 extern kputchar_to
@@ -9,12 +10,13 @@ GREEN equ 0x2
 RED equ 0x4f
 PG_SIZE equ 512*8; in bytes
 PG_SIZE_QW equ PG_SIZE/8
-global _start
+global _start; EBX <-- pointer to boot information format
 bits 32
 section .text
 _start:
     mov esp,  stk_top ; creating stack:
     mov cl,   GREEN ;<- <cl> color info;
+    push ebx ; Store BOOT info and put as 1st argument to main()
 section .rodata
 thinfo: db "THUNDERSTORM 0.0 Embedded system x86_64 port layer",0
 chk_multiboot: db "multiboot checked!", 0

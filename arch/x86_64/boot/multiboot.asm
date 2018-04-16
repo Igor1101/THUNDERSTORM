@@ -7,6 +7,12 @@ boot_start:
   dd ARCH
   dd boot_end - boot_start
   dd 0x100000000 - (MAGIC + ARCH + (boot_end - boot_start))
+; tags:
+; EGA console:
+  dw 0
+  dw 0
+  dd 4
+;
   dw 0
   dw 0
   dd 8

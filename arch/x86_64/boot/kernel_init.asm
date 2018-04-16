@@ -12,5 +12,6 @@ kernel_init:
   mov rax, verify_x64
   mov cl, GREEN
   call kputstr_to
+  pop rdi ; EBX <-- boot info (via multiboot spec)
   call main
   hlt

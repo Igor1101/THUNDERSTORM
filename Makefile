@@ -10,7 +10,7 @@ AS = as# now we aren`t really use it
 LD = ld
 AR = ar
 AS_FLAGS:=
-CC_FLAGS:= -Os -g -fno-stack-protector -ffreestanding -Wall -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
+CC_FLAGS:= -Os -g -fno-stack-protector -ffreestanding -Wall -Werror -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
 LD_FLAGS:=-nostdlib -static 
 BOOT_PORTS_PATH:=arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
@@ -31,8 +31,8 @@ LIBC_DIRECTORIES=libc libc/string
 DIRECTORIES:=src arch bin boot include kernel libc \
 	$(KERNEL_BUILD_PATH)\
 	$(LIBC_BUILD_PATH)
-all: initialize kernel iso ksize
-kernel: ports libc
+all: kernel iso ksize
+kernel: initialize ports libc
 	# KERNEL COMPILATION
 	@for cfile in $(KERNEL_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
@@ -46,7 +46,7 @@ clean:
 	rm -r $(LIBC_BUILD_PATH)
 	rm -r $(THLIBC)
 	rm os.iso
-ports:
+ports: initialize
 	# compile NASM syntax ports sorces
 	@for cfile in $(LLD_NASM_SOURCES);do \
 	CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
@@ -60,7 +60,7 @@ ports:
 	; done
 
 # compile libraries:
-libc:
+libc: initialize
 	# LIBC BUILDING
 	@for cfile in $(LIBC_C_SOURCES); do \
 		CFILE=$(LIBC_BUILD_PATH)/$$(basename $$cfile.o); \
@@ -72,9 +72,9 @@ libc:
 iso: kernel
 	if [ -e os.iso ]; then rm os.iso ; fi
 	grub-mkrescue  -o os.iso ./ 2> /dev/null
-run:
+run: iso
 	@qemu-system-x86_64 -m 256M -cdrom os.iso
-debug:
+debug: iso
 	@qemu-system-x86_64 -S -s -m 120M -cdrom os.iso 
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \

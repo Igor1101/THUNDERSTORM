@@ -13,7 +13,8 @@ __________________________________________________________________________/_____
 #include <TH/sysinfo.h>
 #include <kstdlib.h>
 #include <kstdio.h>
-int main()
+int debug;
+int main(void* sysinfo)
 {
   static char verifier=100;
   if(verifier != 100)
@@ -24,9 +25,10 @@ int main()
   tui_init(Cyan);
   kputs((int8_t*)"\n\n\nTHUNDERSTORM Embedded system\n\
  COPYRIGHT Igor Muravyov 2018");
-  tui_init(Green);
   kputs((int8_t*)SMALL_SYS_EMBLEM);
-  kprintf("\n\n\n\nDEC: %xHEX: 0x%x %s", 18446744073709551615, 18446744073709551615, "SIMPLY");
+  kputs((int8_t*)"COMPUTER INFO:");
+  debug=1;
+  bootinfo(sysinfo);
   asm("hlt");
   while(1);
 }

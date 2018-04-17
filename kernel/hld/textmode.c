@@ -14,6 +14,11 @@ void tui_init(int color)
 }
 void newline(void)
 {
+  if(vga.row >=ROWS)
+  {
+    make_newline();
+    return;
+  }
   vga.row++;
   vga.col=1;
 }
@@ -31,7 +36,7 @@ void kputchar(int8_t chr)
   {
     newline();
   }
-  else if(vga.col >= COLUMNS && vga.row >= ROWS)
+  else if(vga.row >= ROWS && vga.col >= COLUMNS)
   {
     make_newline();
   }

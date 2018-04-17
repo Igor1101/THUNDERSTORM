@@ -11,6 +11,7 @@ __________________________________________________________________________/_____
 */
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
+#include <TH/sysvars.h>
 #include <kstdlib.h>
 #include <kstdio.h>
 int debug;
@@ -29,6 +30,7 @@ int main(void* sysinfo)
   kputs((int8_t*)"COMPUTER INFO:");
   debug=1;
   bootinfo(sysinfo);
+  kputs((int8_t*)"\nHALTING");
   asm("hlt");
   while(1);
 }

@@ -45,8 +45,11 @@ void kputchar(int8_t chr)
     vga.col++;
   }
 }
-void kputs(int8_t * str)
+void kputs(char* str)
 {
+#ifdef KDEBUG
+  kpause();
+#endif
   while(*str!=0)
   {
     kputchar(*str);

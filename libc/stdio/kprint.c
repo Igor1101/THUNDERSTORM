@@ -8,6 +8,9 @@
 #define kputc kputchar
 
 void dputs(const char *s) {
+#ifdef KDEBUG
+  kpause();
+#endif
     while (*s) {
         kputc(*s++);
     }

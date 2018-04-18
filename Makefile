@@ -1,7 +1,7 @@
 .PHONY: kernel
 .PHONY: ksize
 .PHONY: libc
-KERNEL_OPTIONS += -D USE_VGA
+KERNEL_OPTIONS += -D USE_VGA -D KDEBUG
 ARCH ?= x86_64
 kernel=TH
 TH_ABS_PATH=$(PWD)
@@ -10,7 +10,7 @@ AS = as# now we aren`t really use it
 LD = ld
 AR = ar
 AS_FLAGS:=
-CC_FLAGS:= -Os -g -fno-stack-protector -ffreestanding -Wall -Werror -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
+CC_FLAGS:= -O0 -g -fno-stack-protector -ffreestanding -Wall -Werror -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
 LD_FLAGS:=-nostdlib -static 
 BOOT_PORTS_PATH:=arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
@@ -72,10 +72,10 @@ libc: initialize
 iso: kernel
 	if [ -e os.iso ]; then rm os.iso ; fi
 	grub-mkrescue  -o os.iso ./ 2> /dev/null
-run: iso
-	@qemu-system-x86_64 -m 256M -cdrom os.iso
-debug: iso
-	@qemu-system-x86_64 -S -s -m 120M -cdrom os.iso 
+run: os.iso
+	@qemu-system-x86_64 -m 20M -cdrom os.iso
+debug: os.iso
+	@qemu-system-x86_64 -S -s -m 10M -cdrom os.iso 
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \
 		if ! [ -e $$dir ]; then mkdir $$dir; fi;\

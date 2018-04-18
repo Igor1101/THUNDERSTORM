@@ -1,7 +1,17 @@
 #ifndef SYSVARS
 #define SYSVARS
-/* highest RAM info, loaded from bootloader */
-extern uintptr_t highestRAM;
-/* lowest RAM info, loaded from bootloader */
-extern uintptr_t lowestRAM;
+
+
+
+
+extern struct RAM_INFO
+{
+  /* highest RAM info, loaded from bootloader */
+  uintptr_t* highest;
+  /* lowest RAM info, loaded from bootloader */
+  uintptr_t* lowest;
+} RAM;
+
+
+
 #endif /* sysvars */

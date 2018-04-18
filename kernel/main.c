@@ -14,6 +14,14 @@ __________________________________________________________________________/_____
 #include <TH/sysvars.h>
 #include <kstdlib.h>
 #include <kstdio.h>
+
+/* declared vars */
+struct RAM_INFO RAM = 
+{
+  NULL,
+  NULL
+};
+
 int debug;
 int main(void* sysinfo)
 {
@@ -24,13 +32,16 @@ int main(void* sysinfo)
                   smth wrong with bss */
   }
   tui_init(Cyan);
-  kputs((int8_t*)"\n\n\nTHUNDERSTORM Embedded system\n\
+  kputs("\n\n\nTHUNDERSTORM Embedded system\n\
  COPYRIGHT Igor Muravyov 2018");
-  kputs((int8_t*)SMALL_SYS_EMBLEM);
-  kputs((int8_t*)"COMPUTER INFO:");
+#ifdef KDEBUG
+  kputs("This is a DEBUG version of kernel,\
+output is too slow");
+#endif /* KDEBUG */
+  kputs("COMPUTER INFO:");
   debug=1;
   bootinfo(sysinfo);
-  kputs((int8_t*)"\nHALTING");
+  kputs("\nHALTING");
   asm("hlt");
   while(1);
 }

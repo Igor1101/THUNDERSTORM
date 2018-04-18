@@ -2,56 +2,71 @@
 #define MEMORY 4
 
 #include <stdint.h>
+#include <string.h>
 #include <kstdio.h>
 #include <TH/sysvars.h>
+#include <TH/lld.h>
 /**
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 
  * */
-void* loader_name(void *ebx)
+int loader_name(void *ebx)
 {
-  static int already_set=0;
-  if(already_set == 1)
+  /* verify if it really is provided info */
+  if(strlen((char*) (ebx + 2 * sizeof (uint32_t))) < 5 ) 
   {
-    return ebx;
+    return -1;
   }
-  already_set=1;
-  kprintf("\nloader is %s", (char*) (ebx + 2 * sizeof (uint32_t)));
-  /* find out size of structure */
-  return ( ebx + 
-      *( (uint32_t*) (ebx + sizeof (uint32_t) ) ) 
-      - sizeof (uint32_t) );
+  kprintf("loader is %s\n", (char*) (ebx + 2 * sizeof (uint32_t)));
+  return 0;
 }
 
-void* memory(void *ebx)
+int memory(void *ebx)
 {
-  kprintf("\nRAM LOWESTLIMIT: 0x%xk HIGHEST: 0x%xk", 
-*(uint32_t*) (ebx + 2 * sizeof (uint32_t) ),
-*(uint32_t*) (ebx + 3 * sizeof (uint32_t) )
+  /* verify if it really is provided info */
+  if(*(uint32_t*) (ebx + 1 * sizeof (uint32_t) ) != 16 )
+  {
+    return -1;
+  }
+  RAM.lowest = (uintptr_t *)(uintptr_t)(1024 * *(uint32_t*) (ebx + 2 * sizeof (uint32_t) ) );
+  RAM.highest = (uintptr_t *)(uintptr_t)(1024 * *(uint32_t*) (ebx + 3 * sizeof (uint32_t) ) );
+  kprintf("RAM lowestlimit: 0x%x K, highest: 0x%x K\n", 
+      ( (uintptr_t)RAM.lowest ) / 0x400,
+      ( (uintptr_t)RAM.highest ) / 0x400
       );
-  return ( ebx + 
-      *( (uint32_t*) (ebx + sizeof (uint32_t) ) ) 
-      - sizeof (uint32_t) );
+  return 0;
 }
 
 void bootinfo(void * ebx)
 {
   /* total size of header*/
   uint32_t header_size=*((uint32_t*)ebx);
-  void * start_ebx=ebx;
-  kprintf("\n\n\ntotal size=%x",header_size);
+  while(header_size % sizeof (uint32_t) != 0) 
+    header_size--;
+  register void* bp;
+  kprintf("total size of boot struct=%x\n",header_size);
   /* reserved */
   ebx += sizeof (uint32_t);
-  /* next type */
-  ebx += sizeof (uint32_t);
   /* parsing header info */
-  while(ebx <= ( start_ebx + header_size ) )
+  /*Finding memory info */
+  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
   {
-    ebx += sizeof (uint32_t);
-    switch(*(uint32_t*)ebx)
+    if(*(uint32_t*)bp == MEMORY)
     {
-      case MEMORY: ebx = memory(ebx); break;
-      case LOADER_NAME: ebx = loader_name(ebx); break;
+      if(memory(bp) == 0)
+      {
+        break;
+      }
+    }
+  }
+  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  {
+    if(*(uint32_t*)bp == LOADER_NAME)
+    {
+      if(loader_name(bp) == 0)
+      {
+        break;
+      }
     }
   }
 }

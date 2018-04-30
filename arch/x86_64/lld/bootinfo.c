@@ -1,5 +1,10 @@
 #define LOADER_NAME 2
 #define MEMORY 4
+#define BOOTDEV 5
+#define BOOTCMD 1
+#define MODULES 3
+#define VBEMODE 7
+#define FRAMEBUFFER 8
 
 #include <stdint.h>
 #include <string.h>
@@ -10,16 +15,54 @@
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 
  * */
-int loader_name(void *ebx)
+int vbe_mode(void *ebx)
 {
   /* verify if it really is provided info */
-  if(strlen((char*) (ebx + 2 * sizeof (uint32_t))) < 5 ) 
+  if(*(int*)(ebx + sizeof (uint32_t)) != 784)
   {
     return -1;
   }
-  kprintf("loader is %s\n", (char*) (ebx + 2 * sizeof (uint32_t)));
+  kprintf("vbe_mode: 0x%x", *(uint16_t*)(ebx + 2 * sizeof(uint32_t) ));
   return 0;
 }
+  
+int loader_name(void *ebx)
+{
+  /* verify if it really is provided info */
+  if(strlen((char*) (ebx + 2 * sizeof (uint32_t))) < 5 || 
+      *(int32_t*)(ebx + sizeof (uint32_t) ) <= 0) 
+  {
+    return -1;
+  }
+  kprintf("loader is %s\n", (char*) (ebx + 2 * sizeof (uint32_t) ) );
+  return 0;
+}
+
+int boot_cmd(void *ebx)
+{
+  /* verify if it really is provided info */
+  if(strlen((char*)(ebx + 2 * sizeof (uint32_t) ) ) < 4 || 
+      *(int32_t*)(ebx + sizeof (uint32_t) ) <= 0) 
+  {
+    return -1;
+  }
+  kprintf("kcmdline:  %s\n", (char*) (ebx + 2 * sizeof (uint32_t) ) );
+  return 0;
+}
+
+int boot_device(void *ebx)
+{
+  /* verify if it really is provided info */
+  if( *(uint32_t*)(ebx + sizeof (uint32_t) ) != 20 ) 
+  {
+    return -1;
+  }
+  kprintf("BOOTDEV IS  0x%x\n", *(uint32_t*)(ebx + 2 * sizeof (uint32_t) ) );
+  kprintf("PARTITION:  0x%x\n", *(uint32_t*)(ebx + 3 * sizeof (uint32_t) ) );
+  kprintf("SUBPARTITION:  0x%x\n", *(uint32_t*)(ebx + 4 * sizeof (uint32_t) ) );
+  return 0;
+}
+
 
 int memory(void *ebx)
 {
@@ -28,14 +71,43 @@ int memory(void *ebx)
   {
     return -1;
   }
-  RAM.lowest = (uintptr_t *)(uintptr_t)(1024 * *(uint32_t*) (ebx + 2 * sizeof (uint32_t) ) );
-  RAM.highest = (uintptr_t *)(uintptr_t)(1024 * *(uint32_t*) (ebx + 3 * sizeof (uint32_t) ) );
+  RAM.lowest = (uintptr_t *)(uintptr_t)
+    (1024 * *(uint32_t*) (ebx + 2 * sizeof (uint32_t) ) );
+  RAM.highest = 0x100000 /* 1M */
+    + (uintptr_t *)(uintptr_t)(1024 * *(uint32_t*) (ebx + 3 * sizeof (uint32_t) ) );
   kprintf("RAM lowestlimit: 0x%x K, highest: 0x%x K\n", 
       ( (uintptr_t)RAM.lowest ) / 0x400,
       ( (uintptr_t)RAM.highest ) / 0x400
       );
   return 0;
 }
+
+int modules(void *ebx)
+{
+  /* verify if it really is provided info */
+  if(strlen((char*)(ebx + 4 * sizeof (uint32_t) ) ) < 4
+      || *(int32_t*)(ebx + sizeof (uint32_t) ) <= 2) 
+  {
+    return -1;
+  }
+  kprintf("module:  %s\n", (char*) (ebx +  4 * sizeof (uint32_t)  ) );
+  return 0;
+}
+
+int framebuffer_info(void * ebx)
+{
+  if(*(int32_t*) (ebx + 1 * sizeof (uint32_t)) <= 16)
+  {
+    return -1;
+  }
+  uint64_t addr = *(uint64_t*)(ebx + 2 * sizeof (uint32_t));
+  uint32_t pitch =*(uint32_t*) (ebx + 2 * sizeof (uint32_t) 
+      + sizeof (uint64_t) );
+  kprintf("framebuffer addr 0x%x pitch 0x%x\n", addr, pitch);
+  return 0;
+}
+
+
 
 void bootinfo(void * ebx)
 {
@@ -59,6 +131,7 @@ void bootinfo(void * ebx)
       }
     }
   }
+  /* BOOTLOADER INFO */
   for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == LOADER_NAME)
@@ -69,4 +142,66 @@ void bootinfo(void * ebx)
       }
     }
   }
+  /* BIOS and partition info */
+  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  {
+    if(*(uint32_t*)bp == BOOTDEV)
+    {
+      if(boot_device(bp) == 0)
+      {
+        break;
+      }
+    }
+  }
+
+  /* boot command line */
+  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  {
+    if(*(uint32_t*)bp == BOOTCMD)
+    {
+      if(boot_cmd(bp) == 0)
+      {
+        break;
+      }
+    }
+  }
+
+  /* modules */
+  register uint32_t times=0;
+  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  {
+    if(*(uint32_t*)bp == MODULES)
+    {
+      if(modules(bp) == 0)
+      {
+        times++;
+      }
+    }
+  }
+  kprintf("%d modules found\n", times);
+
+  /* VBE MODE INFO */
+  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  {
+    if(*(uint32_t*)bp == VBEMODE)
+    {
+      if(vbe_mode(bp) == 0)
+      {
+        break;
+      }
+    }
+  }
+
+  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  {
+    if(*(uint32_t*)bp == FRAMEBUFFER)
+    {
+      if(framebuffer_info(bp) == 0)
+      {
+        break;
+      }
+    }
+  }
+
+
 }

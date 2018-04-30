@@ -32,12 +32,12 @@ struct Text_mode_pointer
 };
 void tui_init(int color);
 void kputchar_to(int8_t chr, uint8_t row, uint8_t col, int color);
-void kputchar(int8_t chr);
-void kputs(char* str);
 void make_newline(void);
 
 /* boot info */
 void bootinfo(void * ebx);
 /* miscelaneous */
-void kpause(void);
+/* cpu management */
+void kpause(void);/* for debug */
+void cpu_halt(void);
 #endif

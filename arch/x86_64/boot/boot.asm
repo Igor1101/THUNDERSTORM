@@ -5,7 +5,7 @@ extern kputstr_to
 extern kputchar_to
 extern kernel_phys_base
 extern kernel_init
-OS_STK_SIZE equ 10240; 100K for os stack
+OS_STK_SIZE equ 102400; 100K for os stack
 GREEN equ 0x2
 RED equ 0x4f
 PG_SIZE equ 512*8; in bytes

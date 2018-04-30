@@ -31,7 +31,7 @@ int main(void* sysinfo)
     return (1);/* GOT is not working, 
                   smth wrong with bss */
   }
-  tui_init(Cyan);
+  tui_init(Green);
   kputs("\n\n\nTHUNDERSTORM Embedded system\n\
  COPYRIGHT Igor Muravyov 2018");
 #ifdef KDEBUG
@@ -41,7 +41,6 @@ output is too slow");
   kputs("COMPUTER INFO:");
   debug=1;
   bootinfo(sysinfo);
-  kputs("\nHALTING");
-  asm("hlt");
+  cpu_halt();
   while(1);
 }

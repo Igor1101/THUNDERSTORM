@@ -20,3 +20,8 @@ libc/
 ```
 ....
 
+##### Dependencies:
+nasm gcc binutils qemu-system-x86_64 OVMF(optional) grub-mkrescue
+#### Running it!
+make
+make run 

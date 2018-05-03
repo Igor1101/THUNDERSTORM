@@ -2,7 +2,7 @@
 .PHONY: ksize
 .PHONY: libc
 BIOS ?=biosfile
-KERNEL_OPTIONS += -D USE_VGA  -D USE_VBE
+KERNEL_OPTIONS += -D USE_VGA 
 ARCH ?= x86_64
 kernel=TH
 TH_ABS_PATH=$(PWD)

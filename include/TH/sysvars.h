@@ -1,6 +1,6 @@
 #ifndef SYSVARS
 #define SYSVARS
-
+#include <TH/lld.h>
 
 
 
@@ -12,6 +12,8 @@ extern struct RAM_INFO
   uintptr_t* lowest;
 } RAM;
 
+/* video info */
+extern struct Framebuffer sysfb;
 
 
 #endif /* sysvars */

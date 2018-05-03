@@ -74,7 +74,8 @@ int memory(void *ebx)
   RAM.lowest = (uintptr_t *)(uintptr_t)
     (1024 * *(uint32_t*) (ebx + 2 * sizeof (uint32_t) ) );
   RAM.highest = 0x100000 /* 1M */
-    + (uintptr_t *)(uintptr_t)(1024 * *(uint32_t*) (ebx + 3 * sizeof (uint32_t) ) );
+    + (uintptr_t *)(uintptr_t)
+    (1024 * *(uint32_t*) (ebx + 3 * sizeof (uint32_t) ) );
   kprintf("RAM lowestlimit: 0x%x K, highest: 0x%x K\n", 
       ( (uintptr_t)RAM.lowest ) / 0x400,
       ( (uintptr_t)RAM.highest ) / 0x400
@@ -100,10 +101,21 @@ int framebuffer_info(void * ebx)
   {
     return -1;
   }
-  uint64_t addr = *(uint64_t*)(ebx + 2 * sizeof (uint32_t));
-  uint32_t pitch =*(uint32_t*) (ebx + 2 * sizeof (uint32_t) 
+  sysfb.addr = (uint64_t*)(*(uint64_t*)(ebx + 2 * sizeof (uint32_t) ) );
+  sysfb.pitch = *(uint32_t*) (ebx + 2 * sizeof (uint32_t) 
       + sizeof (uint64_t) );
-  kprintf("framebuffer addr 0x%x pitch 0x%x\n", addr, pitch);
+  sysfb.width = *(uint32_t*) (ebx + 3 * sizeof (uint32_t) 
+      + sizeof (uint64_t) );
+  sysfb.height = *(uint32_t*) (ebx + 4 * sizeof (uint32_t) 
+      + sizeof (uint64_t) );
+  sysfb.bpp = *(uint8_t*) (ebx + 5 * sizeof (uint32_t) 
+      + sizeof (uint64_t) );
+  sysfb.type = *(uint8_t*) (ebx + 5 * sizeof (uint32_t) 
+      + sizeof (uint64_t) + sizeof (uint8_t) );
+  kprintf("framebuffer addr 0x%x pitch 0x%x width 0x%x height 0x%x ", 
+      sysfb.addr, sysfb.pitch, sysfb.width);
+  kprintf("bpp 0x%x type 0x%x \n", 
+      sysfb.bpp, sysfb.type, sysfb.width);
   return 0;
 }
 
@@ -202,6 +214,5 @@ void bootinfo(void * ebx)
       }
     }
   }
-
 
 }

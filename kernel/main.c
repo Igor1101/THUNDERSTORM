@@ -22,6 +22,8 @@ struct RAM_INFO RAM =
   NULL
 };
 
+struct Framebuffer sysfb;
+
 int debug;
 int main(void* sysinfo)
 {
@@ -35,6 +37,7 @@ int main(void* sysinfo)
   kputs("\n\n\nTHUNDERSTORM Embedded system\n\
  COPYRIGHT Igor Muravyov 2018");
 #ifdef KDEBUG
+  tui_init(Cyan);
   kputs("This is a DEBUG version of kernel,\
 output is too slow");
 #endif /* KDEBUG */

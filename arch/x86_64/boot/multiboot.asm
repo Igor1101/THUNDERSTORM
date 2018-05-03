@@ -7,14 +7,20 @@ boot_start:
   dd ARCH
   dd boot_end - boot_start
   dd 0x100000000 - (MAGIC + ARCH + (boot_end - boot_start))
-; tags:
-
-  dw 0
+address_tag_start:
+%ifdef USE_VBE
+framebuffer_tag_start:
+  dw 5 ; 
+  dw 0 ; optional
+  dd .end - framebuffer_tag_start ; size
+  dd 1024
+  dd 768
+  dd 32
+.end:
+%endif
+tags_end:
+; terminate tags:
+;  dw 0
   dw 0
   dd 8
-; EGA console:
-  dw 4
-  dw 0
-  dd 12
-;
 boot_end:

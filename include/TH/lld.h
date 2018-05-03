@@ -1,6 +1,7 @@
 #include <stdint.h>
 #ifndef LLD_TH
 #define LLD_TH
+
 /*VGA info */
 #define ROWS 25
 #define COLUMNS 80
@@ -30,9 +31,24 @@ struct Text_mode_pointer
   uint8_t volatile col;
   int volatile color;
 };
+
+/* video framebuffer */
+struct Framebuffer
+{
+  uint64_t * addr;
+  uint32_t pitch;
+  uint32_t width;
+  uint32_t height;
+  uint32_t bpp;
+  uint32_t type;
+  uint32_t colorinfo;
+};
 void tui_init(int color);
 void kputchar_to(int8_t chr, uint8_t row, uint8_t col, int color);
 void make_newline(void);
+
+
+
 
 /* boot info */
 void bootinfo(void * ebx);

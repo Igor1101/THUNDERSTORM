@@ -1,7 +1,7 @@
 .PHONY: kernel
 .PHONY: ksize
 .PHONY: libc
-KERNEL_OPTIONS += -D USE_VGA 
+KERNEL_OPTIONS += -D USE_VGA  
 ARCH ?= x86_64
 kernel=TH
 TH_ABS_PATH=$(PWD)
@@ -10,7 +10,7 @@ AS = as# now we aren`t really use it
 LD = ld
 AR = ar
 AS_FLAGS:=
-CC_FLAGS:= -O4 -g -fno-stack-protector -ffreestanding -Wall -Werror -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
+CC_FLAGS:= -Og -g -fno-stack-protector -ffreestanding -Wall -Werror -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
 LD_FLAGS:=-nostdlib -static 
 BOOT_PORTS_PATH:=arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
@@ -51,7 +51,7 @@ ports: initialize
 	@for cfile in $(LLD_NASM_SOURCES);do \
 	CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 	printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-	nasm -f elf64  -o $$CFILE $$cfile; \
+	nasm $(KERNEL_OPTIONS) -f elf64  -o $$CFILE $$cfile; \
 	done
 	@for cfile in $(LLD_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \

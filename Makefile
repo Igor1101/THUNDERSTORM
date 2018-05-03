@@ -1,7 +1,8 @@
 .PHONY: kernel
 .PHONY: ksize
 .PHONY: libc
-KERNEL_OPTIONS += -D USE_VGA  
+BIOS ?=biosfile
+KERNEL_OPTIONS += -D USE_VGA  -D USE_VBE
 ARCH ?= x86_64
 kernel=TH
 TH_ABS_PATH=$(PWD)
@@ -73,9 +74,15 @@ iso: kernel
 	if [ -e os.iso ]; then rm os.iso ; fi
 	grub-mkrescue  -o os.iso ./ 2> /dev/null
 run: os.iso
-	@qemu-system-x86_64 -m 20M -cdrom os.iso
+	if [ -f $(BIOS) ]; then \
+	qemu-system-x86_64 -bios $(BIOS) -m 100M -cdrom os.iso; \
+	else \
+	qemu-system-x86_64 -m 100M -cdrom os.iso; fi
 debug: os.iso
-	@qemu-system-x86_64 -S -s -m 10M -cdrom os.iso 
+	if [ -f $(BIOS) ]; then \
+	qemu-system-x86_64 -S -s -bios $(BIOS) -m 100M -cdrom os.iso; \
+	else \
+	qemu-system-x86_64 -S -s -m 100M -cdrom os.iso; fi
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \
 		if ! [ -e $$dir ]; then mkdir $$dir; fi;\

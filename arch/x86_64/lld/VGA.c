@@ -14,7 +14,7 @@ void kputchar_to(int8_t chr, uint8_t row, uint8_t col, int color)
 
 void make_newline(void)
 {
-  memcpy(VGAADDR, VGAADDR + 2 * ( 1 * 80 + 0 ), ROWS*COLUMNS*2);
+  memcpy(VGAADDR, VGAADDR + 160, ROWS*COLUMNS*2 + COLUMNS);
 }
 
 #endif

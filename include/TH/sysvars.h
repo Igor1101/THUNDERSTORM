@@ -1,8 +1,10 @@
 #ifndef SYSVARS
 #define SYSVARS
+
 #include <TH/lld.h>
-
-
+#ifndef MAX_RAM_ENTRIES 
+  #define MAX_RAM_ENTRIES 50 /*max amount of information about ram entries */
+#endif /* RAM_ENTRIES */
 
 extern struct RAM_INFO
 {
@@ -11,7 +13,13 @@ extern struct RAM_INFO
   /* lowest RAM info, loaded from bootloader */
   uintptr_t* lowest;
 } RAM;
-
+extern struct RAM_MAP
+{
+  uintptr_t* base_addr;
+  uintptr_t length;
+  uint32_t type;
+} ram_map[MAX_RAM_ENTRIES];
+int ram_entries;
 /* video info */
 extern struct Framebuffer sysfb;
 

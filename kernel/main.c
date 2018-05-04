@@ -41,6 +41,7 @@ int main(void* sysinfo)
 output is too slow");
 #endif /* KDEBUG */
   kputs("COMPUTER INFO:");
+  kputs(SMALL_SYS_EMBLEM);
   bootinfo(sysinfo);
   /*for(int i=00;i<100;i++)
   {

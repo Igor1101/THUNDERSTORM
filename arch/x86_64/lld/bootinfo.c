@@ -131,7 +131,7 @@ int memmap(void *ebx)
     switch(ram_map[i].type)
     {
       case 1: type = "PHYSICAL RAM";break;
-      case 3: type = "PCI";break;
+      case 3: type = "ACPI";break;
       case 4: type = "RESERVED, must be preserved"; break;
       default: type = "RESERVED";
     }
@@ -178,7 +178,7 @@ void bootinfo(void * ebx)
   while(header_size % sizeof (uint32_t) != 0) 
     header_size--;
   register void* bp;
-  kprintf("total size of boot struct=%x\n",header_size);
+  kprintf("total size of boot struct=%x\n", header_size);
   /* reserved */
   ebx += sizeof (uint32_t);
   /* parsing header info */

@@ -8,8 +8,8 @@ struct Text_mode_pointer vga =
 };
 void tui_init(int color)
 {
-  vga.row=1;
-  vga.col=1;
+  vga.row = 1;
+  vga.col = 1;
   vga.color=color;
 }
 void newline(void)
@@ -17,10 +17,11 @@ void newline(void)
   if(vga.row >=ROWS)
   {
     make_newline();
+    vga.col = 1;
     return;
   }
   vga.row++;
-  vga.col=1;
+  vga.col = 1;
 }
 void kputchar(int8_t chr)
 {
@@ -32,13 +33,15 @@ void kputchar(int8_t chr)
     default: break;
   }
   kputchar_to(chr, vga.row, vga.col, vga.color);
-  if(vga.col >= COLUMNS && vga.row <= ROWS)
+  if(vga.col >= COLUMNS && vga.row < ROWS)
   {
     newline();
   }
   else if(vga.row >= ROWS && vga.col >= COLUMNS)
   {
     make_newline();
+    vga.col = 1;
+    vga.row = ROWS-1;
   }
   else
   {

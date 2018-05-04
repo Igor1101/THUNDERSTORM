@@ -21,10 +21,9 @@ struct RAM_INFO RAM =
   NULL,
   NULL
 };
-
 struct Framebuffer sysfb;
+struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
-int debug;
 int main(void* sysinfo)
 {
   static char verifier=100;
@@ -42,8 +41,11 @@ int main(void* sysinfo)
 output is too slow");
 #endif /* KDEBUG */
   kputs("COMPUTER INFO:");
-  debug=1;
   bootinfo(sysinfo);
+  /*for(int i=00;i<100;i++)
+  {
+    kputpixel(i,i, 0x4210);
+  }*/
   cpu_halt();
   while(1);
 }

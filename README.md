@@ -22,8 +22,12 @@ libc/
 
 ##### Dependencies:
 nasm gcc binutils qemu-system-x86_64 OVMF(optional) grub-mkrescue
-#### Running it!
+#### Running it on qemu!
 ```
 make
 make run 
+```
+Running os with different BIOS(for example OVMF.fd, which is UEFI/BIOS):
+```
+make run BIOS=path_to_BIOS
 ```

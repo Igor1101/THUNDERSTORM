@@ -1,10 +1,13 @@
 #define LOADER_NAME 2
-#define MEMORY 4
+#define MEMORY 4 /**
+                  * Basic memory info, 
+                  * almost useless */
 #define BOOTDEV 5
 #define BOOTCMD 1
 #define MODULES 3
 #define VBEMODE 7
 #define FRAMEBUFFER 8
+#define MEMMAP 6 /* memory map */
 
 #include <stdint.h>
 #include <string.h>
@@ -94,6 +97,53 @@ int modules(void *ebx)
   kprintf("module:  %s\n", (char*) (ebx +  4 * sizeof (uint32_t)  ) );
   return 0;
 }
+
+int memmap(void *ebx)
+  /* warning!: this function needs to be called after memory(); */
+{
+  /* verify if it really is provided info */
+  if( *(int32_t*)(ebx + sizeof (int32_t) ) < 16 ) 
+  {
+    return -1;
+  }
+  uint32_t size = *(uint32_t*)(ebx + sizeof (uint32_t) );
+  uint32_t entry_size = *(uint32_t*)(ebx + 2 * sizeof (uint32_t) );
+  uint32_t entry_version = *(uint32_t*)(ebx + 3 * sizeof (uint32_t) );
+  register void* mappointer = ebx + 4 * sizeof (uint32_t);
+  int rami=0;
+  for(; rami<MAX_RAM_ENTRIES; rami++)
+  {
+    if(mappointer >= ebx + size)
+    {
+      break;
+    }
+    ram_map[rami].base_addr = *(uint64_t**)mappointer;
+    ram_map[rami].length = *(uint64_t*)(mappointer + sizeof (uint64_t));
+    ram_map[rami].type = *(uint32_t*)(mappointer + 2 * sizeof (uint64_t));
+    mappointer += entry_size;
+  }
+  ram_entries = rami + 1;
+  kprintf("memmap:  ram_entries: %d entry version: %d\n",  
+      ram_entries, entry_version);
+  for(int i=0; i<ram_entries; i++)
+  {
+    char * type;
+    switch(ram_map[i].type)
+    {
+      case 1: type = "PHYSICAL RAM";break;
+      case 3: type = "PCI";break;
+      case 4: type = "RESERVED, must be preserved"; break;
+      default: type = "RESERVED";
+    }
+    kprintf("entry %d: addr 0x%x, length %dM, type %s %d\n",
+        i, ram_map[i].base_addr, 
+        ram_map[i].length/1024/1024,
+        type,
+        ram_map[i].type);
+  }
+  return 0;
+}
+
 
 int framebuffer_info(void * ebx)
 {
@@ -214,5 +264,16 @@ void bootinfo(void * ebx)
       }
     }
   }
+  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  {
+    if(*(uint32_t*)bp == MEMMAP)
+    {
+      if(memmap(bp) == 0)
+      {
+        //break;
+      }
+    }
+  }
+
 
 }

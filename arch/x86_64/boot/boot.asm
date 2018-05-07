@@ -5,6 +5,13 @@ extern kputstr_to
 extern kputchar_to
 extern kernel_phys_base
 extern kernel_init
+
+global p4_table
+global p3_table
+global p2_table
+global p1_table
+global init_paging; used in "memory_mapping.c"
+
 OS_STK_SIZE equ 102400; 100K for os stack
 GREEN equ 0x2
 RED equ 0x4f
@@ -80,6 +87,8 @@ section .text
     hlt
 
 init_paging:
+  push eax
+  push ecx
   mov eax, p4_table
   mov cr3, eax
   ; PAE for huge pages use
@@ -93,9 +102,11 @@ init_paging:
   mov eax, cr0
   or eax, 1<<31
   mov cr0, eax
+  pop ecx
+  pop eax
   ret
 set_paging:
-; p4[0] -> p3[0] -> p2[0...PG_SIZE] -> 2GB memory
+; p4[0] -> p3[0] -> p2[0...PG_SIZE] -> 2GB - 2MB memory
 
 ;p4[0] -> p3[0]
     mov eax,  p3_table
@@ -113,9 +124,9 @@ set_paging:
     mov eax,  2<<20; 2MB
     mul ebx
     or  eax,  0b10000011; writable, exists, extended
-    mov [p2_table + ebx], eax
-    add ebx,  8; sizeof QW
-    cmp ebx,  PG_SIZE
+    mov [p2_table + ebx * 8], eax
+    add ebx,  1; sizeof QW
+    cmp ebx,  PG_SIZE_QW
     jne .map
     ret
 

@@ -122,7 +122,7 @@ int memmap(void *ebx)
     ram_map[rami].type = *(uint32_t*)(mappointer + 2 * sizeof (uint64_t));
     mappointer += entry_size;
   }
-  ram_entries = rami + 1;
+  ram_entries = rami;
   kprintf("memmap:  ram_entries: %d entry version: %d\n",  
       ram_entries, entry_version);
   for(int i=0; i<ram_entries; i++)
@@ -130,16 +130,16 @@ int memmap(void *ebx)
     char * type;
     switch(ram_map[i].type)
     {
-      case 1: type = "PHYSICAL RAM";break;
-      case 3: type = "ACPI";break;
-      case 4: type = "RESERVED, must be preserved"; break;
+      case PHYSRAM: type = "PHYSICAL RAM";break;
+      case ACPIRAM: type = "ACPI";break;
+      case PRESERVED: type = "RESERVED, must be preserved"; break;
       default: type = "RESERVED";
     }
-    kprintf("entry %d: addr 0x%x, length %dM, type %s %d\n",
+    kprintf("entry %d: addr 0x%x, length %dM, type %s \n",
         i, ram_map[i].base_addr, 
         ram_map[i].length/1024/1024,
-        type,
-        ram_map[i].type);
+        type
+        );
   }
   return 0;
 }

@@ -5,6 +5,7 @@ BIOS ?=biosfile
 QEMU_MEM ?= 100M
 KERNEL_OPTIONS += -D USE_VGA 
 ARCH ?= x86_64
+INCLUDE_DIRS = -I include -I arch/$(ARCH)/include
 kernel=TH
 TH_ABS_PATH=$(PWD)
 CC ?= gcc
@@ -12,7 +13,8 @@ AS = as# now we aren`t really use it
 LD = ld
 AR = ar
 AS_FLAGS:=
-CC_FLAGS:= -O0 -g -fno-stack-protector -ffreestanding -Wall -Werror -Wextra -static -nostdlib -I include $(KERNEL_OPTIONS)
+CC_FLAGS:= -Og -g -fno-stack-protector\
+ 	-ffreestanding -Wall -Werror -Wextra -static -nostdlib  $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
 LD_FLAGS:=-nostdlib -static 
 BOOT_PORTS_PATH:=arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
@@ -81,9 +83,9 @@ run: os.iso
 	qemu-system-x86_64 -m $(QEMU_MEM) -cdrom os.iso; fi
 debug: os.iso
 	if [ -f $(BIOS) ]; then \
-	qemu-system-x86_64 -S -s -bios $(BIOS) -m $(QEMU_MEM) -cdrom os.iso; \
+	qemu-system-x86_64 -S -s -d int -bios $(BIOS) -m $(QEMU_MEM) -cdrom os.iso; \
 	else \
-	qemu-system-x86_64 -S -s -m $(QEMU_MEM) -cdrom os.iso; fi
+	qemu-system-x86_64 -S -s -d int -m $(QEMU_MEM) -cdrom os.iso; fi
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \
 		if ! [ -e $$dir ]; then mkdir $$dir; fi;\

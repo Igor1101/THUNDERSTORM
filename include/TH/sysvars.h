@@ -3,9 +3,14 @@
 
 #include <TH/lld.h>
 #ifndef MAX_RAM_ENTRIES 
-  #define MAX_RAM_ENTRIES 50 /*max amount of information about ram entries */
+  #define MAX_RAM_ENTRIES 100 /*max amount of 
+                                information about ram entries */
 #endif /* RAM_ENTRIES */
+/*ram types */
 
+#define PHYSRAM 1
+#define ACPIRAM 3
+#define PRESERVED 4
 extern struct RAM_INFO
 {
   /* highest RAM info, loaded from bootloader */

@@ -11,11 +11,11 @@ address_tag_start:
 %ifdef USE_VBE
 framebuffer_tag_start:
   dw 5 ; 
-  dw 0 ; optional
+  dw 1 ; optional
   dd .end - framebuffer_tag_start ; size
-  dd 1024
-  dd 768
-  dd 32
+  dd 0 ;width
+  dd 0 ;heiht
+  dd 0 ;bpp
 .end:
 %endif
 tags_end:

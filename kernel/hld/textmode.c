@@ -40,7 +40,7 @@ void kputchar(int8_t chr)
     default: break;
   }
   kputchar_to(chr, vga.row, vga.col, vga.color);
-  update_cursor(vga.col + 1, vga.row-1);
+  update_cursor(vga.col + 1, vga.row);
   if(vga.col >= COLUMNS && vga.row < ROWS)
   {
     newline();

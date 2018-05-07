@@ -43,10 +43,19 @@ output is too slow");
   kputs("COMPUTER INFO:");
   kputs(SMALL_SYS_EMBLEM);
   bootinfo(sysinfo);
-  /*for(int i=00;i<100;i++)
-  {
-    kputpixel(i,i, 0x4210);
-  }*/
+  init_video();
+  kputpixel(0,0, 255<<8);
+  kputpixel(1,0, 255<<8);
+  kputpixel(2,0, 255<<8);
+  kputpixel(3,0, 255<<8);
+  kputpixel(4,0, 255<<8);
+  kputpixel(5,0, 255<<8);
+  kputpixel(6,0, 255<<8);
+  kputpixel(7,0, 255<<8);
+  kputpixel(8,0, 255<<8);
+  kputpixel(9,0, 255<<8);
+  kputpixel(10,0, 255<<8);
+  kputpixel(10,10, 255<<8);
   cpu_halt();
   while(1);
 }

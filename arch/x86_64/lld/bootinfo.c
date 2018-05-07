@@ -18,10 +18,10 @@
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 
  * */
-int vbe_mode(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int vbe_mode(void *ebx)
 {
   /* verify if it really is provided info */
-  if(*(int*)(ebx + sizeof (uint32_t)) != 784)
+  if(*(int*)(ebx + sizeof (uint32_t)) != 784/* fixed size */)
   {
     return -1;
   }
@@ -29,7 +29,7 @@ int vbe_mode(void *ebx)
   return 0;
 }
   
-int loader_name(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int loader_name(void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*) (ebx + 2 * sizeof (uint32_t))) < 5 || 
@@ -41,7 +41,7 @@ int loader_name(void *ebx)
   return 0;
 }
 
-int boot_cmd(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int boot_cmd(void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 2 * sizeof (uint32_t) ) ) < 4 || 
@@ -53,10 +53,10 @@ int boot_cmd(void *ebx)
   return 0;
 }
 
-int boot_device(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int boot_device(void *ebx)
 {
   /* verify if it really is provided info */
-  if( *(uint32_t*)(ebx + sizeof (uint32_t) ) != 20 ) 
+  if( *(uint32_t*)(ebx + sizeof (uint32_t) ) != 20 /* fixed size */) 
   {
     return -1;
   }
@@ -67,10 +67,10 @@ int boot_device(void *ebx)
 }
 
 
-int memory(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int memory(void *ebx)
 {
   /* verify if it really is provided info */
-  if(*(uint32_t*) (ebx + 1 * sizeof (uint32_t) ) != 16 )
+  if(*(uint32_t*) (ebx + 1 * sizeof (uint32_t) ) != 16 /* fixed size */)
   {
     return -1;
   }
@@ -86,7 +86,7 @@ int memory(void *ebx)
   return 0;
 }
 
-int modules(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int modules(void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 4 * sizeof (uint32_t) ) ) < 4
@@ -98,7 +98,7 @@ int modules(void *ebx)
   return 0;
 }
 
-int memmap(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int memmap(void *ebx)
   /* warning!: this function needs to be called after memory(); */
 {
   /* verify if it really is provided info */
@@ -106,11 +106,11 @@ int memmap(void *ebx)
   {
     return -1;
   }
-  uint32_t size = *(uint32_t*)(ebx + sizeof (uint32_t) );
-  uint32_t entry_size = *(uint32_t*)(ebx + 2 * sizeof (uint32_t) );
-  uint32_t entry_version = *(uint32_t*)(ebx + 3 * sizeof (uint32_t) );
-  register void* mappointer = ebx + 4 * sizeof (uint32_t);
-  int rami=0;
+  auto uint32_t size = *(uint32_t*)(ebx + sizeof (uint32_t) );
+  auto uint32_t entry_size = *(uint32_t*)(ebx + 2 * sizeof (uint32_t) );
+  auto uint32_t entry_version = *(uint32_t*)(ebx + 3 * sizeof (uint32_t) );
+  auto void* mappointer = ebx + 4 * sizeof (uint32_t);
+  auto int rami=0;
   for(; rami<MAX_RAM_ENTRIES; rami++)
   {
     if(mappointer >= ebx + size)
@@ -145,7 +145,7 @@ int memmap(void *ebx)
 }
 
 
-int framebuffer_info(void * ebx)
+__attribute__ ( ( always_inline ) ) inline int framebuffer_info(void * ebx)
 {
   if(*(int32_t*) (ebx + 1 * sizeof (uint32_t)) <= 16)
   {

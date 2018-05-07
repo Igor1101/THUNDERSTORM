@@ -3,7 +3,7 @@
 #define LLD_TH
 
 /*VGA info */
-#define ROWS 25
+#define ROWS 24
 #define COLUMNS 80
 enum Color
 {
@@ -46,6 +46,9 @@ struct Framebuffer
 void tui_init(int color);
 void kputchar_to(int8_t chr, uint8_t row, uint8_t col, int color);
 void make_newline(void);
+void update_cursor(int x, int y);
+void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+
 /* VIDEO */
 void kputpixel(uint32_t x, uint32_t y, uint32_t color);
 void init_video(void);

@@ -40,6 +40,10 @@ int main(void* sysinfo)
   kputs("This is a DEBUG version of kernel,\
 output is too slow");
 #endif /* KDEBUG */
+
+#ifdef USE_VGA
+  kputs("Note, that VGA mode is Legacy, used only for debbuging");
+#endif /* USE_VGA */
   kputs("COMPUTER INFO:");
   kputs(SMALL_SYS_EMBLEM);
   bootinfo(sysinfo);

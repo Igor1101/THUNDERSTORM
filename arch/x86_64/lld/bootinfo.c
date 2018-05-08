@@ -270,7 +270,7 @@ void bootinfo(void * ebx)
     {
       if(memmap(bp) == 0)
       {
-        //break;
+        break;
       }
     }
   }

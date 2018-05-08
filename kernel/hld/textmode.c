@@ -10,9 +10,14 @@ void tui_init(int color)
 {
   vga.row = 0;
   vga.col = 0;
-  vga.color=color;
-  enable_cursor(0, 255);
+  vga.color = color;
+  enable_cursor(0, ROWS);
 }
+void select_color(int color)
+{
+  vga.color = color;
+}
+
 void newline(void)
 {
   if(vga.row >=ROWS)

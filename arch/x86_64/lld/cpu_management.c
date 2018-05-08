@@ -2,5 +2,7 @@
 void cpu_halt(void)
 {
   kputs("HALTING");
-  asm volatile ("hlt");
+  asm volatile (" halt: hlt\n"
+      "jmp halt\n"
+      );
 }

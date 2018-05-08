@@ -1,4 +1,5 @@
 /* High level TH kernel initialization */
+
 /*
  _____ _   _ _   _ _   _ ____  _____ ____  ____ _____ ___  ____  __  __        __
 |_   _| | | | | | | \ | |  _ \| ____|  _ \/ ___|_   _/ _ \|  _ \|  \/  |  __  /  \_  _
@@ -9,6 +10,7 @@
                                                                           \  \
 __________________________________________________________________________/___________
 */
+
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
@@ -23,6 +25,13 @@ struct RAM_INFO RAM =
 };
 struct Framebuffer sysfb;
 struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
+void putchar(
+    /* note that this is int, not char as it's a unicode character */
+    unsigned short int c,
+    /* cursor position on screen, in characters not in pixels */
+    int cx, int cy,
+    /* foreground and background colors, say 0xFFFFFF and 0x000000 */
+    uint32_t fg, uint32_t bg);
 
 int main(void* sysinfo)
 {
@@ -32,20 +41,21 @@ int main(void* sysinfo)
     return (1);/* GOT is not working, 
                   smth wrong with bss */
   }
-  tui_init(Green);
+  tui_init(Default);
   kputs("\n\n\nTHUNDERSTORM Embedded system\n\
  COPYRIGHT Igor Muravyov 2018");
 #ifdef KDEBUG
-  tui_init(Cyan);
+  select_color(Cyan);
   kputs("This is a DEBUG version of kernel,\
 output is too slow");
 #endif /* KDEBUG */
 
 #ifdef USE_VGA
+  select_color(Red);
   kputs("Note, that VGA mode is Legacy, used only for debbuging");
+  select_color(Default);
 #endif /* USE_VGA */
   kputs("COMPUTER INFO:");
-  kputs(SMALL_SYS_EMBLEM);
   bootinfo(sysinfo);
   init_video();
   kputpixel(0,0, 255<<8);
@@ -60,6 +70,15 @@ output is too slow");
   kputpixel(9,0, 255<<8);
   kputpixel(10,0, 255<<8);
   kputpixel(10,10, 255<<8);
+  putchar('A',0,0, 255<<8, 0);
+  font_info();
+  for(int i=0; i<1000; i++)
+  {
+    kpause();
+    putchar(i,0,0, 255<<8, 0);
+    putchar(i,1,1, 255<<8, 0);
+    putchar(i,0,1, 255<<8, 255);
+  }
   cpu_halt();
   while(1);
 }

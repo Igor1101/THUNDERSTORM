@@ -22,7 +22,8 @@ enum Color
   LightRed   = 12,
   Pink       = 13,
   Yellow     = 14,
-  White      = 15
+  White      = 15,
+  Default    = 2
 };
 
 struct Text_mode_pointer
@@ -35,7 +36,8 @@ struct Text_mode_pointer
 /* video framebuffer */
 struct Framebuffer
 {
-  uint64_t * addr;
+  uintptr_t * virtaddr;
+  uintptr_t * addr;
   uint32_t pitch;
   uint32_t width;
   uint32_t height;
@@ -48,10 +50,12 @@ void kputchar_to(int8_t chr, uint8_t row, uint8_t col, int color);
 void make_newline(void);
 void update_cursor(int x, int y);
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+void select_color(int color);
 
 /* VIDEO */
 void kputpixel(uint32_t x, uint32_t y, uint32_t color);
 void init_video(void);
+void font_info(void);
 
 
 

@@ -12,7 +12,7 @@ global p2_table
 global p1_table
 global init_paging; used in "memory_mapping.c"
 
-OS_STK_SIZE equ 102400; 100K for os stack
+OS_STK_SIZE equ 1024000; 100K for os stack
 GREEN equ 0x2
 RED equ 0x4f
 PG_SIZE equ 512*8; in bytes
@@ -126,7 +126,7 @@ set_paging:
     or  eax,  0b10000011; writable, exists, extended
     mov [p2_table + ebx * 8], eax
     add ebx,  1; sizeof QW
-    cmp ebx,  PG_SIZE_QW
+    cmp ebx,  PG_SIZE_QW - 1
     jne .map
     ret
 

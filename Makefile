@@ -3,40 +3,42 @@
 .PHONY: libc
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
-KERNEL_OPTIONS += -D USE_VGA 
+KERNEL_OPTIONS += -D USE_VBE -D USE_VGA
 ARCH ?= x86_64
-INCLUDE_DIRS = -I include -I arch/$(ARCH)/include
-kernel=TH
-TH_ABS_PATH=$(PWD)
+OBJCOPY_FLAGS += --localize-symbols
+INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include
+kernel = TH
+TH_ABS_PATH = $(PWD)
 CC ?= gcc
 AS = as# now we aren`t really use it
 LD = ld
 AR = ar
-AS_FLAGS:=
-CC_FLAGS:= -Os -g -fno-stack-protector\
+OBJCOPY = objcopy
+AS_FLAGS =
+CC_FLAGS = -O4 -g -fno-stack-protector\
  	-ffreestanding -Wall -Werror -Wextra -static -nostdlib  $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
-LD_FLAGS:=-nostdlib -static 
-BOOT_PORTS_PATH:=arch/$(ARCH)/boot
+LD_FLAGS = -nostdlib -static 
+BOOT_PORTS_PATH = arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
-LLD_PORTS_PATH:=arch/$(ARCH)
+LLD_PORTS_PATH = arch/$(ARCH)
+KERNEL_BUILD_PATH = kernbuild# where to put all kernel *.o files
+THLIBC = libTHc.a 
+LIBC_BUILD_PATH = libcbuild
 # high level drivers
-LLD_PORTS += VGA
-LLD_NASM_SOURCES=$(shell find $(LLD_PORTS_PATH) -name *.asm)
-LLD_AS_SOURCES=$(shell find $(LLD_PORTS_PATH) -name *.s)
+# find more files we need:
+LLD_NASM_SOURCES = $(shell find $(LLD_PORTS_PATH) -name *.asm)
+LLD_AS_SOURCES = $(shell find $(LLD_PORTS_PATH) -name *.s)
 LLD_AS_SOURCES += $(shell find $(LLD_PORTS_PATH) -name *.S)
 LLD_C_SOURCES = $(shell find $(LLD_PORTS_PATH) -name *.c)
-KERNEL_C_SOURCES=$(shell find kernel/ -name *.c)
-KERNEL_BUILD_PATH=kernbuild# where to put all kernel *.o files
-THLIBC=libTHc.a 
-LIBC_C_SOURCES=$(shell find libc/ -name *.c)
-LIBC_BUILD_PATH=libcbuild
-LIBC_DIRECTORIES=libc libc/string
+KERNEL_C_SOURCES = $(shell find kernel/ -name *.c)
+LIBC_C_SOURCES = $(shell find libc/ -name *.c)
+FONTS = $(shell find $(FONTS_PATH) -name *.psf)
 
-DIRECTORIES:=src arch bin boot include kernel libc \
+DIRECTORIES:=src arch bin boot kernel libc \
 	$(KERNEL_BUILD_PATH)\
 	$(LIBC_BUILD_PATH)
 all: kernel iso ksize
-kernel: initialize ports libc
+kernel: initialize ports libc 
 	# KERNEL COMPILATION
 	@for cfile in $(KERNEL_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
@@ -77,12 +79,12 @@ iso: kernel
 	if [ -e os.iso ]; then rm os.iso ; fi
 	grub-mkrescue  -o os.iso ./ 2> /dev/null
 run: os.iso
-	if [ -f $(BIOS) ]; then \
+	@if [ -f $(BIOS) ]; then \
 	qemu-system-x86_64 -bios $(BIOS) -m $(QEMU_MEM) -cdrom os.iso; \
 	else \
 	qemu-system-x86_64 -m $(QEMU_MEM) -cdrom os.iso; fi
 debug: os.iso
-	if [ -f $(BIOS) ]; then \
+	@if [ -f $(BIOS) ]; then \
 	qemu-system-x86_64 -S -s -d int -bios $(BIOS) -m $(QEMU_MEM) -cdrom os.iso; \
 	else \
 	qemu-system-x86_64 -S -s -d int -m $(QEMU_MEM) -cdrom os.iso; fi

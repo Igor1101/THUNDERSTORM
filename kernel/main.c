@@ -58,22 +58,13 @@ output is too slow");
   kputs("COMPUTER INFO:");
   bootinfo(sysinfo);
   init_video();
-  kputpixel(0,0, 255<<8);
-  kputpixel(1,0, 255<<8);
-  kputpixel(2,0, 255<<8);
-  kputpixel(3,0, 255<<8);
-  kputpixel(4,0, 255<<8);
-  kputpixel(5,0, 255<<8);
-  kputpixel(6,0, 255<<8);
-  kputpixel(7,0, 255<<8);
-  kputpixel(8,0, 255<<8);
-  kputpixel(9,0, 255<<8);
-  kputpixel(10,0, 255<<8);
-  kputpixel(10,10, 255<<8);
-  for(uint8_t i=40;i<255;i++)
+  for(uint32_t i=0;i<1024;i++)
   {
-    putchar(i,i,0, 255<<8, 0);
-    kpause();
+    for(int j=0; j<200 ;j++)
+    {
+      //kputpixel(j,i, 255<<8);
+      putchar(j+ 40,j,i, 255<< 8, 0);
+    }
   }
   cpu_halt();
   while(1);

@@ -4,7 +4,7 @@
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 void init_paging(void);
-void map_video(void* addr)
+uintptr_t* map_video(void* addr)
 {/*
     used for mapping videoaddr/framebuffer
     to kernel memory
@@ -14,7 +14,7 @@ void map_video(void* addr)
   uint64_t* volatile map_addr = (void*)&p2_table + PG_SIZE - sizeof(uint64_t);
   (*map_addr) = videoaddr;
   init_paging();
-  sysfb.virtaddr = (uintptr_t*) 
+  return (uintptr_t*) 
     ( (uintptr_t)(2 << 20) * (PG_SIZE / 8 - 1 ) );
 }
 

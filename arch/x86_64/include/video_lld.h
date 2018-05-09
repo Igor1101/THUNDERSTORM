@@ -2,4 +2,4 @@
 
 bool video_initialized;
 
-void map_video(void*addr);
+uintptr_t* map_video(void* addr);

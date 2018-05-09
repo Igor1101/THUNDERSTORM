@@ -55,7 +55,7 @@ void select_color(int color);
 /* VIDEO */
 void kputpixel(uint32_t x, uint32_t y, uint32_t color);
 void init_video(void);
-void font_info(void);
+int font_info(void);
 
 
 

@@ -178,7 +178,7 @@ void bootinfo(void * ebx)
   while(header_size % sizeof (uint32_t) != 0) 
     header_size--;
   register void* bp;
-  kprintf("total size of boot struct=%x\n", header_size);
+  kprintf("total size of boot struct=0x%x\n", header_size);
   /* reserved */
   ebx += sizeof (uint32_t);
   /* parsing header info */

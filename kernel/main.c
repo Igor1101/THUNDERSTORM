@@ -70,14 +70,10 @@ output is too slow");
   kputpixel(9,0, 255<<8);
   kputpixel(10,0, 255<<8);
   kputpixel(10,10, 255<<8);
-  putchar('A',0,0, 255<<8, 0);
-  font_info();
-  for(int i=0; i<1000; i++)
+  for(uint8_t i=40;i<255;i++)
   {
+    putchar(i,i,0, 255<<8, 0);
     kpause();
-    putchar(i,0,0, 255<<8, 0);
-    putchar(i,1,1, 255<<8, 0);
-    putchar(i,0,1, 255<<8, 255);
   }
   cpu_halt();
   while(1);

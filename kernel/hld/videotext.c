@@ -23,6 +23,7 @@ asm("_font_start: \n"
 extern char _font_start;
 extern char _font_end;
 uint16_t *unicode = NULL;
+
 int font_info(void)
 {
   int ret = 0;
@@ -48,6 +49,17 @@ int font_info(void)
   return ret;
 }
 
+int verify_addr(uint32_t *addr)
+  /* verify if we are writing to permissible address */
+{
+  if(addr >= (uint32_t*) sysfb.virtaddr + 
+      sysfb.width * sysfb.height)
+  {
+    return -1;
+  }
+  return 0;
+}
+
 void putchar(
     /* note that this is int, not char as it's a unicode character */
     unsigned short int c,
@@ -62,7 +74,7 @@ void putchar(
   }
     /* cast the address to PSF header struct */
     PSF_font *font = (PSF_font*)&_font_start;
-    uint32_t scanline = sysfb.width * sysfb.bpp / 32;
+    uint32_t scanline = sysfb.width * sysfb.bpp / 32/*usually bpp=32 */;
     /* we need to know how many bytes encode one row */
     int bytesperline=(font -> width + 7) / 8;
     /* unicode translation */
@@ -91,8 +103,11 @@ void putchar(
         /* display a row */
         for(x=0;x<font->width;x++)
         {
-          register uint32_t* where = (uint32_t*)sysfb.virtaddr + line;
-          *where  = ((uint32_t)*glyph) & (mask) ? fg : bg;
+          register uint32_t* volatile vaddr = (uint32_t*)sysfb.virtaddr + line;
+          if(verify_addr(vaddr) == 0)
+          {
+            *vaddr  = ((uint32_t)*glyph) & (mask) ? fg : bg;
+          }
             /* adjust to the next pixel */
             mask >>= 1;
             line += 1;

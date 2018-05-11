@@ -14,6 +14,7 @@ uintptr_t* map_video(void* addr)
   uint64_t* volatile map_addr = (void*)&p2_table + PG_SIZE - sizeof(uint64_t);
   (*map_addr) = videoaddr;
   init_paging();
+  kpause(); /* <--- Wait for MMU, to change vaddr */
   return (uintptr_t*) 
     ( (uintptr_t)(2 << 20) * (PG_SIZE / 8 - 1 ) );
 }

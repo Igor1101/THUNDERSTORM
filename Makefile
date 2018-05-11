@@ -3,9 +3,8 @@
 .PHONY: libc
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
-KERNEL_OPTIONS += -D USE_VBE -D USE_VGA
+KERNEL_OPTIONS ?= -D USE_VGsA -D USE_VBE
 ARCH ?= x86_64
-OBJCOPY_FLAGS += --localize-symbols
 INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include
 kernel = TH
 TH_ABS_PATH = $(PWD)
@@ -15,7 +14,7 @@ LD = ld
 AR = ar
 OBJCOPY = objcopy
 AS_FLAGS =
-CC_FLAGS = -Og -g -fno-stack-protector\
+CC_FLAGS = -Os -g -fno-stack-protector\
  	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib  $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
 LD_FLAGS = -nostdlib -static 
 BOOT_PORTS_PATH = arch/$(ARCH)/boot
@@ -37,7 +36,7 @@ FONTS = $(shell find $(FONTS_PATH) -name *.psf)
 DIRECTORIES:=src arch bin boot kernel libc \
 	$(KERNEL_BUILD_PATH)\
 	$(LIBC_BUILD_PATH)
-all: kernel iso ksize
+all: kernel iso ksize 
 kernel: initialize ports libc 
 	# KERNEL COMPILATION
 	@for cfile in $(KERNEL_C_SOURCES); do \
@@ -93,12 +92,11 @@ initialize: # add directories
 		if ! [ -e $$dir ]; then mkdir $$dir; fi;\
  	done
 ksize: kernel
-	@size boot/$(kernel).elf
+	@size  boot/$(kernel).elf
 	@printf "ISO size: "
 	@du -h os.iso
 dis: kernel
 	@objdump -D boot/$(kernel).elf | less
 nm: kernel
 	@nm --numeric-sort boot/$(kernel).elf|less
-
 

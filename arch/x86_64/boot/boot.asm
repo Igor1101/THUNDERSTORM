@@ -12,7 +12,8 @@ global p2_table
 global p1_table
 global init_paging; used in "memory_mapping.c"
 
-OS_STK_SIZE equ 1024000; 100K for os stack
+OS_STK_SIZE equ 1024 * 1024; 1MB for os stack
+;!!!!!!!!!!!! STACK MUST BE ON THE THIRD 1MB TABLE !!!!!!!!!!!!
 GREEN equ 0x2
 RED equ 0x4f
 PG_SIZE equ 512*8; in bytes

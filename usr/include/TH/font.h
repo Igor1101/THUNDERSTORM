@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define PSF_FONT_MAGIC 0x864ab572
  
 typedef struct {
@@ -11,3 +15,11 @@ typedef struct {
     uint32_t width;         /* width in pixels */
 } PSF_font;
 
+uint16_t *unicode;
+extern char _font_start;
+extern char _font_end;
+PSF_font *font;
+
+#ifdef __cplusplus
+}
+#endif

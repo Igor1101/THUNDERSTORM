@@ -1,72 +1,78 @@
 /* THUNDERSTORM VGA HL DRIVER */
 #include <stdint.h>
 #include <TH/lld.h>
-static volatile 
-struct Text_mode_pointer vga =
+#define BEG 0
+volatile 
+struct Text_mode_pointer text;
+void tui_init(void)
 {
-  1, 1, Green
-};
-void tui_init(int color)
-{
-  vga.row = 0;
-  vga.col = 0;
-  vga.color = color;
-  enable_cursor(0, ROWS);
+  text.row = BEG;
+  text.col = BEG;
+  text.fgcolor = Default;
+  enable_cursor(BEG, text.rows + 2);
+  text.columns = determine_columns();
+  text.rows = determine_rows();
 }
-void select_color(int color)
+
+void select_fgcolor(int color)
 {
-  vga.color = color;
+  text.fgcolor = color;
+}
+
+void select_bgcolor(int color)
+{
+  text.bgcolor = color;
 }
 
 void newline(void)
 {
-  if(vga.row >=ROWS)
+  if(text.row >=text.rows)
   {
     make_newline();
-    vga.col = 0;
+    text.col = BEG;
     return;
   }
-  vga.row++;
-  vga.col = 0;
+  text.row++;
+  text.col = BEG;
 }
 void kputchar(int8_t chr)
 {
   switch(chr)
   {
     case '\n': newline();
-               update_cursor(vga.col + 1, vga.row);
+               update_cursor(text.row, text.col);
                return;
-    case '\r': vga.col=0; 
-               update_cursor(vga.col + 1, vga.row);
+    case '\r': text.col=BEG; 
+               update_cursor(text.row, text.col);
                return;
-    case '\b': vga.col--; 
-               update_cursor(vga.col + 1, vga.row);
+    case '\b': text.col--; 
+               update_cursor(text.row, text.col);
                return;
     default: break;
   }
-  kputchar_to(chr, vga.row, vga.col, vga.color);
-  update_cursor(vga.col + 1, vga.row);
-  if(vga.col >= COLUMNS && vga.row < ROWS)
+  kputchar_to(chr, text.row, text.col, text.fgcolor, text.bgcolor);
+  update_cursor(text.col + 1, text.row);
+  if(text.col >= text.columns && text.row < text.rows)
   {
     newline();
   }
-  else if(vga.row >= ROWS && vga.col >= COLUMNS)
+  else if(text.row >= text.rows && text.col >= text.columns)
   {
     make_newline();
-    vga.col = 0;
-    vga.row = ROWS-1;
+    text.col = BEG;
+    text.row = text.rows-1;
   }
   else
   {
-    vga.col++;
+    text.col++;
   }
 }
-void kputs(char* str)
+void kputs(char * str)
 {
 #ifdef KDEBUG
   kpause();
 #endif
-  while(*str!=0)
+  while(*str != 0)
   {
     kputchar(*str);
     str++;

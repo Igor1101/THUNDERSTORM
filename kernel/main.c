@@ -16,6 +16,7 @@ __________________________________________________________________________/_____
 #include <TH/sysvars.h>
 #include <kstdlib.h>
 #include <kstdio.h>
+#include <stdbool.h>
 
 /* declared vars */
 struct RAM_INFO RAM = 
@@ -25,46 +26,42 @@ struct RAM_INFO RAM =
 };
 struct Framebuffer sysfb;
 struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
-void putchar(
-    /* note that this is int, not char as it's a unicode character */
-    unsigned short int c,
-    /* cursor position on screen, in characters not in pixels */
-    int cx, int cy,
-    /* foreground and background colors, say 0xFFFFFF and 0x000000 */
-    uint32_t fg, uint32_t bg);
 
-int main(void* sysinfo)
+int main(void* pcinfo)
 {
+  tui_init();
   static char verifier=100;
   if(verifier != 100)
   {
     return (1);/* GOT is not working, 
                   smth wrong with bss */
   }
-  tui_init(Default);
   kputs("\n\n\nTHUNDERSTORM Embedded system\n\
  COPYRIGHT Igor Muravyov 2018");
 #ifdef KDEBUG
-  select_color(Cyan);
+  select_fgcolor(Cyan);
   kputs("This is a DEBUG version of kernel,\
 output is too slow");
 #endif /* KDEBUG */
 
 #ifdef USE_VGA
-  select_color(Red);
+  tui_init();
+  select_fgcolor(Red);
   kputs("Note, that VGA mode is Legacy, used only for debbuging");
-  select_color(Default);
+  select_fgcolor(Default);
 #endif /* USE_VGA */
+
   kputs("COMPUTER INFO:");
-  bootinfo(sysinfo);
-  init_video();
-  for(uint32_t i=0;i<1024;i++)
+  bootinfo(pcinfo);
+  if(init_video() == true)
   {
-    for(int j=0; j<200 ;j++)
-    {
-      //kputpixel(j,i, 255<<8);
-      putchar(j+ 40,j,i, 255<< 8, 0);
-    }
+    tui_init();
+    kputs("videomode successfully started");
+    select_fgcolor(Cyan);
+    select_bgcolor(Blue);
+    kputs(BIG_SYS_EMBLEM);
+    select_bgcolor(Black);
+    select_fgcolor(Default);
   }
   cpu_halt();
   while(1);

@@ -1,10 +1,9 @@
 #include <stdint.h>
+#include <stdbool.h>
 #ifndef LLD_TH
 #define LLD_TH
 
-/*VGA info */
-#define ROWS 24
-#define COLUMNS 80
+#ifdef USE_VGA
 enum Color
 {
   Black      = 0,
@@ -25,12 +24,40 @@ enum Color
   White      = 15,
   Default    = 2
 };
+#endif /*USE_VGA */
+
+#ifdef USE_VBE
+enum Color
+{
+  Black      = 0,
+  Blue       = 0x041B36,
+  Green      = 0x1A3604,
+  Cyan       = 0x4B81C0,
+  Red        = 0xFF0000,
+  Magenta    = 0xFF00FF,
+  Brown      = 0xA52A2A,
+  LightGray  = 0x8F959B,
+  DarkGray   = 0x52575C,
+  LightBlue  = 0x88B9F2,
+  LightGreen = 0x88F2AF,
+  LightCyan  = 0xC9FFE5,
+  LightRed   = 0xFF001A,
+  Pink       = 0xFFC0CB,
+  Yellow     = 0xFFFF00,
+  White      = 0xFFFFFF,
+  Default    = 0x2A7225
+};
+#endif /*USE_VBE */
 
 struct Text_mode_pointer
+/* suitable with VGA and VBE */
 {
-  uint8_t volatile row;
-  uint8_t volatile col;
-  int volatile color;
+  uint32_t row;
+  uint32_t col;
+  uint32_t bgcolor;
+  uint32_t fgcolor;
+  uint32_t rows;/* in chars */
+  uint32_t columns;/* in chars */
 };
 
 /* video framebuffer */
@@ -45,17 +72,28 @@ struct Framebuffer
   uint32_t type;
   uint32_t colorinfo;
 };
-void tui_init(int color);
-void kputchar_to(int8_t chr, uint8_t row, uint8_t col, int color);
+void tui_init(void);
 void make_newline(void);
 void update_cursor(int x, int y);
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
-void select_color(int color);
+void select_fgcolor(int color);
+void select_bgcolor(int color);
 
 /* VIDEO */
 void kputpixel(uint32_t x, uint32_t y, uint32_t color);
-void init_video(void);
+
+/* return true if op successful */
+bool init_video(void);
 int font_info(void);
+uint32_t determine_columns(void);
+uint32_t determine_rows(void);
+void kputchar_to(
+    /* unicode character */
+    unsigned short int c,
+    /* cursor position on screen in characters  */
+    uint32_t row, uint32_t column,
+    /* foreground and background colors */
+    uint32_t fg, uint32_t bg);
 
 
 

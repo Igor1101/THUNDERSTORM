@@ -5,6 +5,7 @@
 #include <video_lld.h>
 #include <stdbool.h>
 #include <string.h>
+#include <kstring.h>
 
 bool video_initialized = false;
 
@@ -61,10 +62,10 @@ void make_newline(void)
 {
   if(video_initialized == false)
     return;
-  void* beg = sysfb.virtaddr;
+  ;
   void* end = sysfb.virtaddr + 
     (1 * font -> height * sysfb.pitch / 8);
-  memcpy(beg, end, sysfb.width * sysfb.height * sysfb.bpp / 8);
+  kmemcpy_ptr(sysfb.virtaddr, end, sysfb.width * sysfb.height * sysfb.bpp / 8);
 }
 void update_cursor(int x, int y)
 {int s=x;s=y;s++;}

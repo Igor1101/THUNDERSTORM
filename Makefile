@@ -1,6 +1,7 @@
 .PHONY: kernel
 .PHONY: ksize
 .PHONY: libc
+RELEASE=0.0
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
 KERNEL_OPTIONS ?=  -D USE_VBE

@@ -7,6 +7,8 @@
 #include <TH/font.h>
 #include <video_lld.h>
 
+#ifdef USE_VBE
+
 int verify_addr(uint32_t *addr)
   /* verify if we are writing to permissible address */
 {
@@ -18,7 +20,6 @@ int verify_addr(uint32_t *addr)
   return 0;
 }
 
-#ifdef USE_VBE
 void kputchar_to(
     /* unicode character */
     unsigned short int c,
@@ -28,7 +29,7 @@ void kputchar_to(
     uint32_t fg, uint32_t bg)
 {
   if( (video_initialized == false) ||
-    (row >= text.rows ) || 
+    (row >= text.rows) || 
      (column >= text.columns) )
   {
     return;
@@ -48,11 +49,11 @@ void kputchar_to(
   unsigned char *glyph =
    (unsigned char*)&_font_start +
    font->headersize +
-   (c>0&&c<font-> numglyph?c:0)*font->bytesperglyph;
+   (c > 0 && c < (font -> numglyph)?c:0)*font->bytesperglyph;
   /* calculate the upper left corner on screen where 
    * we want to display.*/
   auto int offs =
-      (row * font->height * sysfb.pitch / 4) +
+      (row * font -> height * sysfb.pitch / 4) +
       (column * (font->width + 1) * sysfb.bpp / 32);
   /* finally display pixels according to the bitmap */
   register uint32_t x,y, line,mask;
@@ -84,4 +85,14 @@ void kputchar_to(
   }
 }
 
-#endif
+#endif /* USE_VBE */
+
+void print_video_info(void)
+{
+  kprintf("Resolution: %dx%d\n", sysfb.width, sysfb.height);
+  kprintf("chars per row: %d\n", text.columns);
+  kprintf("chars per column: %d\n", text.rows);
+  kprintf("font width: %d\n", font -> width);
+  kprintf("font height :%d\n", font -> height);
+}
+

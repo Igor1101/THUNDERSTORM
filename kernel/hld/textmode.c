@@ -1,15 +1,15 @@
 /* THUNDERSTORM VGA HL DRIVER */
 #include <stdint.h>
 #include <TH/lld.h>
-#define BEG 0
+#define BEGINNING 0
 volatile 
 struct Text_mode_pointer text;
 void tui_init(void)
 {
-  text.row = BEG;
-  text.col = BEG;
+  text.row = BEGINNING;
+  text.col = BEGINNING;
   text.fgcolor = Default;
-  enable_cursor(BEG, text.rows + 2);
+  enable_cursor(BEGINNING, text.rows + 2);
   text.columns = determine_columns();
   text.rows = determine_rows();
 }
@@ -26,14 +26,14 @@ void select_bgcolor(int color)
 
 void newline(void)
 {
-  if(text.row >=text.rows)
+  if(text.row >=text.rows - 1)
   {
     make_newline();
-    text.col = BEG;
+    text.col = BEGINNING;
     return;
   }
   text.row++;
-  text.col = BEG;
+  text.col = BEGINNING;
 }
 void kputchar(int8_t chr)
 {
@@ -42,7 +42,7 @@ void kputchar(int8_t chr)
     case '\n': newline();
                update_cursor(text.row, text.col);
                return;
-    case '\r': text.col=BEG; 
+    case '\r': text.col=BEGINNING; 
                update_cursor(text.row, text.col);
                return;
     case '\b': text.col--; 
@@ -59,7 +59,7 @@ void kputchar(int8_t chr)
   else if(text.row >= text.rows && text.col >= text.columns)
   {
     make_newline();
-    text.col = BEG;
+    text.col = BEGINNING;
     text.row = text.rows-1;
   }
   else

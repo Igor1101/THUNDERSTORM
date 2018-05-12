@@ -4,6 +4,7 @@
 #include <TH/font.h>
 #include <video_lld.h>
 #include <stdbool.h>
+#include <string.h>
 
 bool video_initialized = false;
 
@@ -27,25 +28,45 @@ void krectangle(uint32_t x, uint32_t y,
 {
   
 }*/
-#ifdef USE_VBE
-uint32_t determine_columns(void)
-{
-  /* system font should already be processed
-   * */
-  return sysfb.width / (font -> width + 1) - font -> width + 7;
-}
 
+#ifdef USE_VBE
 uint32_t determine_rows(void)
 {
   /* system font should already be processed
    * */
-  return sysfb.height / font -> height - 7 ;
+  int row = 1;
+  while((row * font -> height) < sysfb.height)
+  {
+    row++;
+  }
+  return row - 1;
+}
+
+uint32_t determine_columns(void)
+{
+  /* system font should already be processed
+   * */
+  uint32_t column = 1;
+  while(column * (font -> width + 1) * sysfb.bpp / 32 < sysfb.width)
+  {
+    column++;
+  }
+  return column - 1;
 }
 
 
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {volatile uint8_t s=cursor_start; s=cursor_end;s--;}
-void make_newline(void){}
+void make_newline(void)
+{
+  if(video_initialized == false)
+    return;
+  void* beg = sysfb.virtaddr;
+  void* end = sysfb.virtaddr + 
+    (1 * font -> height * sysfb.pitch / 8);
+  memcpy(beg, end, sysfb.width * sysfb.height * sysfb.bpp / 8);
+}
 void update_cursor(int x, int y)
 {int s=x;s=y;s++;}
+
 #endif

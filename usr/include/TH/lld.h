@@ -1,7 +1,12 @@
 #include <stdint.h>
 #include <stdbool.h>
+
 #ifndef LLD_TH
 #define LLD_TH
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef USE_VGA
 enum Color
@@ -81,6 +86,7 @@ void select_bgcolor(int color);
 
 /* VIDEO */
 void kputpixel(uint32_t x, uint32_t y, uint32_t color);
+void print_video_info(void);
 
 /* return true if op successful */
 bool init_video(void);
@@ -103,4 +109,10 @@ void bootinfo(void * ebx);
 /* cpu management */
 void kpause(void);/* for debug */
 void cpu_halt(void);
+
+
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* LLD_TH */

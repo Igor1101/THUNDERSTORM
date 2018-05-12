@@ -29,7 +29,14 @@ struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
 int main(void* pcinfo)
 {
+
+#ifdef USE_VGA
   tui_init();
+  select_fgcolor(Red);
+  kputs("Note, that VGA mode is Legacy, used only for debbuging");
+  select_fgcolor(Default);
+#endif /* USE_VGA */
+
   static char verifier=100;
   if(verifier != 100)
   {
@@ -44,12 +51,6 @@ int main(void* pcinfo)
 output is too slow");
 #endif /* KDEBUG */
 
-#ifdef USE_VGA
-  tui_init();
-  select_fgcolor(Red);
-  kputs("Note, that VGA mode is Legacy, used only for debbuging");
-  select_fgcolor(Default);
-#endif /* USE_VGA */
 
   kputs("COMPUTER INFO:");
   bootinfo(pcinfo);
@@ -58,7 +59,7 @@ output is too slow");
     tui_init();
     kputs("videomode successfully started");
     print_video_info();
-    kputchar_to('A', text.rows-1, text.columns-1, Red, Red);
+    kputchar_to('A', text.rows - 1, text.columns - 1, Red, Red);
     select_fgcolor(Cyan);
     select_bgcolor(Blue);
     kputs(SMALL_SYS_EMBLEM);
@@ -66,17 +67,11 @@ output is too slow");
     select_fgcolor(Default);
   }
 #ifdef USE_VBE
-  /*
-  for(int i=0;i< 10000;i++)
+  
+  for(int i=0; i< 160; i++)
   {
-    kputchar('a');
-    kpause();
-  }*/
-  for(int i=0; i< 100; i++)
-  {
-    kputs("TH");
+    kputs("TH-----------------------------------------------------------------------------------------------------------------------------------");
   }
-  kputchar_to('a', text.rows -1, text.columns - 1, Red, Red);
 #endif
   cpu_halt();
   while(1);

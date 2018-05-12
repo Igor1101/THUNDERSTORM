@@ -18,7 +18,7 @@
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 
  * */
-__attribute__ ( ( always_inline ) ) inline int vbe_mode(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int vbe_mode(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(*(int*)(ebx + sizeof (uint32_t)) != 784/* fixed size */)
@@ -29,7 +29,7 @@ __attribute__ ( ( always_inline ) ) inline int vbe_mode(void *ebx)
   return 0;
 }
   
-__attribute__ ( ( always_inline ) ) inline int loader_name(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int loader_name(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*) (ebx + 2 * sizeof (uint32_t))) < 5 || 
@@ -41,7 +41,7 @@ __attribute__ ( ( always_inline ) ) inline int loader_name(void *ebx)
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) inline int boot_cmd(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int boot_cmd(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 2 * sizeof (uint32_t) ) ) < 4 || 
@@ -53,7 +53,7 @@ __attribute__ ( ( always_inline ) ) inline int boot_cmd(void *ebx)
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) inline int boot_device(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int boot_device(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if( *(uint32_t*)(ebx + sizeof (uint32_t) ) != 20 /* fixed size */) 
@@ -67,26 +67,27 @@ __attribute__ ( ( always_inline ) ) inline int boot_device(void *ebx)
 }
 
 
-__attribute__ ( ( always_inline ) ) inline int memory(void *ebx)
+__attribute__ ( ( always_inline ) ) 
+inline int memory(volatile void *ebx)
 {
   /* verify if it really is provided info */
-  if(*(uint32_t*) (ebx + 1 * sizeof (uint32_t) ) != 16 /* fixed size */)
+  if(*(uint32_t volatile*) (ebx + 1 * sizeof (uint32_t) ) != 16 /* fixed size */)
   {
     return -1;
   }
-  RAM.lowest = (uintptr_t *)(uintptr_t)
+  RAM.lowest = (uintptr_t *)(uintptr_t volatile)
     (1024 * *(uint32_t*) (ebx + 2 * sizeof (uint32_t) ) );
-  RAM.highest = 0x100000 /* 1M */
-    + (uintptr_t *)(uintptr_t)
-    (1024 * *(uint32_t*) (ebx + 3 * sizeof (uint32_t) ) );
+  RAM.highest = (uintptr_t * volatile)(0x100000 /* 1M */
+    + (volatile uintptr_t)
+    (1024 * *(volatile uint32_t*) (ebx + 3 * sizeof (uint32_t) ) ) );
   kprintf("RAM lowestlimit: 0x%x K, highest: 0x%x K\n", 
-      ( (uintptr_t)RAM.lowest ) / 0x400,
-      ( (uintptr_t)RAM.highest ) / 0x400
+      ( (volatile uintptr_t)RAM.lowest ) / 0x400,
+      ( (volatile uintptr_t)RAM.highest ) / 0x400
       );
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) inline int modules(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int modules(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 4 * sizeof (uint32_t) ) ) < 4
@@ -98,7 +99,7 @@ __attribute__ ( ( always_inline ) ) inline int modules(void *ebx)
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) inline int memmap(void *ebx)
+__attribute__ ( ( always_inline ) ) inline int memmap(volatile void *ebx)
   /* warning!: this function needs to be called after memory(); */
 {
   /* verify if it really is provided info */
@@ -106,11 +107,11 @@ __attribute__ ( ( always_inline ) ) inline int memmap(void *ebx)
   {
     return -1;
   }
-  auto uint32_t size = *(uint32_t*)(ebx + sizeof (uint32_t) );
-  auto uint32_t entry_size = *(uint32_t*)(ebx + 2 * sizeof (uint32_t) );
-  auto uint32_t entry_version = *(uint32_t*)(ebx + 3 * sizeof (uint32_t) );
-  auto void* mappointer = ebx + 4 * sizeof (uint32_t);
-  auto int rami=0;
+  auto volatile uint32_t size = *(uint32_t*)(ebx + sizeof (uint32_t) );
+  auto volatile uint32_t entry_size = *(uint32_t*)(ebx + 2 * sizeof (uint32_t) );
+  auto volatile uint32_t entry_version = *(uint32_t*)(ebx + 3 * sizeof (uint32_t) );
+  auto volatile void* mappointer = ebx + 4 * sizeof (uint32_t);
+  auto volatile int rami=0;
   for(; rami<MAX_RAM_ENTRIES; rami++)
   {
     if(mappointer >= ebx + size)
@@ -145,7 +146,8 @@ __attribute__ ( ( always_inline ) ) inline int memmap(void *ebx)
 }
 
 
-__attribute__ ( ( always_inline ) ) inline int framebuffer_info(void * ebx)
+__attribute__ ( ( always_inline ) ) 
+inline int framebuffer_info(volatile void * ebx)
 {
   if(*(int32_t*) (ebx + 1 * sizeof (uint32_t)) <= 16)
   {
@@ -171,13 +173,13 @@ __attribute__ ( ( always_inline ) ) inline int framebuffer_info(void * ebx)
 
 
 
-void bootinfo(void * ebx)
+void bootinfo(volatile void * ebx)
 {
   /* total size of header*/
   uint32_t header_size=*((uint32_t*)ebx);
   while(header_size % sizeof (uint32_t) != 0) 
     header_size--;
-  register void* bp;
+  register volatile void* bp;
   kprintf("total size of boot struct=0x%x\n", header_size);
   /* reserved */
   ebx += sizeof (uint32_t);

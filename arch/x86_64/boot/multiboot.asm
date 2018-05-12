@@ -15,7 +15,7 @@ framebuffer_tag_start:
   dd .end - framebuffer_tag_start ; size
   dd 0  ;width
   dd 0 ;heiht
-  dd 32 ;bpp
+  dd 0 ;bpp
 .end:
 %endif
 tags_end:

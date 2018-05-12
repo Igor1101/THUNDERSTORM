@@ -104,7 +104,7 @@ void kputchar_to(
 
 
 /* boot info */
-void bootinfo(void * ebx);
+void bootinfo(volatile void * ebx);
 /* miscelaneous */
 /* cpu management */
 void kpause(void);/* for debug */

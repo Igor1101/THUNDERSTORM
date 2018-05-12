@@ -57,12 +57,27 @@ output is too slow");
   {
     tui_init();
     kputs("videomode successfully started");
+    print_video_info();
+    kputchar_to('A', text.rows-1, text.columns-1, Red, Red);
     select_fgcolor(Cyan);
     select_bgcolor(Blue);
-    kputs(BIG_SYS_EMBLEM);
+    kputs(SMALL_SYS_EMBLEM);
     select_bgcolor(Black);
     select_fgcolor(Default);
   }
+#ifdef USE_VBE
+  /*
+  for(int i=0;i< 10000;i++)
+  {
+    kputchar('a');
+    kpause();
+  }*/
+  for(int i=0; i< 100; i++)
+  {
+    kputs("TH");
+  }
+  kputchar_to('a', text.rows -1, text.columns - 1, Red, Red);
+#endif
   cpu_halt();
   while(1);
 }

@@ -1,6 +1,11 @@
 #ifndef SYSVARS
 #define SYSVARS
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <TH/lld.h>
 #ifndef MAX_RAM_ENTRIES 
   #define MAX_RAM_ENTRIES 100 /*max amount of 
@@ -34,5 +39,9 @@ extern struct Text_mode_pointer text;
 extern struct Framebuffer sysfb;
 
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* sysvars */

@@ -13,17 +13,22 @@
  * this file path (kernel/misc/font.c) should not be changed
  * it uses relative path
  * */
-asm(".global _font_start\n"
+
+asm 
+    (
+    ".section .rodata\n"
+    ".global _font_start\n"
     "_font_start: \n"
     " .incbin \"../../usr/share/consolefonts/uni.psf\"\n"
     "_font_end: \n"
+    ".section .text\n"
     );
 
 uint16_t *unicode = NULL;
 
 int font_info(void)
 {
-  int ret = 0;
+  volatile int ret = 0;
   select_fgcolor(Cyan);
   kputs("fonts info:");
   font = (PSF_font*)&_font_start;

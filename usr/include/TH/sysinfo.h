@@ -1,3 +1,10 @@
+#ifndef TH_EMBL
+#define TH_EMBL
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  _____ _   _ _   _ _   _ ____  _____ ____  ____ _____ ___  ____  __  __        __
 |_   _| | | | | | | \ | |  _ \| ____|  _ \/ ___|_   _/ _ \|  _ \|  \/  |  __  /  \_  _
@@ -22,3 +29,11 @@ __________________________________________________________________________/_____
  THUNDERSTORM
  */
 #define SMALL_SYS_EMBLEM "\n/*      __      \n   __  /  \\_  _\n _/  \\/     \\/ \\\n \\_ ___________/\n    /\n   /\\_\n   \\  \\\n __/___________\n THANKS FOR USING\n THUNDERSTORM\n */\n"
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* TH_EMBL */

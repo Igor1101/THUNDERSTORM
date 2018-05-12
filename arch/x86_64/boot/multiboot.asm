@@ -13,8 +13,8 @@ framebuffer_tag_start:
   dw 5 ; 
   dw 1 ; optional
   dd .end - framebuffer_tag_start ; size
-  dd 1024 ;width
-  dd 768 ;heiht
+  dd 0  ;width
+  dd 0 ;heiht
   dd 32 ;bpp
 .end:
 %endif

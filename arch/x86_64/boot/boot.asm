@@ -1,5 +1,5 @@
 ; CPU initialization for THUNDERSTORM kernel 
-; USES MULTIBOOT 2 SPEC
+; USES MULTIBOOT 2 SPEC AND VGA OUTPUT
 ; constants:
 extern kputstr_to
 extern kputchar_to

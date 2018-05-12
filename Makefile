@@ -3,7 +3,7 @@
 .PHONY: libc
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
-KERNEL_OPTIONS ?= -D USE_VGsA -D USE_VBE
+KERNEL_OPTIONS ?=  -D USE_VBE
 ARCH ?= x86_64
 INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include
 kernel = TH
@@ -14,7 +14,7 @@ LD = ld
 AR = ar
 OBJCOPY = objcopy
 AS_FLAGS =
-CC_FLAGS = -Os -g -fno-stack-protector\
+CC_FLAGS = -Og -g -fno-stack-protector\
  	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib  $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
 LD_FLAGS = -nostdlib -static 
 BOOT_PORTS_PATH = arch/$(ARCH)/boot

@@ -15,7 +15,7 @@ LD = ld
 AR = ar
 OBJCOPY = objcopy
 AS_FLAGS =
-CC_FLAGS = -Og -g -fno-stack-protector\
+CC_FLAGS = -O4 -g -fno-stack-protector\
  	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib  $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
 LD_FLAGS = -nostdlib -static 
 BOOT_PORTS_PATH = arch/$(ARCH)/boot
@@ -32,7 +32,6 @@ LLD_AS_SOURCES += $(shell find $(LLD_PORTS_PATH) -name *.S)
 LLD_C_SOURCES = $(shell find $(LLD_PORTS_PATH) -name *.c)
 KERNEL_C_SOURCES = $(shell find kernel/ -name *.c)
 LIBC_C_SOURCES = $(shell find libc/ -name *.c)
-FONTS = $(shell find $(FONTS_PATH) -name *.psf)
 
 DIRECTORIES:=src arch bin boot kernel libc \
 	$(KERNEL_BUILD_PATH)\

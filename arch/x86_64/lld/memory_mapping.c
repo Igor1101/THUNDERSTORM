@@ -4,15 +4,15 @@
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 void init_paging(void);
-uintptr_t* map_video(void* addr)
+uintptr_t* map_video(volatile void* addr)
 {/*
     in arch/x86_64/boot/boot.asm: 8 * 2MB
     used for mapping videoaddr/framebuffer
     to kernel memory
     virtual addr = 2MB * (PG_SIZE - 8)/4 = 0x3fe00000;
   */
-  uint64_t videoaddr = (uint64_t)addr | 0b10000011;
-  uint64_t* volatile map_addr = (void*)&p2_table + PG_SIZE - 8 * sizeof(uint64_t);
+  uint64_t volatile videoaddr = (uint64_t)addr | 0b10000011;
+  volatile uint64_t* volatile map_addr = (void*)&p2_table + PG_SIZE - 8 * sizeof(uint64_t);
   (*map_addr) = videoaddr; // 1st 2 MB`s : 1
   videoaddr += 2<<20;
   (*(map_addr + 1)) = videoaddr; // second 2 MB`s : 2

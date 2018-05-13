@@ -1,3 +1,7 @@
+/* 
+ * This driver is universal for a huge amount
+ * of platforms, but it is slow
+ */
 #include <kstdio.h>
 #include <TH/lld.h>
 #include <TH/sysvars.h>
@@ -8,6 +12,7 @@
 #include <kstring.h>
 
 bool video_initialized = false;
+bool cursor_enabled = false;
 
 void kputpixel(uint32_t x, uint32_t y, uint32_t color)
 {
@@ -57,17 +62,29 @@ uint32_t determine_columns(void)
 
 
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
-{volatile uint8_t s=cursor_start; s=cursor_end;s--;}
+{
+  volatile uint8_t s=cursor_start; s=cursor_end;s--;
+  cursor_enabled = true;
+}
 void make_newline(void)
 {
   if(video_initialized == false)
     return;
-  ;
   void* end = sysfb.virtaddr + 
     (1 * font -> height * sysfb.pitch / 8);
   kmemcpy_ptr(sysfb.virtaddr, end, sysfb.width * sysfb.height * sysfb.bpp / 8);
 }
 void update_cursor(int x, int y)
-{int s=x;s=y;s++;}
+{
+  static int lastx;
+  static int lasty;
+  if(cursor_enabled == true)
+  {
+    kputchar_to('_', x, y, White, Black);
+    kputchar_to('_', lastx, lasty, Black, Black);
+  }
+  lastx = x;
+  lasty = y;
+}
 
 #endif

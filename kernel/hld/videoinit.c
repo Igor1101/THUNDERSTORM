@@ -21,7 +21,7 @@ bool init_video(void)
   video_initialized = true;
   /* low level map this address
    * to somewhere in kernel memory */
-  sysfb.virtaddr = map_video(sysfb.addr);
+  sysfb.virtaddr = map_video((volatile void* )sysfb.addr);
 #endif
   return video_initialized;
 }

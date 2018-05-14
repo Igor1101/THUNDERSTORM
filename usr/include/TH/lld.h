@@ -31,7 +31,7 @@ enum Color
 };
 #endif /*USE_VGA */
 
-#ifdef USE_VBE
+#ifdef USE_VESA
 enum Color
 {
   Black      = 0,
@@ -52,10 +52,10 @@ enum Color
   White      = 0xFFFFFF,
   Default    = 0x2A7225
 };
-#endif /*USE_VBE */
+#endif /*USE_VESA */
 
 struct Text_mode_pointer
-/* suitable with VGA and VBE */
+/* suitable with VGA and VESA */
 {
   uint32_t row;
   uint32_t col;

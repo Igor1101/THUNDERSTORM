@@ -7,7 +7,7 @@
 #include <TH/font.h>
 #include <video_lld.h>
 
-#ifdef USE_VBE
+#ifdef USE_VESA
 
 int verify_addr(uint32_t *addr)
   /* verify if we are writing to permissible address */
@@ -85,7 +85,7 @@ void kputchar_to(
   }
 }
 
-#endif /* USE_VBE */
+#endif /* USE_VESA */
 
 void print_video_info(void)
 {

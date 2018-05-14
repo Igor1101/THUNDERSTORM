@@ -30,6 +30,8 @@ __________________________________________________________________________/_____
  */
 #define SMALL_SYS_EMBLEM "\n/*      __      \n   __  /  \\_  _\n _/  \\/     \\/ \\\n \\_ ___________/\n    /\n   /\\_\n   \\  \\\n __/___________\n THANKS FOR USING\n THUNDERSTORM\n */\n"
 
+#define RELEASE "0.0"
+#define YEARS "2018"
 
 #ifdef __cplusplus
 }

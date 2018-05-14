@@ -35,7 +35,7 @@ void krectangle(uint32_t x, uint32_t y,
   
 }*/
 
-#ifdef USE_VBE
+#ifdef USE_VESA
 uint32_t determine_rows(void)
 {
   /* system font should already be processed

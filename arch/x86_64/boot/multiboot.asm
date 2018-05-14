@@ -8,7 +8,7 @@ boot_start:
   dd boot_end - boot_start
   dd 0x100000000 - (MAGIC + ARCH + (boot_end - boot_start))
 address_tag_start:
-%ifdef USE_VBE
+%ifdef USE_VESA
 framebuffer_tag_start:
   dw 5 ; 
   dw 1 ; optional

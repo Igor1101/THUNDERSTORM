@@ -17,7 +17,7 @@ bool init_video(void)
     video_initialized = false;
     return false;
   }
-#ifdef USE_VBE
+#ifdef USE_VESA
   video_initialized = true;
   /* low level map this address
    * to somewhere in kernel memory */

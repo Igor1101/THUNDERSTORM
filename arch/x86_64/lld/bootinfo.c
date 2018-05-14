@@ -5,7 +5,7 @@
 #define BOOTDEV 5
 #define BOOTCMD 1
 #define MODULES 3
-#define VBEMODE 7
+#define VESAMODE 7
 #define FRAMEBUFFER 8
 #define MEMMAP 6 /* memory map */
 
@@ -244,10 +244,10 @@ void bootinfo(volatile void * ebx)
   }
   kprintf("%d modules found\n", times);
 
-  /* VBE MODE INFO */
+  /* VESA MODE INFO */
   for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
   {
-    if(*(uint32_t*)bp == VBEMODE)
+    if(*(uint32_t*)bp == VESAMODE)
     {
       if(vbe_mode(bp) == 0)
       {

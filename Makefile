@@ -3,7 +3,7 @@
 .PHONY: libc
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
-KERNEL_OPTIONS ?=  -D USE_VBE
+KERNEL_OPTIONS ?=  -D USE_VESA
 ARCH ?= x86_64
 INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include
 kernel = TH

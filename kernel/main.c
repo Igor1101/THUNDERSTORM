@@ -43,8 +43,6 @@ int main(void* pcinfo)
     return (1);/* GOT is not working, 
                   smth wrong with bss */
   }
-  kputs("\n\n\nTHUNDERSTORM Embedded system\n\
- COPYRIGHT Igor Muravyov 2018");
 #ifdef KDEBUG
   select_fgcolor(Cyan);
   kputs("This is a DEBUG version of kernel,\
@@ -59,20 +57,19 @@ output is too slow");
     tui_init();
     kputs("videomode successfully started");
     print_video_info();
+    /* verifying bounds of display*/
     kputchar_to('A', text.rows - 1, text.columns - 1, Red, Red);
+    kputchar_to('A', 0, text.columns - 1, Red, Red);
+    kputchar_to('A', text.rows - 1, 0, Red, Red);
     select_fgcolor(Cyan);
     select_bgcolor(Blue);
     kputs(SMALL_SYS_EMBLEM);
     select_bgcolor(Black);
     select_fgcolor(Default);
   }
-#ifdef USE_VBE
- /* 
-  for(int i=0; i< 160; i++)
-  {
-    kputs("TH-----------------------------------------------------------------------------------------------------------------------------------");
-  }*/
-#endif
+  kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
+ COPYRIGHT Igor Muravyov (c) %s ", RELEASE, YEARS);
+  select_RAM();
   cpu_halt();
   while(1);
 }

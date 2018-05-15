@@ -7,12 +7,7 @@
 #include <stdbool.h>
 
 void print_RAM_info(void)
-{
-}
-
-void select_RAM(void)
-{
-  /* for each region */
+{/* for each region */
   for(int i=0; i<ram_entries; i++)
   {
     char * type;
@@ -31,7 +26,11 @@ void select_RAM(void)
     if((uintptr_t*)&kernel_phys_base >= ram_map[i].base_addr &&
         (uintptr_t*)&kernel_phys_base < ram_map[i + 1].base_addr)
     {
-      kprintf("<-- kernel ( 0x%x )", &kernel_phys_base);
+      kprintf("<-- kernel: \ntext: 0x%x, \ndata: 0x%x, \nbss: 0x%x, \nend of bss: 0x%x", 
+          &kernel_text,
+          &kernel_data,
+          &kernel_bss,
+          &kernel_bss_end);
     }
 
     if((uintptr_t*)sysfb.addr >= ram_map[i].base_addr &&
@@ -39,7 +38,12 @@ void select_RAM(void)
     {
       kprintf("<-- fb ( 0x%x )", sysfb.virtaddr);
     }
-
+    
     kputchar('\n');
   }
+}
+
+void* select_RAM(void)
+{
+  return NULL;
 }

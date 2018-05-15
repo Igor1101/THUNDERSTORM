@@ -38,8 +38,8 @@ int ram_entries;
 extern struct Text_mode_pointer text;
 extern struct Framebuffer sysfb;
 
-void select_RAM(void);
-
+void* select_RAM(void);
+void print_RAM_info(void);
 #ifdef __cplusplus
 }
 #endif

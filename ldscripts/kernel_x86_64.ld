@@ -23,6 +23,7 @@ SECTIONS {
 		*(.bss)
     *(.noinit)
 		*(COMMON)
+    kernel_bss_end = .;
 	}
 	
 }

@@ -58,9 +58,10 @@ output is too slow");
     kputs("videomode successfully started");
     print_video_info();
     /* verifying bounds of display*/
-    kputchar_to('A', text.rows - 1, text.columns - 1, Red, Red);
-    kputchar_to('A', 0, text.columns - 1, Red, Red);
-    kputchar_to('A', text.rows - 1, 0, Red, Red);
+    kputchar_to('\0', text.rows - 1, text.columns - 1, Red, Red);
+    kputchar_to('\0', 0, text.columns - 1, Red, Red);
+    kputchar_to('\0', text.rows - 1, 0, Red, Red);
+
     select_fgcolor(Cyan);
     select_bgcolor(Blue);
     kputs(SMALL_SYS_EMBLEM);
@@ -68,8 +69,8 @@ output is too slow");
     select_fgcolor(Default);
   }
   kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
- COPYRIGHT Igor Muravyov (c) %s ", RELEASE, YEARS);
-  select_RAM();
+ COPYRIGHT Igor Muravyov (c) %s \n", RELEASE, YEARS);
+  print_RAM_info();
   cpu_halt();
   while(1);
 }

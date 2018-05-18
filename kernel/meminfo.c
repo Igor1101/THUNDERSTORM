@@ -8,7 +8,7 @@
 
 void print_RAM_info(void)
 {/* for each region */
-  for(int i=0; i<ram_entries; i++)
+  for(uint32_t i=0; i<ram_entries; i++)
   {
     char * type;
     switch(ram_map[i].type)
@@ -40,6 +40,12 @@ void print_RAM_info(void)
     }
     
     kputchar('\n');
+  }
+  /*modules addr info */
+  for(uint32_t i=0; i < module_entries; i++)
+  {
+    kprintf("module %s, 0x%x, 0x%x\n", modules[i].ext_name, 
+        modules[i].phys_addr, modules[i].phys_addr_end);
   }
 }
 

@@ -29,8 +29,6 @@ uintptr_t* map_video(volatile void* addr)
   videoaddr += 2<<20;
   (*(map_addr + 7) ) = videoaddr; // : 8
 
-  init_paging();
-  kpause(); /* <--- Wait for MMU, to change vaddr */
   return (uintptr_t*) 
     ( (uintptr_t)(2 << 20) * (PG_SIZE / 8 - 8 ) );
 }

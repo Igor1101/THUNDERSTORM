@@ -1,3 +1,8 @@
+/* 
+ * It`s hard to understand what`s written on this file,
+ * but trust me it successfully 
+ * fetches information from multiboot header
+ */
 #define LOADER_NAME 2
 #define MEMORY 4 /**
                   * Basic memory info, 
@@ -87,7 +92,8 @@ inline int memory(volatile void *ebx)
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) inline int modules(volatile void *ebx)
+__attribute__ ( ( always_inline ) ) 
+inline int modules_proc(volatile void *ebx, uint32_t num)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 4 * sizeof (uint32_t) ) ) < 4
@@ -95,7 +101,10 @@ __attribute__ ( ( always_inline ) ) inline int modules(volatile void *ebx)
   {
     return -1;
   }
-  kprintf("module:  %s\n", (char*) (ebx +  4 * sizeof (uint32_t)  ) );
+  modules[num].ext_name = (char*) (ebx +  4 * sizeof (uint32_t)  );
+  modules[num].phys_addr_end = *(uint32_t*) (ebx + 3 * sizeof (uint32_t));
+  modules[num].phys_addr = *(uint32_t*) (ebx + 2 * sizeof (uint32_t) );
+  kprintf("module:  %s\n",  modules[num].ext_name);
   return 0;
 }
 
@@ -126,7 +135,7 @@ __attribute__ ( ( always_inline ) ) inline int memmap(volatile void *ebx)
   ram_entries = rami;
   kprintf("memmap:  ram_entries: %d entry version: %d\n",  
       ram_entries, entry_version);
-  for(int i=0; i<ram_entries; i++)
+  for(uint32_t i=0; i<ram_entries; i++)
   {
     char * type;
     switch(ram_map[i].type)
@@ -236,12 +245,17 @@ void bootinfo(volatile void * ebx)
   {
     if(*(uint32_t*)bp == MODULES)
     {
-      if(modules(bp) == 0)
+      if(modules_proc(bp, times) == 0)
       {
         times++;
       }
+      if(times >= MAX_MODULES)
+      {
+        break;
+      }
     }
   }
+  module_entries = times;
   kprintf("%d modules found\n", times);
 
   /* VESA MODE INFO */
@@ -276,6 +290,4 @@ void bootinfo(volatile void * ebx)
       }
     }
   }
-
-
 }

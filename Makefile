@@ -31,6 +31,7 @@ LLD_AS_SOURCES += $(shell find $(LLD_PORTS_PATH) -name *.S)
 LLD_C_SOURCES = $(shell find $(LLD_PORTS_PATH) -name *.c)
 KERNEL_C_SOURCES = $(shell find kernel/ -name *.c)
 LIBC_C_SOURCES = $(shell find libc/ -name *.c)
+CDROMIMAGE = cdromimage/os.iso
 
 DIRECTORIES:=src arch bin boot kernel libc \
 	$(KERNEL_BUILD_PATH)\
@@ -49,7 +50,7 @@ clean:
 	rm -r $(KERNEL_BUILD_PATH)
 	rm -r $(LIBC_BUILD_PATH)
 	rm -r $(THLIBC)
-	rm os.iso
+	rm $(CDROMIMAGE) 
 ports: initialize
 	# compile NASM syntax ports sorces
 	@for cfile in $(LLD_NASM_SOURCES);do \
@@ -74,18 +75,18 @@ libc: initialize
 	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*
 
 iso: kernel
-	if [ -e os.iso ]; then rm os.iso ; fi
-	grub-mkrescue  -o os.iso ./ 2> /dev/null
-run: os.iso
+	if [ -e os.iso ]; then rm $(CDROMIMAGE) ; fi
+	grub-mkrescue  -o $(CDROMIMAGE) ./ 2> /dev/null
+run: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
-	qemu-system-x86_64 -bios $(BIOS) -m $(QEMU_MEM) -cdrom os.iso; \
+	qemu-system-x86_64 -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE); \
 	else \
-	qemu-system-x86_64 -m $(QEMU_MEM) -cdrom os.iso; fi
-debug: os.iso
+	qemu-system-x86_64 -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
+debug: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
-	qemu-system-x86_64 -S -s -d int -bios $(BIOS) -m $(QEMU_MEM) -cdrom os.iso; \
+	qemu-system-x86_64 -S -s -d int -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);\
 	else \
-	qemu-system-x86_64 -S -s -d int -m $(QEMU_MEM) -cdrom os.iso; fi
+	qemu-system-x86_64 -S -s -d int -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \
 		if ! [ -e $$dir ]; then mkdir $$dir; fi;\
@@ -93,7 +94,7 @@ initialize: # add directories
 ksize: kernel
 	@size  boot/$(kernel).elf
 	@printf "ISO size: "
-	@du -h os.iso
+	@du -h $(CDROMIMAGE) 
 dis: kernel
 	@objdump -D boot/$(kernel).elf | less
 nm: kernel

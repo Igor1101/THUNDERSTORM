@@ -47,7 +47,7 @@ FORCE_INLINE int loader_name(volatile void *ebx)
   return 0;
 }
 
-FORCE_INLINE inline int boot_cmd(volatile void *ebx)
+FORCE_INLINE int boot_cmd(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 2 * sizeof (uint32_t) ) ) < 4 || 
@@ -59,7 +59,7 @@ FORCE_INLINE inline int boot_cmd(volatile void *ebx)
   return 0;
 }
 
-FORCE_INLINE inline int boot_device(volatile void *ebx)
+FORCE_INLINE int boot_device(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if( *(uint32_t*)(ebx + sizeof (uint32_t) ) != 20 /* fixed size */) 
@@ -73,7 +73,7 @@ FORCE_INLINE inline int boot_device(volatile void *ebx)
 }
 
 
-FORCE_INLINE inline int memory(volatile void *ebx)
+FORCE_INLINE int memory(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(*(uint32_t volatile*) (ebx + 1 * sizeof (uint32_t) ) != 16 /* fixed size */)
@@ -92,7 +92,7 @@ FORCE_INLINE inline int memory(volatile void *ebx)
   return 0;
 }
 
-FORCE_INLINE inline int modules_proc(volatile void *ebx, uint32_t num)
+FORCE_INLINE int modules_proc(volatile void *ebx, uint32_t num)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 4 * sizeof (uint32_t) ) ) < 4
@@ -107,7 +107,7 @@ FORCE_INLINE inline int modules_proc(volatile void *ebx, uint32_t num)
   return 0;
 }
 
-FORCE_INLINE inline int memmap(volatile void *ebx)
+FORCE_INLINE int memmap(volatile void *ebx)
   /* warning!: this function needs to be called after memory(); */
 {
   /* verify if it really is provided info */
@@ -154,7 +154,7 @@ FORCE_INLINE inline int memmap(volatile void *ebx)
 }
 
 
-FORCE_INLINE inline int framebuffer_info(volatile void * ebx)
+FORCE_INLINE int framebuffer_info(volatile void * ebx)
 {
   if(*(int32_t*) (ebx + 1 * sizeof (uint32_t)) <= 16)
   {

@@ -1,12 +1,12 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <gcc_opt.h>
 /*
  * Copyed from: osdev.org
  * --------------------------------------------------------------------------
  * CMSIS-LIKE INTERFACE FOR CPU MANAGEMENT
  */
-__attribute__ ( ( always_inline ) ) 
-inline void io_wait(void)
+FORCE_INLINE void io_wait(void)
 {
     /* Port 0x80 is used for 'checkpoints' during POST. */
     /* The Linux kernel seems to think it is free for use :-/ */
@@ -14,8 +14,7 @@ inline void io_wait(void)
 }
 
 /* Input a byte from a port */
-__attribute__ ( ( always_inline ) ) 
-inline unsigned char inb(uint16_t port)
+FORCE_INLINE unsigned char inb(uint16_t port)
 {
   io_wait();
   volatile unsigned char ret;
@@ -25,15 +24,13 @@ inline unsigned char inb(uint16_t port)
 
 /* Output a byte to a port */
 
-__attribute__ ( ( always_inline ) ) 
-inline void outb(uint16_t port, uint8_t value)
+FORCE_INLINE void outb(uint16_t port, uint8_t value)
 {
   io_wait();
   asm volatile ("outb %%al,%%dx": :"d" (port), "a" (value));
 }
 
-__attribute__ ( ( always_inline ) ) 
-inline bool are_interrupts_enabled()
+FORCE_INLINE bool are_interrupts_enabled()
 {
     unsigned long flags;
     asm volatile ( "pushf\n\t"
@@ -46,8 +43,7 @@ inline bool are_interrupts_enabled()
  * Read the current value of the CPU's 
  * time-stamp counter and store into EDX:EAX
  */
-__attribute__ ( ( always_inline ) ) 
-inline uint64_t rdtsc(void)
+FORCE_INLINE uint64_t rdtsc(void)
 {
     uint32_t low, high;
     asm volatile("rdtsc":"=a"(low),"=d"(high));
@@ -57,8 +53,7 @@ inline uint64_t rdtsc(void)
 /*
  * Read the value in a control register.
  */
-__attribute__ ( ( always_inline ) ) 
-inline unsigned long read_cr0(void)
+FORCE_INLINE unsigned long read_cr0(void)
 {
     unsigned long val;
     asm volatile ( "mov %%cr0, %0" : "=r"(val) );
@@ -68,8 +63,7 @@ inline unsigned long read_cr0(void)
 /*
  * write msr
  */
-__attribute__ ( ( always_inline ) ) 
-static inline void wrmsr(uint64_t msr, uint64_t value)
+FORCE_INLINE static void wrmsr(uint64_t msr, uint64_t value)
 {
 	uint32_t low = value & 0xFFFFFFFF;
 	uint32_t high = value >> 32;
@@ -83,8 +77,7 @@ static inline void wrmsr(uint64_t msr, uint64_t value)
 /* 
  * read msr
  */
-__attribute__ ( ( always_inline ) ) 
-inline uint64_t rdmsr(uint64_t msr)
+FORCE_INLINE uint64_t rdmsr(uint64_t msr)
 {
 	uint32_t low, high;
 	asm volatile (
@@ -98,13 +91,12 @@ inline uint64_t rdmsr(uint64_t msr)
 /* 
  * define new interrupt table
  */
-__attribute__ ( ( always_inline ) ) 
-inline void lidt(void* base, uint16_t size)
+FORCE_INLINE void lidt(void* base, uint16_t size)
 {   /*This function works in 32 and 64bit mode*/
     struct {
         uint16_t length;
         void*    base;
-    } __attribute__((packed)) IDTR = { size, base };
+    } PACKED IDTR = { size, base };
 
     asm ( "lidt %0" : : "m"(IDTR) );  /* let the compiler choose an addressing mode*/
 }

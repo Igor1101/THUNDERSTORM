@@ -5,6 +5,7 @@
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <TH/lld.h>
+#include <gcc_opt.h>
 #define kputc kputchar
 
 void dputs(const char *s) {
@@ -143,7 +144,7 @@ void kvprintf(const char *fmt, va_list args) {
     }
 }
 
-__attribute__ ((noreturn)) void kpanic(const char *msg) {
+NORET void kpanic(const char *msg) {
     kprintf("!!! PANIC !!!\n%s\n", msg);
     while (1) {
         __asm__ __volatile__ ("cli; hlt");

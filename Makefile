@@ -75,7 +75,7 @@ libc: initialize
 	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*
 
 iso: kernel
-	if [ -e os.iso ]; then rm $(CDROMIMAGE) ; fi
+	if [ -e  $(CDROMIMAGE) ]; then rm $(CDROMIMAGE) ; fi
 	grub-mkrescue  -o $(CDROMIMAGE) ./ 2> /dev/null
 run: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \

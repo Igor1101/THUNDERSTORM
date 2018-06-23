@@ -19,11 +19,12 @@
 #include <kstdio.h>
 #include <TH/sysvars.h>
 #include <TH/lld.h>
+#include <gcc_opt.h>
 /**
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 
  * */
-__attribute__ ( ( always_inline ) ) inline int vbe_mode(volatile void *ebx)
+FORCE_INLINE int vbe_mode(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(*(int*)(ebx + sizeof (uint32_t)) != 784/* fixed size */)
@@ -34,7 +35,7 @@ __attribute__ ( ( always_inline ) ) inline int vbe_mode(volatile void *ebx)
   return 0;
 }
   
-__attribute__ ( ( always_inline ) ) inline int loader_name(volatile void *ebx)
+FORCE_INLINE int loader_name(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*) (ebx + 2 * sizeof (uint32_t))) < 5 || 
@@ -46,7 +47,7 @@ __attribute__ ( ( always_inline ) ) inline int loader_name(volatile void *ebx)
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) inline int boot_cmd(volatile void *ebx)
+FORCE_INLINE inline int boot_cmd(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 2 * sizeof (uint32_t) ) ) < 4 || 
@@ -58,7 +59,7 @@ __attribute__ ( ( always_inline ) ) inline int boot_cmd(volatile void *ebx)
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) inline int boot_device(volatile void *ebx)
+FORCE_INLINE inline int boot_device(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if( *(uint32_t*)(ebx + sizeof (uint32_t) ) != 20 /* fixed size */) 
@@ -72,8 +73,7 @@ __attribute__ ( ( always_inline ) ) inline int boot_device(volatile void *ebx)
 }
 
 
-__attribute__ ( ( always_inline ) ) 
-inline int memory(volatile void *ebx)
+FORCE_INLINE inline int memory(volatile void *ebx)
 {
   /* verify if it really is provided info */
   if(*(uint32_t volatile*) (ebx + 1 * sizeof (uint32_t) ) != 16 /* fixed size */)
@@ -92,8 +92,7 @@ inline int memory(volatile void *ebx)
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) 
-inline int modules_proc(volatile void *ebx, uint32_t num)
+FORCE_INLINE inline int modules_proc(volatile void *ebx, uint32_t num)
 {
   /* verify if it really is provided info */
   if(strlen((char*)(ebx + 4 * sizeof (uint32_t) ) ) < 4
@@ -108,7 +107,7 @@ inline int modules_proc(volatile void *ebx, uint32_t num)
   return 0;
 }
 
-__attribute__ ( ( always_inline ) ) inline int memmap(volatile void *ebx)
+FORCE_INLINE inline int memmap(volatile void *ebx)
   /* warning!: this function needs to be called after memory(); */
 {
   /* verify if it really is provided info */
@@ -155,8 +154,7 @@ __attribute__ ( ( always_inline ) ) inline int memmap(volatile void *ebx)
 }
 
 
-__attribute__ ( ( always_inline ) ) 
-inline int framebuffer_info(volatile void * ebx)
+FORCE_INLINE inline int framebuffer_info(volatile void * ebx)
 {
   if(*(int32_t*) (ebx + 1 * sizeof (uint32_t)) <= 16)
   {

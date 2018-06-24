@@ -1,12 +1,10 @@
-.PHONY: kernel
-.PHONY: ksize
-.PHONY: libc
+include compile_opt_kernel.mk
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
-KERNEL_OPTIONS ?=  -D USE_VESA
+KERNEL_OPTIONS += -D $(KERNEL_OUTPUT)
 ARCH ?= x86_64
 INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include
-kernel = TH
+KERNEL = boot/THkernel
 TH_ABS_PATH = $(PWD)
 CC ?= gcc
 AS = as# now we aren`t really use it
@@ -44,13 +42,14 @@ kernel: initialize ports libc
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
 		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \
 	; done
-	$(LD) --nmagic -o boot/$(kernel).elf -T ldscripts/kernel_x86_64.ld $(KERNEL_BUILD_PATH)/* $(LD_FLAGS) $(THLIBC)
+	$(LD) --nmagic -o $(KERNEL) -T ldscripts/kernel_x86_64.ld $(KERNEL_BUILD_PATH)/* $(LD_FLAGS) $(THLIBC)
 
 clean:
 	rm -r $(KERNEL_BUILD_PATH)
 	rm -r $(LIBC_BUILD_PATH)
 	rm -r $(THLIBC)
 	rm $(CDROMIMAGE) 
+	rm -r $(KERNEL)
 ports: initialize
 	# compile NASM syntax ports sorces
 	@for cfile in $(LLD_NASM_SOURCES);do \
@@ -92,11 +91,11 @@ initialize: # add directories
 		if ! [ -e $$dir ]; then mkdir $$dir; fi;\
  	done
 ksize: kernel
-	@size  boot/$(kernel).elf
+	@size  $(KERNEL)
 	@printf "ISO size: "
 	@du -h $(CDROMIMAGE) 
 dis: kernel
-	@objdump -D boot/$(kernel).elf | less
+	@objdump --disassembler-options=intel -D $(KERNEL) | less
 nm: kernel
-	@nm --numeric-sort boot/$(kernel).elf|less
+	@nm --numeric-sort $(KERNEL)|less
 

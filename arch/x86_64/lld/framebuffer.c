@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <kstring.h>
-
+#include <gcc_opt.h>
 bool video_initialized = false;
 bool cursor_enabled = false;
 
@@ -66,7 +66,7 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
   volatile uint8_t s=cursor_start; s=cursor_end;s--;
   cursor_enabled = true;
 }
-void make_newline(void)
+LIKELY void make_newline(void)
 {
   if(video_initialized == false)
     return;

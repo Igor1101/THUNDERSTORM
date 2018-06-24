@@ -26,7 +26,7 @@ uint32_t determine_rows(void)
 }
 void update_cursor(int x, int y)
 {
-	uint16_t offset = (y * COLUMNS) + x;
+	uint16_t offset = (y * COLUMNS) + x + COLUMNS + 1;
 	outb(0x3D4, 14);
   outb(0x3D5, offset >> 8);
   outb(0x3D4, 15);

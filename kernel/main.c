@@ -17,6 +17,7 @@ __________________________________________________________________________/_____
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <stdbool.h>
+#include <verify_kopt.h>
 
 /* declared vars */
 struct RAM_INFO RAM = 

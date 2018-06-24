@@ -2,10 +2,11 @@
 #include <stddef.h>
 #include <kstdlib.h>
 #include <string.h>
+#include <gcc_opt.h>
 
 static const char *s_itoa_chars = "0123456789abcdef";
 
-void itoa(char *buf, intptr_t base, intptr_t val) {
+LIKELY void itoa(char *buf, intptr_t base, intptr_t val) {
     if (!val) {
         buf[0] = '0';
         buf[1] = 0;
@@ -47,7 +48,7 @@ void itoa(char *buf, intptr_t base, intptr_t val) {
     buf[r] = 0;
 }
 
-void itoap(char *buf, size_t width, intptr_t base, uintptr_t value) {
+LIKELY void itoap(char *buf, size_t width, intptr_t base, uintptr_t value) {
     memset(buf, '0', width);
     buf[width] = 0;
     intptr_t i = 0;
@@ -58,7 +59,7 @@ void itoap(char *buf, size_t width, intptr_t base, uintptr_t value) {
     }
 }
 
-void utoa(char *buf, uintptr_t value) {
+LIKELY void utoa(char *buf, uintptr_t value) {
     if (!value) {
         buf[0] = '0';
         buf[1] = 0;

@@ -9,7 +9,7 @@ void tui_init(void)
   text.row = BEGINNING;
   text.col = BEGINNING;
   text.fgcolor = Default;
-  //enable_cursor(BEGINNING, text.rows + 2);
+  enable_cursor(BEGINNING, text.rows );
   text.columns = determine_columns();
   text.rows = determine_rows();
 }

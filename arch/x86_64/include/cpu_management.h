@@ -98,5 +98,6 @@ FORCE_INLINE void lidt(void* base, uint16_t size)
         void*    base;
     } PACKED IDTR = { size, base };
 
-    asm ( "lidt %0" : : "m"(IDTR) );  /* let the compiler choose an addressing mode*/
+    asm ( "lidt %0" : : "m"(IDTR) );  /* let the compiler 
+                                         choose an addressing mode*/
 }

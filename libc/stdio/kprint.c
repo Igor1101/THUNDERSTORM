@@ -8,7 +8,7 @@
 #include <gcc_opt.h>
 #define kputc kputchar
 
-void dputs(const char *s) {
+LIKELY void dputs(const char *s) {
 #ifdef KDEBUG
   kpause();
 #endif
@@ -17,7 +17,7 @@ void dputs(const char *s) {
     }
 }
 
-void dputs_pad(const char *s, char c, size_t p) {
+LIKELY void dputs_pad(const char *s, char c, size_t p) {
     size_t d = strlen(s);
     if (d < p) {
         for (size_t i = 0; i < p - d; ++i) {
@@ -27,7 +27,7 @@ void dputs_pad(const char *s, char c, size_t p) {
     dputs(s);
 }
 
-void ddump(const void *block, size_t count) {
+LIKELY void ddump(const void *block, size_t count) {
     const char *v = (const char *) block;
     unsigned char c;
     static char cbuf[16];
@@ -65,7 +65,7 @@ void kprintf(const char *fmt, ...) {
     va_end(args);
 }
 
-void kvprintf(const char *fmt, va_list args) {
+LIKELY void kvprintf(const char *fmt, va_list args) {
     char c;
     uintptr_t vp;
     char cbuf[256];

@@ -51,12 +51,13 @@ clean:
 	rm $(CDROMIMAGE) 
 	rm -r $(KERNEL)
 ports: initialize
-	# compile NASM syntax ports sorces
+	# NASM PORTS
 	@for cfile in $(LLD_NASM_SOURCES);do \
 	CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 	printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
 	nasm $(KERNEL_OPTIONS) -f elf64  -o $$CFILE $$cfile; \
 	done
+	# C PORTS
 	@for cfile in $(LLD_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
@@ -65,12 +66,13 @@ ports: initialize
 
 # compile libraries:
 libc: initialize
-	# LIBC BUILDING
+	# LIBC
 	@for cfile in $(LIBC_C_SOURCES); do \
 		CFILE=$(LIBC_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
 		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS); \
-	done; \
+	done; 
+	# LIBC COMPRESSING
 	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*
 
 iso: kernel

@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <gcc_opt.h>
 /**
  * memmove - Copy one area of memory to another
  * @dest: Where to copy to
@@ -7,7 +8,7 @@
  *
  * Unlike memcpy(), memmove() copes with overlapping areas.
  */
-void *memmove(void *dest, const void *src, size_t count)
+LIKELY void *memmove(void *dest, const void *src, size_t count)
 {
 	register volatile char *tmp;
 	register volatile const char *s;

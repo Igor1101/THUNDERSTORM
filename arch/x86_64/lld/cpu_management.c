@@ -1,5 +1,6 @@
 #include <kstdio.h>
-void cpu_halt(void)
+#include <gcc_opt.h>
+UNLIKELY void cpu_halt(void)
 {
   kputs("HALTING");
   asm volatile (" halt: hlt\n"

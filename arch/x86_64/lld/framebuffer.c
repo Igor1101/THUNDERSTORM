@@ -14,7 +14,7 @@
 bool video_initialized = false;
 bool cursor_enabled = false;
 
-void kputpixel(uint32_t x, uint32_t y, uint32_t color)
+LIKELY void kputpixel(uint32_t x, uint32_t y, uint32_t color)
 {
   if(video_initialized == false)
     return;
@@ -36,7 +36,7 @@ void krectangle(uint32_t x, uint32_t y,
 }*/
 
 #ifdef USE_VESA
-uint32_t determine_rows(void)
+UNLIKELY uint32_t determine_rows(void)
 {
   /* system font should already be processed
    * */
@@ -48,7 +48,7 @@ uint32_t determine_rows(void)
   return row - 1;
 }
 
-uint32_t determine_columns(void)
+UNLIKELY uint32_t determine_columns(void)
 {
   /* system font should already be processed
    * */
@@ -74,7 +74,7 @@ LIKELY void make_newline(void)
     (1 * font -> height * sysfb.pitch / 8);
   kmemcpy_ptr(sysfb.virtaddr, end, sysfb.width * sysfb.height * sysfb.bpp / 8);
 }
-void update_cursor(int x, int y)
+LIKELY void update_cursor(int x, int y)
 {
   static int lastx;
   static int lasty;

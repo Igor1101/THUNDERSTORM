@@ -1,7 +1,7 @@
 include compile_opt_kernel.mk
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
-KERNEL_OPTIONS += -D $(KERNEL_OUTPUT)
+KERNEL_OPTIONS += -D $(KERNEL_OUTPUT) -D $(KERNEL_BUILD_MODE)
 ARCH ?= x86_64
 INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include
 KERNEL = boot/THkernel

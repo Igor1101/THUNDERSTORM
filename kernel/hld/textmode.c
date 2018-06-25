@@ -69,9 +69,6 @@ void kputchar(int8_t chr)
 }
 void kputs(char * str)
 {
-#ifdef KDEBUG
-  kpause();
-#endif
   while(*str != 0)
   {
     kputchar(*str);

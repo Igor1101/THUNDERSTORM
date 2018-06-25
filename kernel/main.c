@@ -44,11 +44,10 @@ int main(void* pcinfo)
     return (1);/* GOT is not working, 
                   smth wrong with bss */
   }
-#ifdef KDEBUG
-  select_fgcolor(Cyan);
-  kputs("This is a DEBUG version of kernel,\
-output is too slow");
-#endif /* KDEBUG */
+#ifdef DEBUG
+  select_fgcolor(Red);
+  kputs("This is a DEBUG version of kernel");
+#endif /* DEBUG */
 
 
   kputs("COMPUTER INFO:");

@@ -20,6 +20,9 @@ extern "C" {
 #define MAX_MODULES 20 /*max amount of modules */
 
 extern struct RAM_INFO
+  /*
+   * looks like this struct is useless in
+   * x86_64 arch */
 {
   /* highest RAM info, loaded from bootloader */
   uintptr_t* highest;

@@ -36,6 +36,7 @@ void clear_problematic_vars(void)
    */
   memset(ram_map, 0, sizeof ram_map);
   memset(&sysfb, 0, sizeof sysfb);
+  memset(&modules, 0, sizeof modules);
 }
 int main(void* pcinfo)
 {

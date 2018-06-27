@@ -19,11 +19,17 @@ SECTIONS {
 	}
 	
 	.bss BLOCK(4K) : AT(ADDR(.bss) - offset) ALIGN(4K) {
+    init_kernel_bss = .;
+    *( .init_bss* )
+    init_kernel_bss_end = .;
+	}
+
+	.bss BLOCK(4K) : AT(ADDR(.bss) - offset) ALIGN(4K) {
     kernel_bss = .;
-		*(.bss)
-    *(.noinit)
-		*(COMMON)
+		*( .bss )
+    *( .noinit )
+		*( COMMON )
     kernel_bss_end = .;
 	}
-	
+
 }

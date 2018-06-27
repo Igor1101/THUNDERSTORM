@@ -211,7 +211,7 @@ error:
 
 ;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;
 ;pgs info:
-section .bss
+[section .init_bss nobits]
 align PG_SIZE
 p4_table:
   resb PG_SIZE

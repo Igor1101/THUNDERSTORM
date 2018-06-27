@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <kstring.h>
+#include <asm/segment.h>/* linux header */
 #define NUM_OF_EXCEPTIONS 32
 #define NUM_OF_DESC 256
 #define SIZE_OF_DESC  sizeof ( struct IDTdesc )
@@ -26,9 +27,7 @@ FORCE_INLINE void idt_clear_vectors(void)
   kmemset_show(idt_table, 0, sizeof(idt_table));
 }
 
-FORCE_INLINE void idt_set_trap(uint8_t num, uint64_t addr,
-    uint16_t sel, uint8_t ist)
+FORCE_INLINE void idt_set_trap(uint8_t num, uint64_t addr, uint8_t ist)
 {
-  idt_set_vector(
-      num, addr, sel, 0b1111, ist);
+  idt_set_vector( num, addr, __KERNEL_CS, 0b1111/*means trap */, ist );
 }

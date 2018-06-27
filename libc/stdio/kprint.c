@@ -1,6 +1,6 @@
 /* copied from x86k system */
 #include <stdint.h>
-#include <string.h>
+#include <kstring.h>
 #include <stdarg.h>
 #include <kstdlib.h>
 #include <kstdio.h>

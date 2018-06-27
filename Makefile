@@ -13,7 +13,8 @@ AR = ar
 OBJCOPY = objcopy
 AS_FLAGS =
 CC_FLAGS = -Og -g -fno-stack-protector\
- 	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib  $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
+ 	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib -Wno-unused-parameter
+KERNEL_CC_FLAGS = -mgeneral-regs-only -nostdinc $(CC_FLAGS) $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
 LD_FLAGS = -nostdlib -static 
 BOOT_PORTS_PATH = arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
@@ -40,7 +41,7 @@ kernel: initialize ports libc
 	@for cfile in $(KERNEL_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \
+		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS) \
 	; done
 	$(LD) --nmagic -o $(KERNEL) -T ldscripts/kernel_x86_64.ld $(KERNEL_BUILD_PATH)/* $(LD_FLAGS) $(THLIBC)
 
@@ -61,7 +62,7 @@ ports: initialize
 	@for cfile in $(LLD_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \
+		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS) \
 	; done
 
 # compile libraries:
@@ -70,7 +71,7 @@ libc: initialize
 	@for cfile in $(LIBC_C_SOURCES); do \
 		CFILE=$(LIBC_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS); \
+		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS); \
 	done; 
 	# LIBC COMPRESSING
 	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*

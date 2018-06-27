@@ -8,7 +8,7 @@
 #include <TH/font.h>
 #include <video_lld.h>
 #include <stdbool.h>
-#include <string.h>
+
 #include <kstring.h>
 #include <gcc_opt.h>
 bool video_initialized = false;

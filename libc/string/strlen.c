@@ -1,4 +1,4 @@
-#include <stddef.h> /* for size_t */
+#include <stddef.h>
 #include <gcc_opt.h>
 LIKELY size_t strlen(const char *s) {
     size_t i;

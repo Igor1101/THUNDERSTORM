@@ -11,7 +11,7 @@
 __________________________________________________________________________/___________
 */
 
-#include <string.h>
+
 #include <kstring.h>
 #include <kstdlib.h>
 #include <kstdio.h>
@@ -22,11 +22,7 @@ __________________________________________________________________________/_____
 #include <TH/sysvars.h>
 
 /* declared vars */
-struct RAM_INFO RAM = 
-{
-  NULL,
-  NULL
-};
+struct RAM_INFO RAM;
 struct Framebuffer sysfb;
 struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
@@ -35,10 +31,9 @@ int main(void* pcinfo)
 #ifdef USE_VGA
   tui_init();
   select_fgcolor(Red);
-  kputs("Note, that VGA mode is Legacy, used only for debbuging");
+  kputs("Note, that VGA mode is Legacy, used only for debbuging and text");
   select_fgcolor(Default);
 #endif /* USE_VGA */
-
   static char verifier=100;
   if(verifier != 100)
   {
@@ -48,6 +43,7 @@ int main(void* pcinfo)
 #ifdef DEBUG
   select_fgcolor(Red);
   kputs("This is a DEBUG version of kernel");
+  select_fgcolor(Default);
 #endif /* DEBUG */
 
 

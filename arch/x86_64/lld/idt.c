@@ -20,5 +20,20 @@ idt_set_vector(uint8_t num, uint64_t addr,
     .zero         = 0
   };
 }
+#ifdef __x86_64__
+typedef unsigned long long int uword_t;
+#else
+typedef unsigned int uword_t;
+#endif
 
+struct interrupt_frame;
+
+INTERRUPT void divide_byzero(struct interrupt_frame *frame, uword_t error_code)
+{
+
+}
+UNLIKELY void set_exceptions(void)
+{
+  idt_set_trap(0, (uint64_t)&divide_byzero, 0);
+}
 

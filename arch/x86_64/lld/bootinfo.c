@@ -15,7 +15,7 @@
 #define MEMMAP 6 /* memory map */
 
 #include <stdint.h>
-#include <string.h>
+#include <kstring.h>
 #include <kstdio.h>
 #include <TH/sysvars.h>
 #include <TH/lld.h>

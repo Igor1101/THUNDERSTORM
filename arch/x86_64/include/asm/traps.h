@@ -1,14 +1,10 @@
 /* SPDX-License-Identifier: GPL-2.0 */
+/* copied from Linux kernel 4.18.0-rc1-ARCH+,
+ * modified by Igor Muravyov <igor.muravyov.2015@gmail.com>
+ * for THUNDERSTORM kernel*/
 #ifndef _ASM_X86_TRAPS_H
 #define _ASM_X86_TRAPS_H
 
-#include <linux/context_tracking_state.h>
-#include <linux/kprobes.h>
-
-#include <asm/debugreg.h>
-#include <asm/siginfo.h>			/* TRAP_TRACE, ... */
-
-#define dotraplinkage __visible
 
 asmlinkage void divide_error(void);
 asmlinkage void debug(void);

@@ -6,8 +6,8 @@
 extern "C" {
 #endif
 
-#include "sys/types.h"
 #include <stdint.h>
+#include <stddef.h>
 
 #define ITOA_BUF_SIZE 33
 

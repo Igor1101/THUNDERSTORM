@@ -4,8 +4,8 @@
  * */
 #ifdef USE_VGA
 #include <stdint.h>
+#include <kstring.h>
 #include <TH/lld.h>
-#include <string.h>
 #include <cpu_management.h>
 
 #define VGAADDR (volatile void* volatile)0xb8000

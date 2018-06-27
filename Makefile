@@ -30,7 +30,7 @@ LLD_AS_SOURCES += $(shell find $(LLD_PORTS_PATH) -name *.S)
 LLD_C_SOURCES = $(shell find $(LLD_PORTS_PATH) -name *.c)
 KERNEL_C_SOURCES = $(shell find kernel/ -name *.c)
 LIBC_C_SOURCES = $(shell find libc/ -name *.c)
-CDROMIMAGE = cdromimage/os.iso
+CDROMIMAGE = os.iso
 
 DIRECTORIES:=src arch bin boot kernel libc \
 	$(KERNEL_BUILD_PATH)\

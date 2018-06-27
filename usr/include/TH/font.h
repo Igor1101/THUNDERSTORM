@@ -17,8 +17,10 @@ typedef struct {
 } PSF_font;
 uint16_t font_arr[USHRT_MAX];
 uint16_t *unicode;
-extern char _font_start;
+
+extern char _font_start; /* < ------------ font in rodata */
 extern char _font_end;
+
 PSF_font *font;
 
 #ifdef __cplusplus

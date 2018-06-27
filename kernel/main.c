@@ -12,6 +12,7 @@ __________________________________________________________________________/_____
 */
 
 #include <string.h>
+#include <kstring.h>
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <stdbool.h>
@@ -29,18 +30,8 @@ struct RAM_INFO RAM =
 struct Framebuffer sysfb;
 struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
-void clear_problematic_vars(void)
-{
-  /* 
-   * here we shouldn`t clear all the bss section
-   */
-  memset(ram_map, 0, sizeof ram_map);
-  memset(&sysfb, 0, sizeof sysfb);
-  memset(&modules, 0, sizeof modules);
-}
 int main(void* pcinfo)
 {
-  clear_problematic_vars();
 #ifdef USE_VGA
   tui_init();
   select_fgcolor(Red);

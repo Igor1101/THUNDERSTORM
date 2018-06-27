@@ -44,6 +44,7 @@ section .text
     cli
     call init_paging
     lgdt [GDT64.Pointer]
+    ; already x86_64 hear
     jmp  GDT64.Code:.init64; update CS
 .init64:
 bits 64
@@ -57,6 +58,7 @@ bits 64
 bits 32
 section .rodata
 ; GDT long mode initialization
+    align 8
 GDT64:                           ; Global Descriptor Table (64-bit).
     .Null: equ $ - GDT64         ; The null descriptor.
     dw 0xFFFF                    ; Limit (low).
@@ -83,7 +85,6 @@ GDT64:                           ; Global Descriptor Table (64-bit).
     dw $ - GDT64 - 1             ; Limit.
     dq GDT64                     ; Base.
     dq 0
-    ; executable, code and data segm, valid selector, 64-bit:
 section .text
     hlt
 

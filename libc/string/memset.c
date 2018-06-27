@@ -23,9 +23,11 @@ memset (PTR dest, register int val, register size_t len)
   return dest;
 }
 
+/* the same as memset, also showing progress */
 LIKELY PTR 
 kmemset_show (PTR dest, register int val, register size_t len)
 {
+  init_progress();
   register unsigned char *ptr = (unsigned char*)dest;
   while (len-- > 0)
   {
@@ -33,5 +35,6 @@ kmemset_show (PTR dest, register int val, register size_t len)
       show_progress();
     *ptr++ = val;
   }
+  stop_progress();
   return dest;
 }

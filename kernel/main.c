@@ -11,7 +11,11 @@
 __________________________________________________________________________/___________
 */
 
+<<<<<<< HEAD
 
+=======
+#include <string.h>
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 #include <kstring.h>
 #include <kstdlib.h>
 #include <kstdio.h>
@@ -22,7 +26,15 @@ __________________________________________________________________________/_____
 #include <TH/sysvars.h>
 
 /* declared vars */
+<<<<<<< HEAD
 struct RAM_INFO RAM;
+=======
+struct RAM_INFO RAM = 
+{
+  NULL,
+  NULL
+};
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 struct Framebuffer sysfb;
 struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
@@ -31,9 +43,16 @@ int main(void* pcinfo)
 #ifdef USE_VGA
   tui_init();
   select_fgcolor(Red);
+<<<<<<< HEAD
   kputs("Note, that VGA mode is Legacy, used only for debbuging and text");
   select_fgcolor(Default);
 #endif /* USE_VGA */
+=======
+  kputs("Note, that VGA mode is Legacy, used only for debbuging");
+  select_fgcolor(Default);
+#endif /* USE_VGA */
+
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
   static char verifier=100;
   if(verifier != 100)
   {
@@ -43,7 +62,10 @@ int main(void* pcinfo)
 #ifdef DEBUG
   select_fgcolor(Red);
   kputs("This is a DEBUG version of kernel");
+<<<<<<< HEAD
   select_fgcolor(Default);
+=======
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 #endif /* DEBUG */
 
 

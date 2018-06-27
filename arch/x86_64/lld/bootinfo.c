@@ -15,7 +15,11 @@
 #define MEMMAP 6 /* memory map */
 
 #include <stdint.h>
+<<<<<<< HEAD
 #include <kstring.h>
+=======
+#include <string.h>
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 #include <kstdio.h>
 #include <TH/sysvars.h>
 #include <TH/lld.h>

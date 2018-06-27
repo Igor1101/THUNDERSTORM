@@ -20,6 +20,7 @@ idt_set_vector(uint8_t num, uint64_t addr,
     .zero         = 0
   };
 }
+<<<<<<< HEAD
 #ifdef __x86_64__
 typedef unsigned long long int uword_t;
 #else
@@ -36,4 +37,7 @@ UNLIKELY void set_exceptions(void)
 {
   idt_set_trap(0, (uint64_t)&divide_byzero, 0);
 }
+=======
+
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 

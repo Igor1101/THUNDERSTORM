@@ -8,7 +8,11 @@
 #include <TH/font.h>
 #include <video_lld.h>
 #include <stdbool.h>
+<<<<<<< HEAD
 
+=======
+#include <string.h>
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 #include <kstring.h>
 #include <gcc_opt.h>
 bool video_initialized = false;

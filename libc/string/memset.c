@@ -9,11 +9,21 @@ Sets the first @var{count} bytes of @var{s} to the constant byte
 @end deftypefn
 */
 
+<<<<<<< HEAD
 #include <kstdlib.h>
 #include <gcc_opt.h>
 
 LIKELY void*
 memset (void* dest, register int val, register size_t len)
+=======
+#include <ansidecl.h>
+#include <stddef.h>
+#include <kstdlib.h>
+#include <gcc_opt.h>
+
+LIKELY PTR 
+memset (PTR dest, register int val, register size_t len)
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 {
   register unsigned char *ptr = (unsigned char*)dest;
   while (len-- > 0)
@@ -22,14 +32,23 @@ memset (void* dest, register int val, register size_t len)
 }
 
 /* the same as memset, also showing progress */
+<<<<<<< HEAD
 LIKELY void*
 kmemset_show (void* dest, register int val, register size_t len)
+=======
+LIKELY PTR 
+kmemset_show (PTR dest, register int val, register size_t len)
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 {
   init_progress();
   register unsigned char *ptr = (unsigned char*)dest;
   while (len-- > 0)
   {
+<<<<<<< HEAD
     if( len % 100 == 0)
+=======
+    if( len % 10 == 0)
+>>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
       show_progress();
     *ptr++ = val;
   }

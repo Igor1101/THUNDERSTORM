@@ -92,12 +92,12 @@ FORCE_INLINE uint64_t rdmsr(uint64_t msr)
  * define new interrupt table
  */
 FORCE_INLINE void lidt(void* base, uint16_t size)
-{   /*This function works in 32 and 64bit mode*/
-    struct {
-        uint16_t length;
-        void*    base;
-    } PACKED IDTR = { size, base };
-
-    asm ( "lidt %0" : : "m"(IDTR) );  /* let the compiler 
-                                         choose an addressing mode*/
+{/*This function works in 32 and 64bit mode*/
+  struct 
+  {
+    uint16_t length;
+    void*    base;
+  } PACKED IDTR = { size, base };
+  asm ( "lidt %0" : : "m"(IDTR) );  /* let the compiler 
+                                     * choose an addressing mode*/
 }

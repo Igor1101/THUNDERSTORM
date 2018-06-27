@@ -77,7 +77,7 @@ libc: initialize
 
 iso: kernel
 	if [ -e  $(CDROMIMAGE) ]; then rm $(CDROMIMAGE) ; fi
-	grub-mkrescue  -o $(CDROMIMAGE) ./ 2>&1
+	grub-mkrescue  -o $(CDROMIMAGE) ./ 2> /dev/null
 run: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
 	qemu-system-x86_64 -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE); \

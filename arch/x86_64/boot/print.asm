@@ -1,3 +1,4 @@
+; early x86 kernel output(works only if VGA supported)
 VGAROWS equ 25
 VGA equ 0xb8000
 bits 32
@@ -41,7 +42,7 @@ section .text
    ret
 
 ; print char to VGA + 2*(row * 80 + col)
-kputchar_to:; print value
+kputchar_to:; print value; shouldn`t be  global
 ; ax <- char
 ; ebx <- row
 ; ecx <- col

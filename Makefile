@@ -76,8 +76,12 @@ libc: initialize
 	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*
 
 iso: kernel
-	if [ -e  $(CDROMIMAGE) ]; then rm $(CDROMIMAGE) ; fi
-	grub-mkrescue  -o $(CDROMIMAGE) ./ 2> /dev/null
+	@if [ -e  $(CDROMIMAGE) ]; then rm $(CDROMIMAGE) ; fi
+	@if [ -e  /tmp/.THUNDERSTORM ]; then rm -r /tmp/.THUNDERSTORM ; fi
+	mkdir /tmp/.THUNDERSTORM
+	cp -r ./boot /tmp/.THUNDERSTORM
+	grub-mkrescue  -o $(CDROMIMAGE) /tmp/.THUNDERSTORM 2> /dev/null
+	rm -r /tmp/.THUNDERSTORM
 run: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
 	qemu-system-x86_64 -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE); \

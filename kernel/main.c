@@ -16,6 +16,7 @@ __________________________________________________________________________/_____
 #include <kstdio.h>
 #include <stdbool.h>
 #include <verify_kopt.h>
+#include <asm/int_handler.h>
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
@@ -67,6 +68,8 @@ int main(void* pcinfo)
   kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
  COPYRIGHT Igor Muravyov (c) %s \n", RELEASE, YEARS);
   print_RAM_info();
+  /* initializing interrupts */
+  set_exceptions();
   cpu_halt();
   while(1);
 }

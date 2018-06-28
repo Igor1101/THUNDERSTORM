@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <kstring.h>
 #include <TH/lld.h>
-#include <cpu_management.h>
+#include <x86_64/cpu_management.h>
 
 #define VGAADDR (volatile void* volatile)0xb8000
 #define COLUMNS 80

@@ -55,9 +55,10 @@ int main(void* pcinfo)
     kputs("videomode successfully started");
     print_video_info();
     /* verifying bounds of display*/
-    kputchar_to('\0', text.rows - 1, text.columns - 1, Red, Red);
-    kputchar_to('\0', 0, text.columns - 1, Red, Red);
-    kputchar_to('\0', text.rows - 1, 0, Red, Red);
+    kputchar_to('\0', text.rows - 1, text.columns - 1, 
+        Red, Red, NOTRANSPARENT);
+    kputchar_to('\0', 0, text.columns - 1, Red, Red, NOTRANSPARENT);
+    kputchar_to('\0', text.rows - 1, 0, Red, Red, NOTRANSPARENT);
 
     select_fgcolor(Cyan);
     select_bgcolor(Blue);

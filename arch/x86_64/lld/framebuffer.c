@@ -62,8 +62,9 @@ UNLIKELY uint32_t determine_columns(void)
 
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
+  /* getting rid of compiler warnings */
   volatile uint8_t s=cursor_start; s=cursor_end;s--;
-  //cursor_enabled = true; //still doesn`t work
+  cursor_enabled = true;
 }
 LIKELY void make_newline(void)
 {
@@ -73,17 +74,17 @@ LIKELY void make_newline(void)
     (1 * font -> height * sysfb.pitch / 8);
   kmemcpy_ptr(sysfb.virtaddr, end, sysfb.width * sysfb.height * sysfb.bpp / 8);
 }
-LIKELY void update_cursor(int x, int y)
+
+LIKELY void update_cursor(int row, int col)
 {
-  static int lastx;
-  static int lasty;
+  //static int lastrow;
+  //static int lastcol;
   if(cursor_enabled == true)
   {
-    kputchar_to('_', x, y, White, Black);
-    kputchar_to('_', lastx, lasty, Black, Black);
+    kputchar_to('_', row, col, Cyan, Black, TRANSPARENT);
   }
-  lastx = x;
-  lasty = y;
+  //lastrow = row;
+  //lastcol = col;
 }
 
 #endif

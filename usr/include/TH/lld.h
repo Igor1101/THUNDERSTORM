@@ -32,6 +32,16 @@ enum Color
 #endif /*USE_VGA */
 
 #ifdef USE_VESA
+
+enum char_attributes
+{
+  /*
+   * for kputchar_to func
+   */
+  TRANSPARENT,
+  NOTRANSPARENT
+};
+
 enum Color
 {
   Black      = 0,
@@ -99,7 +109,10 @@ void kputchar_to(
     /* cursor position on screen in characters  */
     uint32_t row, uint32_t column,
     /* foreground and background colors */
-    uint32_t fg, uint32_t bg);
+    uint32_t fg, uint32_t bg,
+    /* character attributes */
+    uint32_t attr
+    );
 
 
 

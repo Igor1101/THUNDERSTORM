@@ -26,7 +26,10 @@ void kputchar_to(
     /* cursor position on screen in characters*/
     uint32_t row, uint32_t column,
     /* foreground and background colors */
-    uint32_t fg, uint32_t bg)
+    uint32_t fg, uint32_t bg, 
+    /* character attributes */
+    uint32_t attr
+    )
 {
   if( (video_initialized == false) ||
     (row >= text.rows) || 
@@ -66,10 +69,17 @@ void kputchar_to(
     for(x=0;x<font->width;x++)
     {
       register uint32_t* volatile vaddr = 
-        (uint32_t*)sysfb.virtaddr + line;
+          (uint32_t*)sysfb.virtaddr + line;
       if(verify_addr(vaddr) == 0)
       {
-        *vaddr  = ((uint32_t)*glyph) & (mask) ? fg : bg;
+        if(attr == TRANSPARENT)
+        {
+          *vaddr |= ((uint32_t)*glyph) & (mask) ? fg : bg;
+        }
+        else
+        {
+          *vaddr = ((uint32_t)*glyph) & (mask) ? fg : bg;
+        }
       }
       else
       {

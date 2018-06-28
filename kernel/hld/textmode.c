@@ -26,7 +26,7 @@ void select_bgcolor(int color)
 
 void newline(void)
 {
-  if(text.row >=text.rows - 1)
+  if(text.row >= text.rows - 1)
   {
     make_newline();
     text.col = BEGINNING;
@@ -39,19 +39,28 @@ void kputchar(int8_t chr)
 {
   switch(chr)
   {
-    case '\n': newline();
-               update_cursor(text.row, text.col);
+    case '\n': 
+                /* clear last cursor */
+               kputchar_to(' ', text.row, text.col, Black, Black, NOTRANSPARENT);
+               newline();
+               update_cursor(text.row, text.col + 1);
                return;
-    case '\r': text.col=BEGINNING; 
-               update_cursor(text.row, text.col);
+    case '\r': 
+                /* clear last cursor */
+               kputchar_to(' ', text.row, text.col, Black, Black, NOTRANSPARENT);
+               text.col = BEGINNING; 
+               update_cursor(text.row, text.col + 1);
                return;
-    case '\b': text.col--; 
-               update_cursor(text.row, text.col);
+    case '\b': 
+               text.col--; 
+               update_cursor(text.row, text.col + 1);
                return;
-    default: break;
+    default: 
+               break;
   }
-  kputchar_to(chr, text.row, text.col, text.fgcolor, text.bgcolor);
-  update_cursor(text.col + 1, text.row);
+  update_cursor(text.row, text.col + 1);
+  kputchar_to(chr, text.row, text.col, 
+      text.fgcolor, text.bgcolor, NOTRANSPARENT);
   if(text.col >= text.columns && text.row < text.rows)
   {
     newline();

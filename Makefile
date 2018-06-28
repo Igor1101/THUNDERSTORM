@@ -13,12 +13,8 @@ AR = ar
 OBJCOPY = objcopy
 AS_FLAGS =
 CC_FLAGS = -Og -g -fno-stack-protector\
-<<<<<<< HEAD
  	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib -Wno-unused-parameter
 KERNEL_CC_FLAGS = -mgeneral-regs-only -nostdinc $(CC_FLAGS) $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
-=======
- 	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib  $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
->>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 LD_FLAGS = -nostdlib -static 
 BOOT_PORTS_PATH = arch/$(ARCH)/boot
 BOOT_PORTS += boot multiboot print kernel_init
@@ -34,12 +30,7 @@ LLD_AS_SOURCES += $(shell find $(LLD_PORTS_PATH) -name *.S)
 LLD_C_SOURCES = $(shell find $(LLD_PORTS_PATH) -name *.c)
 KERNEL_C_SOURCES = $(shell find kernel/ -name *.c)
 LIBC_C_SOURCES = $(shell find libc/ -name *.c)
-<<<<<<< HEAD
 CDROMIMAGE = os.iso
-=======
-CDROMIMAGE = cdromimage/os.iso
->>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
-
 DIRECTORIES:=src arch bin boot kernel libc \
 	$(KERNEL_BUILD_PATH)\
 	$(LIBC_BUILD_PATH)
@@ -49,11 +40,7 @@ kernel: initialize ports libc
 	@for cfile in $(KERNEL_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-<<<<<<< HEAD
 		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS) \
-=======
-		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \
->>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 	; done
 	$(LD) --nmagic -o $(KERNEL) -T ldscripts/kernel_x86_64.ld $(KERNEL_BUILD_PATH)/* $(LD_FLAGS) $(THLIBC)
 
@@ -74,11 +61,7 @@ ports: initialize
 	@for cfile in $(LLD_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-<<<<<<< HEAD
 		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS) \
-=======
-		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS) \
->>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 	; done
 
 # compile libraries:
@@ -87,11 +70,7 @@ libc: initialize
 	@for cfile in $(LIBC_C_SOURCES); do \
 		CFILE=$(LIBC_BUILD_PATH)/$$(basename $$cfile.o); \
 		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-<<<<<<< HEAD
 		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS); \
-=======
-		$(CC) -c $$cfile -o $$CFILE $(CC_FLAGS); \
->>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 	done; 
 	# LIBC COMPRESSING
 	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*

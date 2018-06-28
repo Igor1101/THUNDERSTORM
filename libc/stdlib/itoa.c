@@ -1,13 +1,7 @@
 #include <stdint.h>
-<<<<<<< HEAD
 #include <kstdlib.h>
 #include <kstring.h>
 #include <stddef.h>
-=======
-#include <stddef.h>
-#include <kstdlib.h>
-#include <string.h>
->>>>>>> fbc8d093eb777ef79fbe6b6d86d5d2412ae235f2
 #include <gcc_opt.h>
 
 static const char *s_itoa_chars = "0123456789abcdef";

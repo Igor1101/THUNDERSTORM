@@ -44,7 +44,7 @@ section .text
     cli
     call init_paging
     lgdt [GDT64.Pointer]
-    ; already x86_64 hear
+    ; already x86_64 here
     jmp  GDT64.Code:.init64; update CS
 .init64:
 bits 64

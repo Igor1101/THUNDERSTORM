@@ -77,14 +77,10 @@ LIKELY void make_newline(void)
 
 LIKELY void update_cursor(int row, int col)
 {
-  //static int lastrow;
-  //static int lastcol;
   if(cursor_enabled == true)
   {
     kputchar_to('_', row, col, Cyan, Black, TRANSPARENT);
   }
-  //lastrow = row;
-  //lastcol = col;
 }
 
 #endif

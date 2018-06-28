@@ -17,6 +17,7 @@ __________________________________________________________________________/_____
 #include <stdbool.h>
 #include <verify_kopt.h>
 #include <asm/int_handler.h>
+#include <asm/cpu_management.h>
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
@@ -70,8 +71,8 @@ int main(void* pcinfo)
  COPYRIGHT Igor Muravyov (c) %s \n", RELEASE, YEARS);
   print_RAM_info();
   /* initializing interrupts */
-  set_exceptions();
   init_interrupts();
+  set_exceptions();
   asm volatile (" int $0x0");
   cpu_halt();
   while(1);

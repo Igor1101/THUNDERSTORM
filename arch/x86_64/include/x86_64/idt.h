@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <kstring.h>
-#include <asm/segment.h>/* linux header */
 #define NUM_OF_EXCEPTIONS 32
 #define NUM_OF_DESC 256
 #define SIZE_OF_DESC  sizeof ( struct IDTdesc )
@@ -13,6 +12,8 @@
 #define TSS_AVAILABLE (0b1001)
 #define TSS_BUSY  (0b1011)
 #define LDT       (0b0010)
+#define __KERNEL_CS 0x8 /* KERNEL segment 
+                         * gdt code descriptor*/
 
 struct IDTdesc 
 {
@@ -37,5 +38,5 @@ FORCE_INLINE void idt_clear_vectors(void)
 
 FORCE_INLINE void idt_set_trap(uint8_t num, uint64_t addr, uint8_t ist)
 {
-  idt_set_vector( num, addr, 8, TRAP|PRESENT, ist );
+  idt_set_vector( num, addr, __KERNEL_CS, TRAP|PRESENT, ist );
 }

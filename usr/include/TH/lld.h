@@ -121,7 +121,6 @@ void bootinfo(volatile void * ebx);
 /* miscelaneous */
 /* cpu management */
 void kpause(void);/* for debug */
-void cpu_halt(void);
 
 
 #ifdef __cplusplus

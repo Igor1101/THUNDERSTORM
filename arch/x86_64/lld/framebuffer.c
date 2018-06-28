@@ -63,7 +63,7 @@ UNLIKELY uint32_t determine_columns(void)
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
   volatile uint8_t s=cursor_start; s=cursor_end;s--;
-  cursor_enabled = true;
+  //cursor_enabled = true; //still doesn`t work
 }
 LIKELY void make_newline(void)
 {

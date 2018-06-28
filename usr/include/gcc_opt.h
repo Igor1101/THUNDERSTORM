@@ -7,6 +7,6 @@
 #define INTERRUPT __attribute__ ( ( interrupt ) ) 
 #define UNLIKELY __attribute__ ( ( cold ) )
 #define LIKELY __attribute__ ( ( hot ) )
-#define ALIGNED(X) __attribute__ ( ( aligned ( X ) ) )
+#define ALIGN(X) __attribute__ ( ( aligned ( X ) ) )
 
 #endif

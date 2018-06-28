@@ -6,6 +6,14 @@
 #define SIZE_OF_DESC  sizeof ( struct IDTdesc )
 #define SIZE_OF_IDT NUM_OF_DESC * SIZE_OF_DESC
 #define EARLY_SIZE_OF_IDT NUM_OF_EXCEPTIONS * SIZE_OF_DESC
+#define PRESENT    (1<<7)
+#define TRAP      (0b1111)
+#define INTERR (0b1110)
+#define CALL_GATE (0b1100)
+#define TSS_AVAILABLE (0b1001)
+#define TSS_BUSY  (0b1011)
+#define LDT       (0b0010)
+
 struct IDTdesc 
 {
    uint16_t offset_0_15; // offset bits 0..15
@@ -29,5 +37,5 @@ FORCE_INLINE void idt_clear_vectors(void)
 
 FORCE_INLINE void idt_set_trap(uint8_t num, uint64_t addr, uint8_t ist)
 {
-  idt_set_vector( num, addr, __KERNEL_CS, 0b1111/*means trap */, ist );
+  idt_set_vector( num, addr, 8, TRAP|PRESENT, ist );
 }

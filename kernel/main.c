@@ -70,6 +70,8 @@ int main(void* pcinfo)
   print_RAM_info();
   /* initializing interrupts */
   set_exceptions();
+  init_interrupts();
+  asm volatile (" int $0x0");
   cpu_halt();
   while(1);
 }

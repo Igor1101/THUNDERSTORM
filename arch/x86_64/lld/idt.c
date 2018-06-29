@@ -22,18 +22,20 @@ idt_set_vector(uint8_t num, uint64_t addr,
     .zero         = 0
   };
 }
-#ifdef __x86_64__
-typedef unsigned long long int uword_t;
-#else
-typedef unsigned int uword_t;
-#endif
 
-struct interrupt_frame;
 
 INTERRUPT void divide_byzero(struct interrupt_frame *frame, uword_t error_code)
 {
+  kprintf("rsp: %d, \nss: %d, \nrflags: %d, \ncs: %d, \nrip %d", 
+      frame -> rsp,
+      frame -> ss,
+      frame -> rflags,
+      frame -> cs,
+      frame -> rip
+      );
   cpu_halt();
 }
+
 UNLIKELY void set_exceptions(void)
 {
   idt_clear_vectors();

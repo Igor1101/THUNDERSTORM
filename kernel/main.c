@@ -71,9 +71,11 @@ int main(void* pcinfo)
  COPYRIGHT Igor Muravyov (c) %s \n", RELEASE, YEARS);
   print_RAM_info();
   /* initializing interrupts */
-  init_interrupts();
   set_exceptions();
-  asm volatile (" int $0x0");
+  init_interrupts();
+  asm volatile (
+      " int $0x0\n"
+                );
   cpu_halt();
   while(1);
 }

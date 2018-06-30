@@ -7,6 +7,7 @@
 #define x64_MIDDLE(X) ( (uint64_t) (X) >> 16 & 0xFFFF )
 #define x64_HIGH(X) ( (uint64_t) (X) >> 32 )
 ALIGN (8) struct IDTdesc idt_table[NUM_OF_DESC];
+
 UNLIKELY void 
 idt_set_vector(uint8_t num, uint64_t addr, 
     uint16_t sel, uint8_t type_attr, uint8_t ist)
@@ -23,25 +24,16 @@ idt_set_vector(uint8_t num, uint64_t addr,
   };
 }
 
-
-INTERRUPT void divide_byzero(struct interrupt_frame *frame, uword_t error_code)
+INTERRUPT void divide_byzero( struct interrupt_frame *frame )
 {
-  kprintf("rsp: %d, \nss: %d, \nrflags: %d, \ncs: %d, \nrip %d", 
-      frame -> rsp,
-      frame -> ss,
-      frame -> rflags,
+  kprintf("rip: %x, \ncs: %x, \nrflags: %x, \nrsp:%x, \nss: %x\n", 
+      frame -> rip,
       frame -> cs,
-      frame -> rip
+      frame -> rflags,
+      frame -> rsp,
+      frame -> ss
       );
   cpu_halt();
 }
 
-UNLIKELY void set_exceptions(void)
-{
-  idt_clear_vectors();
-  for(uint32_t num = 0; num < 32; num++)
-  {
-    idt_set_trap(num, (uint64_t)&divide_byzero, 0);
-  }
-}
 

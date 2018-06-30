@@ -1,3 +1,7 @@
+
+#ifndef x86_64_IDT_H
+#define x86_64_IDT_H
+
 #include <stdint.h>
 #include <kstring.h>
 #define NUM_OF_EXCEPTIONS 32
@@ -15,18 +19,17 @@
 #define __KERNEL_CS 0x8 /* KERNEL segment 
                          * gdt code descriptor*/
 
-
 typedef unsigned long long int uword_t;
-
 
 struct interrupt_frame
 {
-  uword_t ss;
-  uword_t rsp;
-  uword_t rflags;
-  uword_t cs;
   uword_t rip;
-};
+  uword_t cs;
+  uword_t rflags;
+  uword_t rsp;
+  uword_t ss;
+} PACKED;
+
 struct IDTdesc 
 {
    uint16_t offset_0_15; // offset bits 0..15
@@ -52,3 +55,5 @@ FORCE_INLINE void idt_set_trap(uint8_t num, uint64_t addr, uint8_t ist)
 {
   idt_set_vector( num, addr, __KERNEL_CS, TRAP|PRESENT, ist );
 }
+
+#endif /* x86_64_IDT_H */

@@ -11,57 +11,57 @@
 #define CONFIG_X86_64
 #define dotraplinkage //looks like do_* functions are useless here
 /* exceptions */
-INTERRUPT void divide_error(struct interrupt_frame *frame);
-INTERRUPT void debug(struct interrupt_frame *frame);
-INTERRUPT void nmi(struct interrupt_frame *frame);
+INTERRUPT void divide_error(int_frame *frame);
+INTERRUPT void debug(int_frame *frame);
+INTERRUPT void nmi(int_frame *frame);
 /* breakpoint handling */
-INTERRUPT void int3(struct interrupt_frame *frame);
-INTERRUPT void overflow(struct interrupt_frame *frame);
-INTERRUPT void bounds(struct interrupt_frame *frame);
-INTERRUPT void invalid_op(struct interrupt_frame *frame);
-INTERRUPT void device_not_available(struct interrupt_frame *frame);
+INTERRUPT void int3(int_frame *frame);
+INTERRUPT void overflow(int_frame *frame);
+INTERRUPT void bounds(int_frame *frame);
+INTERRUPT void invalid_op(int_frame *frame);
+INTERRUPT void device_not_available(int_frame *frame);
 #ifdef CONFIG_X86_64
-INTERRUPT void double_fault(struct interrupt_frame *frame, uword_t err);
+INTERRUPT void double_fault(int_frame *frame, uword_t err);
 #endif
-INTERRUPT void coprocessor_segment_overrun(struct interrupt_frame *frame);
-INTERRUPT void invalid_TSS(struct interrupt_frame *frame, uword_t err);
-INTERRUPT void segment_not_present(struct interrupt_frame *frame, uword_t err);
-INTERRUPT void stack_segment(struct interrupt_frame *frame, uword_t err);
-INTERRUPT void general_protection(struct interrupt_frame *frame, uword_t err);
-INTERRUPT void page_fault(struct interrupt_frame *frame, uword_t err);
-INTERRUPT void async_page_fault(struct interrupt_frame *frame);
-INTERRUPT void spurious_interrupt_bug(struct interrupt_frame *frame);
-INTERRUPT void coprocessor_error(struct interrupt_frame *frame);
-INTERRUPT void alignment_check(struct interrupt_frame *frame, uword_t err);
+INTERRUPT void coprocessor_segment_overrun(int_frame *frame);
+INTERRUPT void invalid_TSS(int_frame *frame, uword_t err);
+INTERRUPT void segment_not_present(int_frame *frame, uword_t err);
+INTERRUPT void stack_segment(int_frame *frame, uword_t err);
+INTERRUPT void general_protection(int_frame *frame, uword_t err);
+INTERRUPT void page_fault(int_frame *frame, uword_t err);
+INTERRUPT void async_page_fault(int_frame *frame);
+INTERRUPT void spurious_interrupt_bug(int_frame *frame);
+INTERRUPT void coprocessor_error(int_frame *frame);
+INTERRUPT void alignment_check(int_frame *frame, uword_t err);
 
-INTERRUPT void undefined(struct interrupt_frame *frame);
+INTERRUPT void undefined(int_frame *frame);
 
-INTERRUPT void machine_check(struct interrupt_frame *frame);
-INTERRUPT void simd_coprocessor_error(struct interrupt_frame *frame);
+INTERRUPT void machine_check(int_frame *frame);
+INTERRUPT void simd_coprocessor_error(int_frame *frame);
 
 #if defined(CONFIG_X86_64) && defined(CONFIG_XEN_PV)
-INTERRUPT void xen_divide_error(struct interrupt_frame *frame);
-INTERRUPT void xen_xennmi(struct interrupt_frame *frame);
-INTERRUPT void xen_xendebug(struct interrupt_frame *frame);
-INTERRUPT void xen_xenint3(struct interrupt_frame *frame);
-INTERRUPT void xen_overflow(struct interrupt_frame *frame);
-INTERRUPT void xen_bounds(struct interrupt_frame *frame);
-INTERRUPT void xen_invalid_op(struct interrupt_frame *frame);
-INTERRUPT void xen_device_not_available(struct interrupt_frame *frame);
-INTERRUPT void xen_double_fault(struct interrupt_frame *frame);
-INTERRUPT void xen_coprocessor_segment_overrun(struct interrupt_frame *frame);
-INTERRUPT void xen_invalid_TSS(struct interrupt_frame *frame);
-INTERRUPT void xen_segment_not_present(struct interrupt_frame *frame);
-INTERRUPT void xen_stack_segment(struct interrupt_frame *frame);
-INTERRUPT void xen_general_protection(struct interrupt_frame *frame);
-INTERRUPT void xen_page_fault(struct interrupt_frame *frame);
-INTERRUPT void xen_spurious_interrupt_bug(struct interrupt_frame *frame);
-INTERRUPT void xen_coprocessor_error(struct interrupt_frame *frame);
-INTERRUPT void xen_alignment_check(struct interrupt_frame *frame);
+INTERRUPT void xen_divide_error(int_frame *frame);
+INTERRUPT void xen_xennmi(int_frame *frame);
+INTERRUPT void xen_xendebug(int_frame *frame);
+INTERRUPT void xen_xenint3(int_frame *frame);
+INTERRUPT void xen_overflow(int_frame *frame);
+INTERRUPT void xen_bounds(int_frame *frame);
+INTERRUPT void xen_invalid_op(int_frame *frame);
+INTERRUPT void xen_device_not_available(int_frame *frame);
+INTERRUPT void xen_double_fault(int_frame *frame);
+INTERRUPT void xen_coprocessor_segment_overrun(int_frame *frame);
+INTERRUPT void xen_invalid_TSS(int_frame *frame);
+INTERRUPT void xen_segment_not_present(int_frame *frame);
+INTERRUPT void xen_stack_segment(int_frame *frame);
+INTERRUPT void xen_general_protection(int_frame *frame);
+INTERRUPT void xen_page_fault(int_frame *frame);
+INTERRUPT void xen_spurious_interrupt_bug(int_frame *frame);
+INTERRUPT void xen_coprocessor_error(int_frame *frame);
+INTERRUPT void xen_alignment_check(int_frame *frame);
 #ifdef CONFIG_X86_MCE
-INTERRUPT void xen_machine_check(struct interrupt_frame *frame);
+INTERRUPT void xen_machine_check(int_frame *frame);
 #endif /* CONFIG_X86_MCE */
-INTERRUPT void xen_simd_coprocessor_error(struct interrupt_frame *frame);
+INTERRUPT void xen_simd_coprocessor_error(int_frame *frame);
 #endif
 /*
 dotraplinkage void do_divide_error(struct pt_regs *, long);
@@ -121,9 +121,9 @@ extern int panic_on_unrecovered_nmi;
 
 void math_emulate(struct math_emu_info *);
 #ifndef CONFIG_X86_32
-INTERRUPT void smp_thermal_interrupt(struct interrupt_frame *frame);
-INTERRUPT void smp_threshold_interrupt(struct interrupt_frame *frame);
-INTERRUPT void smp_deferred_error_interrupt(struct interrupt_frame *frame);
+INTERRUPT void smp_thermal_interrupt(int_frame *frame);
+INTERRUPT void smp_threshold_interrupt(int_frame *frame);
+INTERRUPT void smp_deferred_error_interrupt(int_frame *frame);
 #endif
 
 extern void ist_enter(void);

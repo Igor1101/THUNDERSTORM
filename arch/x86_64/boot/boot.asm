@@ -139,7 +139,7 @@ check_multiboot:
 
 .no_multiboot:
     mov eax, .nomultiboot_err
-    call warning
+    call error
 section .rodata
 .nomultiboot_err: 
     db "OOPs: Invalid multiboot2 magic data", 0
@@ -212,6 +212,7 @@ error:
 warning:
     mov cl, RED
     call kputstr_to
+    mov cl, GREEN
     ret
 
 ;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;

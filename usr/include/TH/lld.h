@@ -60,7 +60,8 @@ enum Color
   Pink       = 0xFFC0CB,
   Yellow     = 0xFFFF00,
   White      = 0xFFFFFF,
-  Default    = 0x2A7225
+  Default    = 0x2A7225,
+  DefaultBG  = Black
 };
 #endif /*USE_VESA */
 

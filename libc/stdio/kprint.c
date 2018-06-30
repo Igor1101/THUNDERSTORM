@@ -143,10 +143,3 @@ LIKELY void kvprintf(const char *fmt, va_list args) {
         ++fmt;
     }
 }
-
-NORET void kpanic(const char *msg) {
-    kprintf("!!! PANIC !!!\n%s\n", msg);
-    while (1) {
-        __asm__ __volatile__ ("cli; hlt");
-    }
-}

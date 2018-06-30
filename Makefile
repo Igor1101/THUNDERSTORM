@@ -80,7 +80,8 @@ iso: kernel
 	@if [ -e  /tmp/.THUNDERSTORM ]; then rm -r /tmp/.THUNDERSTORM ; fi
 	mkdir /tmp/.THUNDERSTORM
 	cp -r ./boot /tmp/.THUNDERSTORM
-	grub-mkrescue  -o $(CDROMIMAGE) /tmp/.THUNDERSTORM 2> /dev/null
+	grub-mkrescue  --product-name=THUNDERSTORM \
+		-o $(CDROMIMAGE) /tmp/.THUNDERSTORM 2> /dev/null
 	rm -r /tmp/.THUNDERSTORM
 run: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \

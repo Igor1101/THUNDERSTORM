@@ -1,3 +1,6 @@
+#ifndef LL_CPU_MANAGEMENT_H
+#define LL_CPU_MANAGEMENT_H
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <gcc_opt.h>
@@ -101,3 +104,19 @@ FORCE_INLINE void lidt(void* base, uint16_t size)
   asm ( "lidt %0" : : "m"(IDTR) );  /* let the compiler 
                                      * choose an addressing mode*/
 }
+
+FORCE_INLINE uint64_t get_RSP(void)
+{
+	uint64_t rsp;
+	asm("mov %%rsp, %0" : "=r" (rsp) );
+	return rsp;
+}
+
+FORCE_INLINE uint64_t get_CS(void)
+{
+	uint64_t cs;
+	asm("mov %%cs, %0" : "=r" (cs) );
+	return cs;
+}
+
+#endif /* LL_CPU_MANAGEMENT_H */

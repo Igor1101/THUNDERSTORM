@@ -74,8 +74,8 @@ int main(void* pcinfo)
   set_exceptions();
   init_interrupts();
   asm volatile (
-      " mov $0, %rdx\n"
-      " div %rdx\n"
+      " exc: \n"
+      " .word 0xFFFF"
                 );
   cpu_halt();
   while(1);

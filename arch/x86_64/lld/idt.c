@@ -24,16 +24,3 @@ idt_set_vector(uint8_t num, uint64_t addr,
   };
 }
 
-INTERRUPT void divide_byzero( struct interrupt_frame *frame )
-{
-  kprintf("rip: %x, \ncs: %x, \nrflags: %x, \nrsp:%x, \nss: %x\n", 
-      frame -> rip,
-      frame -> cs,
-      frame -> rflags,
-      frame -> rsp,
-      frame -> ss
-      );
-  cpu_halt();
-}
-
-

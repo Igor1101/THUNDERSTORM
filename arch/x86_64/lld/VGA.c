@@ -47,7 +47,10 @@ void kputchar_to(
     /* cursor position on screen in characters  */
     uint32_t cx, uint32_t cy,
     /* foreground and background colors */
-    uint32_t fg, uint32_t bg)
+    uint32_t fg, uint32_t bg,
+    /* useless here */
+    uint32_t attr
+    )
 {/*bgcolor - useless var */
   bg++;
   register volatile int16_t *vga_addr \

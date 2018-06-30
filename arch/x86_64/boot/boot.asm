@@ -139,9 +139,10 @@ check_multiboot:
 
 .no_multiboot:
     mov eax, .nomultiboot_err
-    jmp error
+    call warning
 section .rodata
-.nomultiboot_err: db "OOPs: not loaded as multiboot!!!" 
+.nomultiboot_err: 
+    db "OOPs: Invalid multiboot2 magic data", 0
 section .text
 
 check_cpuid:
@@ -208,6 +209,10 @@ error:
     mov cl, RED
     call kputstr_to
     hlt
+warning:
+    mov cl, RED
+    call kputstr_to
+    ret
 
 ;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;
 ;pgs info:

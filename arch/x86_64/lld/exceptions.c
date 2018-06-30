@@ -23,10 +23,12 @@ INTERRUPT void invalid_op(struct interrupt_frame *frame)
   kputs("invalid opcode");
 }
 
-INTERRUPT void device_not_available(struct interrupt_frame *frame){};
-#ifdef CONFIG_X86_64
+INTERRUPT void device_not_available(struct interrupt_frame *frame)
+{
+  EXC_START;
+  kputs("device not available");
+};
 INTERRUPT void double_fault(struct interrupt_frame *frame, uword_t err){};
-#endif
 INTERRUPT void coprocessor_segment_overrun(struct interrupt_frame *frame){};
 INTERRUPT void invalid_TSS(struct interrupt_frame *frame, uword_t err){};
 INTERRUPT void segment_not_present(struct interrupt_frame *frame, uword_t err){};

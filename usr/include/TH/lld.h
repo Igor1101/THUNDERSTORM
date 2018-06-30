@@ -31,7 +31,6 @@ enum Color
 };
 #endif /*USE_VGA */
 
-#ifdef USE_VESA
 
 enum char_attributes
 {
@@ -42,6 +41,7 @@ enum char_attributes
   NOTRANSPARENT
 };
 
+#ifdef USE_VESA
 enum Color
 {
   Black      = 0,

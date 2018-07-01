@@ -73,7 +73,16 @@ int main(void* pcinfo)
   /* initializing interrupts */
   set_exceptions();
   init_interrupts();
+  set_interrupts();
   asm volatile (
+      " mov $1, %rax\n"
+      " mov $2, %rdx\n"
+      " mov $3, %rcx\n"
+      " mov $8, %r8\n"
+      " mov $9, %r9\n"
+      " mov $10, %r10\n"
+      " mov $11, %r11\n"
+      " mov $-1, %rsi\n"
       " exc: \n"
       " .word 0xFFFF"
                 );

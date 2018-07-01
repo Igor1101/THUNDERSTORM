@@ -8,7 +8,8 @@ INTERRUPT void divide_error(int_frame *frame)
 {
   EXC_START;
   kputs("divide by zero");
-  kpanic("Exception \"divide by zero\"", frame);
+  catch_regs(frame, (void*)get_SP());
+  kpanic("Exception \"divide by zero\"");
 }
 INTERRUPT void debug(int_frame *frame){};
 INTERRUPT void nmi(int_frame *frame){};
@@ -24,7 +25,8 @@ INTERRUPT void invalid_op(int_frame *frame)
 {
   EXC_START;
   kputs("invalid opcode");
-  kpanic("Exception \"invalid opcode\"", frame);
+  catch_regs(frame, (void*)get_SP());
+  kpanic("Exception \"invalid opcode\"");
 }
 
 INTERRUPT void device_not_available(int_frame *frame)

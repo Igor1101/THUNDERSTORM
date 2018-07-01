@@ -105,7 +105,7 @@ FORCE_INLINE void lidt(void* base, uint16_t size)
                                      * choose an addressing mode*/
 }
 
-FORCE_INLINE uint64_t get_RSP(void)
+FORCE_INLINE uint64_t get_SP(void)
 {
 	uint64_t rsp;
 	asm("mov %%rsp, %0" : "=r" (rsp) );

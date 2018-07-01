@@ -14,11 +14,8 @@ FORCE_INLINE void clear_interrupts(void)
 NORET FORCE_INLINE void cpu_halt(void)
 {
   kputs("HALTING");
-  asm volatile (
-                " halt: hlt\n"
-                " jmp   halt\n"
-      );
-  while(1);
+  while(1)
+    asm volatile ( "hlt");
 }
 
 #endif

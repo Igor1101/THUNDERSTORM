@@ -28,5 +28,5 @@ Running os with different BIOS(for example OVMF.fd, which is UEFI/BIOS):
 make run BIOS=$(find /usr/share -name OVMF_CODE.fd)
 ```
 Note, that THUNDERSTORM aims to be BIOS independent, 
-but it`s much better in qemu to run it with UEFI BIOS, since, 
-it`s better supported.
+but it is much better in qemu to run it with UEFI BIOS, since
+it is better supported.

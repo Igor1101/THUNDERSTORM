@@ -1,4 +1,4 @@
-; Multiboot header
+; MULTIBOOT2 HEADER
 MAGIC equ 0xe85250d6
 ARCH  equ 0 ;/* i386 */
 section .multiboot

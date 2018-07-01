@@ -2,15 +2,14 @@
  * Note, that VGA 0xb8000 text support is provided 
  * for debbuging only purposes
  * */
+
 #ifdef USE_VGA
 #include <stdint.h>
 #include <kstring.h>
 #include <TH/lld.h>
 #include <x86_64/cpu_management.h>
+#include <x86_64/VGA.h>
 
-#define VGAADDR (volatile void* volatile)0xb8000
-#define COLUMNS 80
-#define ROWS 23
 
 uint32_t determine_columns(void)
 {
@@ -24,9 +23,9 @@ uint32_t determine_rows(void)
     encapsulation */
   return ROWS;
 }
-void update_cursor(int x, int y)
+void update_cursor(int row, int col)
 {
-	uint16_t offset = (y * COLUMNS) + x + COLUMNS + 1;
+	uint16_t offset = (row * COLUMNS) + col + COLUMNS;
 	outb(0x3D4, 14);
   outb(0x3D5, offset >> 8);
   outb(0x3D4, 15);

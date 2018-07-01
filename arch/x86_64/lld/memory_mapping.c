@@ -3,6 +3,9 @@
 #include <memory_mapping.h>
 #include <TH/lld.h>
 #include <TH/sysvars.h>
+#include <TH/die.h>
+#include <x86_64/VGA.h>
+
 void init_paging(void);
 uintptr_t* map_video(volatile void* addr)
 {/*
@@ -11,6 +14,9 @@ uintptr_t* map_video(volatile void* addr)
     to kernel memory
     virtual addr = 2MB * (PG_SIZE - 8)/4 = 0x3fe00000;
   */
+  if(addr == VGAADDR)
+    die("Bootloader could not initialize proper video mode");
+
   uint64_t volatile videoaddr = (uint64_t)addr | 0b10000011;
   volatile uint64_t* volatile map_addr = (void*)&p2_table + PG_SIZE - 8 * sizeof(uint64_t);
   (*map_addr) = videoaddr; // 1st 2 MB`s : 1

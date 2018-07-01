@@ -75,6 +75,7 @@ int main(void* pcinfo)
   init_interrupts();
   set_interrupts();
   asm volatile (
+      " exc: \n"
       " mov $1, %rax\n"
       " mov $2, %rdx\n"
       " mov $3, %rcx\n"
@@ -83,8 +84,7 @@ int main(void* pcinfo)
       " mov $10, %r10\n"
       " mov $11, %r11\n"
       " mov $-1, %rsi\n"
-      " exc: \n"
-      " .word 0xFFFF"
+      " .quad 0xFFFFFFFFFFFFFFFF"
                 );
   cpu_halt();
   while(1);

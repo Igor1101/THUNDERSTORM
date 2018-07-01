@@ -34,7 +34,13 @@ INTERRUPT void device_not_available(int_frame *frame)
   EXC_START;
   kputs("device not available");
 };
-INTERRUPT void double_fault(int_frame *frame, uword_t err){};
+INTERRUPT void double_fault(int_frame *frame, uword_t err)
+{
+  EXC_START;
+  kprintf("SYSTEM CRASH, ERR CODE %d\n", err);
+  catch_regs(frame, (void*)get_SP());
+  kpanic("Exception \"double fault\"");
+};
 INTERRUPT void coprocessor_segment_overrun(int_frame *frame){};
 INTERRUPT void invalid_TSS(int_frame *frame, uword_t err){};
 INTERRUPT void segment_not_present(int_frame *frame, uword_t err){};

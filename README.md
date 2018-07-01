@@ -20,10 +20,13 @@ arch/$(ARCH)/include/$(ARCH) # specific to machine symbols/namespaces
 nasm gcc binutils qemu-system-x86_64 OVMF(optional) grub-mkrescue
 #### Running it on qemu!
 ```
-make
-make run 
+make # elf image of kernel is placed to "boot/THkernel", "boot/" is placed to cd image "os.iso" with grub bootloader installed
+make run
 ```
 Running os with different BIOS(for example OVMF.fd, which is UEFI/BIOS):
 ```
-make run BIOS=$(find / -name OVMF_CODE.fd)
+make run BIOS=$(find /usr/share -name OVMF_CODE.fd)
 ```
+Note, that THUNDERSTORM aims to be BIOS independent, 
+but it`s much better in qemu to run it with UEFI BIOS, since, 
+it`s better supported.

@@ -8,9 +8,9 @@ global kputstr_to
 kputstr_to:
 ; eax <- pointer to str;
 ; cl <- colormode;
-section .rodata
+section .data
 .row:   dq 0;for row info
-.cons1:   dq 1;for cmov instruction
+.cons0: dq 0;
 section .text
    push eax
    push ecx
@@ -19,8 +19,7 @@ section .text
 ; string row manipulation
     mov edx, [.row] ; row
     cmp edx, VGAROWS
-    cmovnle edx,  [.cons1]; real crutch!!! start put 
-               ; into beginning of console( just after COPYRIGHT)
+    cmovnle edx,  [.cons0]; real crutch!!! start put 
     add edx, 1
     mov ebx, edx
     mov [.row], edx

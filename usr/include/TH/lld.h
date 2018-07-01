@@ -27,7 +27,8 @@ enum Color
   Pink       = 13,
   Yellow     = 14,
   White      = 15,
-  Default    = 2
+  Default    = 2,
+  DefaultBG    = Black
 };
 #endif /*USE_VGA */
 

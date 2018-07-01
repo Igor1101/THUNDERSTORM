@@ -1,8 +1,9 @@
+#ifndef LLD_TH
+#define LLD_TH
+
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifndef LLD_TH
-#define LLD_TH
 
 #ifdef __cplusplus
 extern "C" {

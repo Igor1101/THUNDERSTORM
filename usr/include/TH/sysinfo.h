@@ -1,5 +1,5 @@
-#ifndef TH_EMBL
-#define TH_EMBL
+#ifndef TH_INFO
+#define TH_INFO
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,4 +38,4 @@ __________________________________________________________________________/_____
 #endif
 
 
-#endif /* TH_EMBL */
+#endif /* TH_INFO */

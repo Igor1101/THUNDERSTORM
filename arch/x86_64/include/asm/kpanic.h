@@ -1,3 +1,6 @@
+#ifndef KPANIC_H
+#define KPANIC_H
+
 #include <gcc_opt.h>
 #include <kstdio.h>
 #include <x86_64/idt.h>
@@ -22,3 +25,5 @@ typedef struct __regs_int_gcc __int_regs;
 void kpanic(char*reason);
 
 void catch_regs(int_frame* regs, void* current_SP);
+
+#endif /* KPANIC_H */

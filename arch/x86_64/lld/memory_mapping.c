@@ -1,10 +1,10 @@
 #include <stdint.h>
 #include <kstdio.h>
-#include <memory_mapping.h>
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 #include <TH/die.h>
 #include <x86_64/VGA.h>
+#include <x86_64/memory_mapping.h>
 
 void init_paging(void);
 uintptr_t* map_video(volatile void* addr)

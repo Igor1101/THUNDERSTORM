@@ -1,5 +1,5 @@
-#ifndef GCC_OPT
-#define GCC_OPT
+#ifndef GCC_OPT_H
+#define GCC_OPT_H
 
 #define FORCE_INLINE __attribute__ ( ( always_inline ) ) inline
 #define NORET __attribute__ ( ( noreturn ) ) 
@@ -9,4 +9,4 @@
 #define LIKELY __attribute__ ( ( hot ) )
 #define ALIGN(X) __attribute__ ( ( aligned ( X ) ) )
 
-#endif
+#endif /* GCC_OPT_H */

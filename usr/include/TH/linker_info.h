@@ -1,5 +1,5 @@
-#ifndef LINKI
-#define LINKI
+#ifndef LINKER_INFO_H
+#define LINKER_INFO_H
 
 extern char kernel_phys_base;
 extern char kernel_virt_base;
@@ -10,4 +10,4 @@ extern char init_kernel_bss_end;
 extern char kernel_bss;
 extern char kernel_bss_end;
 
-#endif
+#endif /* LINKER_INFO_H */

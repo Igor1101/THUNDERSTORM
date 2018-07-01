@@ -1,5 +1,5 @@
-#ifndef KSTDLIB
-#define KSTDLIB
+#ifndef KSTDLIB_H
+#define KSTDLIB_H
 
 
 #ifdef __cplusplus
@@ -20,4 +20,4 @@ void utoa(char *buf, uintptr_t value);
 }
 #endif
 
-#endif /* KSTDLIB */
+#endif /* KSTDLIB_H */

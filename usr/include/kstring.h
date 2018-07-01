@@ -1,3 +1,7 @@
+#ifndef KSTRING_H
+#define KSTRING_H
+
+
 #include <stddef.h>
 #include <gcc_opt.h>
 /* copy (ptr * 16) -aligned data (faster than memcpy ) */
@@ -8,3 +12,5 @@ void *memset (void* dest, register int val, register size_t len);
 
 void * memcpy (void *dest, const void *src, size_t len);
 size_t strlen(const char *s);
+
+#endif /* KSTRING_H */ 

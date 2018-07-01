@@ -1,3 +1,5 @@
+#ifndef CONVERT_H
+#define CONVERT_H
 
 #include <stdint.h>
 
@@ -11,3 +13,5 @@ uint16_t swp_u16( uint16_t val );
 int16_t swp_i16( int16_t val );
 uint32_t swp_u32( uint32_t val );
 int32_t swp_i32( int32_t val );
+
+#endif /* CONVERT_H */

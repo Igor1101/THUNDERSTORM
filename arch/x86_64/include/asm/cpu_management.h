@@ -18,4 +18,4 @@ NORET FORCE_INLINE void cpu_halt(void)
     asm volatile ( "hlt");
 }
 
-#endif
+#endif /* CPU_HL_MANAGMENT */

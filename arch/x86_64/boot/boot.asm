@@ -132,7 +132,7 @@ set_paging:
     ret
 
 .no_multiboot:
-    mov eax, .nomultiboot_err
+    mov edi, .nomultiboot_err
     call error
 section .rodata
 .nomultiboot_err: 
@@ -177,7 +177,7 @@ check_cpuid:
 section .rodata
    chk_cpuid_failed: db "CPUID is not supported ",0
 section .text
-    mov eax, chk_cpuid_failed
+    mov edi, chk_cpuid_failed
     jmp error
 
 check_long_mode:
@@ -197,16 +197,16 @@ check_long_mode:
 section .rodata
    chk_long_failed: db "this CPU is not supported by this OS",0
 section .text
-    mov eax, chk_long_failed
+    mov edi, chk_long_failed
     jmp error
 error:
-    mov cl, RED
+    mov si, RED
     call kputstr_32
     hlt
 warning:
-    mov cl, RED
+    mov si, RED
     call kputstr_32
-    mov cl, GREEN
+    mov si, GREEN
     ret
 
 ;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;

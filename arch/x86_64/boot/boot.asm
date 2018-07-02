@@ -22,7 +22,7 @@ PG_SIZE equ 512*8; in bytes
 PG_SIZE_QW equ PG_SIZE/8
 global _start; EBX <-- pointer to boot information format
 bits 32
-section .text
+section .init_text
 _start:
     mov esp,  stk_top ; creating stack:
     mov cl,   GREEN ;<- <cl> color info;
@@ -31,7 +31,7 @@ section .rodata
 thinfo: db "THUNDERSTORM 0.0 Embedded system x86_64 port layer",0
 chk_multiboot: db "multiboot checked!", 0
 chk_cpuid: db "cpuid checked!",0
-section .text
+section .init_text
     call check_multiboot ; <- verify are we multibooted? (uses eax );
     mov eax,  chk_multiboot
     call kputstr_to
@@ -87,7 +87,7 @@ GDT64:                           ; Global Descriptor Table (64-bit).
     dw $ - GDT64 - 1             ; Limit.
     dq GDT64                     ; Base.
     dq 0
-section .text
+section .init_text
     hlt
 
 init_paging:
@@ -145,7 +145,7 @@ check_multiboot:
 section .rodata
 .nomultiboot_err: 
     db "OOPs: Invalid multiboot2 magic data", 0
-section .text
+section .init_text
 
 check_cpuid:
     push ecx
@@ -184,7 +184,7 @@ check_cpuid:
 .no_cpuid:
 section .rodata
    chk_cpuid_failed: db "CPUID is not supported ",0
-section .text
+section .init_text
     mov eax, chk_cpuid_failed
     jmp error
 
@@ -204,7 +204,7 @@ check_long_mode:
 .no_long_mode:
 section .rodata
    chk_long_failed: db "this CPU is not supported by this OS",0
-section .text
+section .init_text
     mov eax, chk_long_failed
     jmp error
 error:
@@ -235,4 +235,4 @@ stk_bottom: ;
   resb OS_STK_SIZE
 stk_top:
   resb PG_SIZE
-section .text
+section .init_text

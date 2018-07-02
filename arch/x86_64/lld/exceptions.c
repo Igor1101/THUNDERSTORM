@@ -27,6 +27,7 @@ INTERRUPT void invalid_op(int_frame *frame)
   kputs("invalid opcode");
   catch_regs(frame, (void*)get_SP());
   kpanic("Exception \"invalid opcode\"");
+  EXC_EXIT;
 }
 
 INTERRUPT void device_not_available(int_frame *frame)
@@ -34,10 +35,10 @@ INTERRUPT void device_not_available(int_frame *frame)
   EXC_START;
   kputs("device not available");
 };
-INTERRUPT void double_fault(int_frame *frame, uword_t err)
+INTERRUPT void double_fault(int_frame *frame)
 {
   EXC_START;
-  kprintf("SYSTEM CRASH, ERR CODE %d\n", err);
+  kprintf("SYSTEM CRASH");
   catch_regs(frame, (void*)get_SP());
   kpanic("Exception \"double fault\"");
 };

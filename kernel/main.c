@@ -73,7 +73,6 @@ int main(void* pcinfo)
   /* initializing interrupts */
   set_exceptions();
   init_interrupts();
-  set_interrupts();
   asm volatile (
       " exc: \n"
       " mov $1, %rax\n"

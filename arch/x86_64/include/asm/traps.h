@@ -21,7 +21,7 @@ INTERRUPT void bounds(int_frame *frame);
 INTERRUPT void invalid_op(int_frame *frame);
 INTERRUPT void device_not_available(int_frame *frame);
 #ifdef CONFIG_X86_64
-INTERRUPT void double_fault(int_frame *frame, uword_t err);
+INTERRUPT void double_fault(int_frame *frame);
 #endif
 INTERRUPT void coprocessor_segment_overrun(int_frame *frame);
 INTERRUPT void invalid_TSS(int_frame *frame, uword_t err);

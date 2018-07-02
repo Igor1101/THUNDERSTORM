@@ -4,6 +4,7 @@
  * */
 
 #ifdef USE_VGA
+#include <gcc_opt.h>
 #include <stdint.h>
 #include <kstring.h>
 #include <TH/lld.h>

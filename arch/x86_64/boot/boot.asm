@@ -1,7 +1,7 @@
 ; CPU initialization for THUNDERSTORM kernel 
 ; USES MULTIBOOT 2 SPEC AND VGA OUTPUT
 ; constants:
-extern kputstr_to
+extern kputstr_32
 extern kputchar_to
 extern kernel_phys_base
 extern kernel_init
@@ -10,43 +10,37 @@ global p4_table
 global p3_table
 global p2_table
 global p1_table
-global init_paging; used in "memory_mapping.c"
-global warning
-global error
+global init_paging; 
 global boot_magic
 global boot_info
 
-OS_STK_SIZE equ 1024 * 1024; 1MB for os stack
-;!!!!!!!!!!!! STACK MUST BE ON THE THIRD 1MB TABLE !!!!!!!!!!!!
 GREEN equ 0x2
 RED equ 0x4f
+
+STK_SIZE equ 1024 * 1024; 1MB for kernel stack
 PG_SIZE equ 512*8; in bytes
 PG_SIZE_QW equ PG_SIZE/8
 global _start; EBX <-- pointer to boot information format
 bits 32
 section .text
 _start:
-section .data
-boot_magic: dq  0
-boot_info:  dq  0
-section .text
-    mov esp,  stk_top ; creating stack:
-    mov cl,   GREEN ;<- <cl> color info;
-    mov [boot_magic], eax ; Store BOOT MAGIC and put as 1st argument to main()
-    mov [boot_info], ebx ; Store BOOT info and put as 2st argument to main()
+    cli
+    mov esp,  stack_top ; creating stack:
+    mov si,   GREEN ;<- <cl> color info;
+    mov [boot_magic], eax ; Store BOOT MAGIC and put as 1st arg
+    mov [boot_info], ebx ; Store BOOT info and put as 2nd arg
 section .rodata
 thinfo: db "THUNDERSTORM 0.0 Embedded system x86_64 port layer",0
 chk_cpuid: db "cpuid checked!",0
 section .text
-    mov eax,  thinfo
-    call kputstr_to
-    call check_cpuid
-    mov eax,  chk_cpuid
-    call kputstr_to
-    call check_long_mode
+    mov   edi,    thinfo
+    call  kputstr_32
+    call  check_cpuid
+    mov   edi,    chk_cpuid
+    call  kputstr_32
+    call  check_long_mode
     ;start cpu reinitialization
     call set_paging
-    cli
     call init_paging
     lgdt [GDT64.Pointer]
     ; already x86_64 here
@@ -207,17 +201,20 @@ section .text
     jmp error
 error:
     mov cl, RED
-    call kputstr_to
+    call kputstr_32
     hlt
 warning:
     mov cl, RED
-    call kputstr_to
+    call kputstr_32
     mov cl, GREEN
     ret
 
 ;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;
-;pgs info:
+section .data
+boot_magic: dq  0
+boot_info:  dq  0
 [section .init_bss nobits]
+;pgs info:
 align PG_SIZE
 p4_table:
   resb PG_SIZE
@@ -229,8 +226,8 @@ p1_table:
   resb PG_SIZE
  ; memory, reserved for STACK:
 align PG_SIZE
-stk_bottom: ; 
-  resb OS_STK_SIZE
-stk_top:
+stack_bottom: ; 
+  resb STK_SIZE
+stack_top:
   resb PG_SIZE
 section .text

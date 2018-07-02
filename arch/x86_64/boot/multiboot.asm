@@ -8,7 +8,7 @@ multiboot_start:
   dd multiboot_end - multiboot_start
   dd 0x100000000 - (MAGIC + ARCH + (multiboot_end - multiboot_start))
 address_tag_start:
-%ifdef USE_VESA
+%ifndef USE_VESA
 framebuffer_tag_start:
   dw 5 ; 
   dw 1 ; optional

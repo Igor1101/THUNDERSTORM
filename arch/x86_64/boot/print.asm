@@ -3,45 +3,42 @@ VGAROWS equ 25
 VGA equ 0xb8000
 bits 32
 ;
-global kputstr_to
+global kputstr_32
 ;print str to row
-kputstr_to:
-; eax <- pointer to str;
-; cl <- colormode;
+kputstr_32:
+; edi <- pointer to str;
+; esi <- colormode;
 section .data
 .row:   dq 0;for row info
 .cons0: dq 0;
 section .text
-   push eax
-   push ecx
-   push edx
-   push ebx
+   push   ecx
+   push   edx
 ; string row manipulation
-    mov edx, [.row] ; row
-    cmp edx, VGAROWS
+    mov   edx,    [.row] ; row
+    cmp   edx,    VGAROWS
     cmovnle edx,  [.cons0]; real crutch!!! start put 
-    add edx, 1
-    mov ebx, edx
+    mov   ebx,    edx    ; ebx <- row
+    add   edx,    1
     mov [.row], edx
 ; put str
-    mov edx, eax
-    mov ah, cl; color
-    mov ecx, 0   ; column
-.kputstr_to_jmp:
-    mov al, [edx]; char
-    call kputchar_to ;print al
-    add ecx, 1
+    mov edx, edi
+    mov ax,  si          ; color
+    mov ah,  al
+    mov ecx, 0           ; column init(always put to the beginning)
+.kputstr_32_jmp:
+    mov al, [edx]        ; ax <- char 
+    call kputchar_32     ;print al
+    add ecx, 1           ; ecx <- column
     add edx, 1
-    cmp al, 0 ; while str is not empty
-    jne .kputstr_to_jmp
-   pop ebx
+    cmp al,  0 ; while chr is not '\0'
+    jne .kputstr_32_jmp
    pop edx
    pop ecx
-   pop eax
    ret
 
 ; print char to VGA + 2*(row * 80 + col)
-kputchar_to:; print value; shouldn`t be  global
+kputchar_32:; print value; shouldn`t be  global
 ; ax <- char
 ; ebx <- row
 ; ecx <- col

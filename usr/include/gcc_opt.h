@@ -8,6 +8,7 @@
 #define UNLIKELY __attribute__ ( ( cold ) )
 #define LIKELY __attribute__ ( ( hot ) )
 #define ALIGN(X) __attribute__ ( ( aligned ( X ) ) )
-#define VISIBLE __attribute__ ( ( externally_visible) )
+#define VISIBLE __attribute__ ( ( externally_visible ) )
+#define NOOPTIMIZE __attribute__ ( ( optimize("O0") ) )
 
 #endif /* GCC_OPT_H */

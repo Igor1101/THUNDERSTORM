@@ -1,6 +1,6 @@
 bits 64
 global kernel_init
-extern kputstr_to
+extern kputstr_32
 extern start_kernel
 extern boot_magic
 extern boot_info
@@ -13,7 +13,7 @@ kernel_init:
   mov rax, 0x1122334455667788
   mov rax, verify_x64
   mov cl, GREEN
-  call kputstr_to
+  call kputstr_32
   mov rdi,  [boot_magic] ; EAX <-- boot magic (via multiboot spec)
   mov rsi,  [boot_info]  ; EBX <-- boot info
   call start_kernel

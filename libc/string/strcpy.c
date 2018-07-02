@@ -1,4 +1,4 @@
-#include <stddef.h> /* size_t */
+#include <stddef.h> 
 char *strncpy(char *dest, const char *src, size_t n)
 {
   char *ret = dest;

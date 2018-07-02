@@ -1,3 +1,6 @@
+/* 
+ * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ */
 #include <asm/traps.h>
 #include <x86_64/idt.h>
 #include <x86_64/cpu_management.h>

@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ */
 #ifndef KSTRING_H
 #define KSTRING_H
 

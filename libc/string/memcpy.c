@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ */
 #include <stddef.h>
 #include <stdint.h>
 #include <gcc_opt.h>

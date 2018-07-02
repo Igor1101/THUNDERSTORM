@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ */
 ENTRY(_start)
 
 	offset = 0x00000000;

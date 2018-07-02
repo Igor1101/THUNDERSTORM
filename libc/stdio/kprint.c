@@ -1,4 +1,9 @@
-/* copied from x86k system */
+/* *
+ * copied from x86k system <https://github.com/alnyan/x86k> 
+ * Authors: Alnyan <alnyan@protonmail.com>
+ * (PUBLIC DOMAIN)
+ * modified for THUNDERSTORM
+ * */
 #include <stdint.h>
 #include <kstring.h>
 #include <stdarg.h>

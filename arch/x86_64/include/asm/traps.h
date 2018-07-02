@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* copied from Linux kernel 4.18.0-rc1-ARCH+,
+/* SPDX-License-Identifier: GPL-2.0 
+ * copied from Linux kernel 4.18.0-rc1-ARCH+,
  * modified by Igor Muravyov <igor.muravyov.2015@gmail.com>
  * for THUNDERSTORM kernel
  * asmlikage useless here*/

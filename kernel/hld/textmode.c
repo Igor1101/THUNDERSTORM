@@ -1,4 +1,7 @@
-/* THUNDERSTORM VGA HL DRIVER */
+/* 
+ * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com> 
+ * THUNDERSTORM VGA HL DRIVER *
+ */
 #include <stdint.h>
 #include <TH/lld.h>
 #define BEGINNING 0

@@ -1,3 +1,5 @@
+#Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+
 include compile_opt_kernel.mk
 BIOS ?=biosfile
 QEMU_MEM ?= 100M

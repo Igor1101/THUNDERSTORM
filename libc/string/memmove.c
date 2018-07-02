@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <gcc_opt.h>
 /**
+ * Public domain
  * memmove - Copy one area of memory to another
  * @dest: Where to copy to
  * @src: Where to copy from

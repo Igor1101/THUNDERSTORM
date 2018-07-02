@@ -1,4 +1,5 @@
 /* 
+ * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
  * It`s hard to understand what`s written on this file,
  * but trust me it successfully 
  * fetches information from multiboot header

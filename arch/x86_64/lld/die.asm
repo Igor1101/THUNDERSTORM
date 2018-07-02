@@ -1,3 +1,4 @@
+; Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
 ; die before videomode initialized
 extern kputstr_32
 extern error

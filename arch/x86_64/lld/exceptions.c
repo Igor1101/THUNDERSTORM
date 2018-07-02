@@ -1,3 +1,4 @@
+/* Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com> */
 #include <gcc_opt.h>
 #include <asm/traps.h>
 #include <asm/int_handler.h>

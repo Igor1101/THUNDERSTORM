@@ -1,3 +1,4 @@
+;Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
 bits 64
 global kernel_init
 extern kputstr_32

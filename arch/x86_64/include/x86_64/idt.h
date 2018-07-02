@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ */
 
 #ifndef x86_64_IDT_H
 #define x86_64_IDT_H

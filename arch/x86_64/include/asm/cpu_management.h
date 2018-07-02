@@ -1,5 +1,8 @@
 #ifndef CPU_HL_MANAGMENT
 #define CPU_HL_MANAGMENT
+/*
+ * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ */
 #include <kstdio.h>
 FORCE_INLINE void set_interrupts(void)
 {/* set external interrupts */

@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 #include <gcc_opt.h>
+
+char *strncpy(char *dest, const char *src, size_t n);
 /* copy (ptr * 16) -aligned data (faster than memcpy ) */
 void* kmemcpy_ptr(void *dest, const void *src, size_t len);
 /* memset with progress */

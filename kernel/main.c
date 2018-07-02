@@ -27,7 +27,7 @@ struct RAM_INFO RAM;
 struct Framebuffer sysfb;
 struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
-int main(void* pcinfo)
+VISIBLE int start_kernel(uintptr_t boot_magic, void* pcinfo)
 {
 #ifdef USE_VGA
   tui_init();

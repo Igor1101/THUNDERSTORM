@@ -13,6 +13,8 @@ global p1_table
 global init_paging; used in "memory_mapping.c"
 global warning
 global error
+global boot_magic
+global boot_info
 
 OS_STK_SIZE equ 1024 * 1024; 1MB for os stack
 ;!!!!!!!!!!!! STACK MUST BE ON THE THIRD 1MB TABLE !!!!!!!!!!!!
@@ -22,19 +24,20 @@ PG_SIZE equ 512*8; in bytes
 PG_SIZE_QW equ PG_SIZE/8
 global _start; EBX <-- pointer to boot information format
 bits 32
-section .init_text
+section .text
 _start:
+section .data
+boot_magic: dq  0
+boot_info:  dq  0
+section .text
     mov esp,  stk_top ; creating stack:
     mov cl,   GREEN ;<- <cl> color info;
-    push ebx ; Store BOOT info and put as 1st argument to main()
+    mov [boot_magic], eax ; Store BOOT MAGIC and put as 1st argument to main()
+    mov [boot_info], ebx ; Store BOOT info and put as 2st argument to main()
 section .rodata
 thinfo: db "THUNDERSTORM 0.0 Embedded system x86_64 port layer",0
-chk_multiboot: db "multiboot checked!", 0
 chk_cpuid: db "cpuid checked!",0
-section .init_text
-    call check_multiboot ; <- verify are we multibooted? (uses eax );
-    mov eax,  chk_multiboot
-    call kputstr_to
+section .text
     mov eax,  thinfo
     call kputstr_to
     call check_cpuid
@@ -87,7 +90,7 @@ GDT64:                           ; Global Descriptor Table (64-bit).
     dw $ - GDT64 - 1             ; Limit.
     dq GDT64                     ; Base.
     dq 0
-section .init_text
+section .text
     hlt
 
 init_paging:
@@ -134,18 +137,13 @@ set_paging:
     jne .map
     ret
 
-check_multiboot:
-    cmp eax, 0x36d76289; magic bootloader value
-    jne .no_multiboot
-    ret
-
 .no_multiboot:
     mov eax, .nomultiboot_err
     call error
 section .rodata
 .nomultiboot_err: 
     db "OOPs: Invalid multiboot2 magic data", 0
-section .init_text
+section .text
 
 check_cpuid:
     push ecx
@@ -184,7 +182,7 @@ check_cpuid:
 .no_cpuid:
 section .rodata
    chk_cpuid_failed: db "CPUID is not supported ",0
-section .init_text
+section .text
     mov eax, chk_cpuid_failed
     jmp error
 
@@ -204,7 +202,7 @@ check_long_mode:
 .no_long_mode:
 section .rodata
    chk_long_failed: db "this CPU is not supported by this OS",0
-section .init_text
+section .text
     mov eax, chk_long_failed
     jmp error
 error:
@@ -235,4 +233,4 @@ stk_bottom: ;
   resb OS_STK_SIZE
 stk_top:
   resb PG_SIZE
-section .init_text
+section .text

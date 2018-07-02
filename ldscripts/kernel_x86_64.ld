@@ -9,7 +9,6 @@ SECTIONS {
 	.text BLOCK(4K) : AT(ADDR(.text) - offset) ALIGN(4K) {
     kernel_text = .;
 		*(.multiboot)
-    *(.init_text)
 		*(.text)
 		*(.rodata)
 	}

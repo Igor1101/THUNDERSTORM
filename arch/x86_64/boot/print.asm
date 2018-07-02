@@ -11,7 +11,7 @@ kputstr_to:
 section .data
 .row:   dq 0;for row info
 .cons0: dq 0;
-section .init_text
+section .text
    push eax
    push ecx
    push edx

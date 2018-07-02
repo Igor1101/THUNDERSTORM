@@ -35,4 +35,4 @@ it is better supported.
 - [ ] improve exceptions handling
 - [ ] TSS initialization
 - [ ] add multiboot 1.0 support to use more lightweight bootloader
-- [ ] port multitasking from @github.com/Igor1101/THUNDERSTORM-OLD
+- [ ] port multitasking from [THUNDERSTORM-OLD](http://github.com/Igor1101/THUNDERSTORM-OLD)

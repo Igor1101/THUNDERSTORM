@@ -8,6 +8,7 @@ global kputstr_32
 kputstr_32:
 ; edi <- pointer to str;
 ; esi <- colormode;
+%ifdef USE_EARLY_PRINT
 section .data
 .row:   dq 0;for row info
 .cons0: dq 0;
@@ -35,6 +36,7 @@ section .text
     jne .kputstr_32_jmp
    pop edx
    pop ecx
+%endif ; USE_EARLY_PRINT
    ret
 
 ; print char to VGA + 2*(row * 80 + col)

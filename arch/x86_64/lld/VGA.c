@@ -27,11 +27,12 @@ uint32_t determine_rows(void)
 void update_cursor(int row, int col)
 {
 	uint16_t offset = (row * COLUMNS) + col + COLUMNS;
-	outb(0x3D4, 14);
-  outb(0x3D5, offset >> 8);
-  outb(0x3D4, 15);
-  outb(0x3D5, offset);
+  outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
+  outb(FB_DATA_PORT,    ((offset >> 8) & 0x00FF));
+  outb(FB_COMMAND_PORT, FB_LOW_BYTE_COMMAND);
+  outb(FB_DATA_PORT,    offset & 0x00FF);
 }
+
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
 	outb(0x3D4, 0x0A);

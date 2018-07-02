@@ -14,16 +14,20 @@
 #define FRAMEBUFFER 8
 #define MEMMAP 6 /* memory map */
 
+#include <gcc_opt.h>
 #include <stdint.h>
 #include <kstring.h>
 #include <kstdio.h>
 #include <TH/sysvars.h>
 #include <TH/lld.h>
-#include <gcc_opt.h>
+#include <TH/kcmdline.h>
 /**
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 
  * */
+
+char kcmdline[KCMDLINE_SIZE];
+
 FORCE_INLINE int vbe_mode(volatile void *ebx)
 {
   /* verify if it really is provided info */
@@ -55,7 +59,8 @@ FORCE_INLINE int boot_cmd(volatile void *ebx)
   {
     return -1;
   }
-  kprintf("kcmdline:  %s\n", (char*) (ebx + 2 * sizeof (uint32_t) ) );
+  strncpy(kcmdline, (char*) (ebx + 2 * sizeof (uint32_t) ), sizeof(kcmdline) );
+  kprintf("kcmdline:  %s\n", kcmdline);
   return 0;
 }
 
@@ -180,7 +185,7 @@ FORCE_INLINE int framebuffer_info(volatile void * ebx)
 
 
 
-void bootinfo(volatile void * ebx)
+__init void bootinfo(volatile void * ebx)
 {
   /* total size of header*/
   uint32_t header_size=*((uint32_t*)ebx);

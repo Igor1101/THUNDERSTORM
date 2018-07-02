@@ -18,11 +18,6 @@ SECTIONS {
 		*(.data)
 	}
 	
-	.bss BLOCK(4K) : AT(ADDR(.bss) - offset) ALIGN(4K) {
-    init_kernel_bss = .;
-    *( .init_bss* )
-    init_kernel_bss_end = .;
-	}
 
 	.bss BLOCK(4K) : AT(ADDR(.bss) - offset) ALIGN(4K) {
     kernel_bss = .;
@@ -30,6 +25,20 @@ SECTIONS {
     *( .noinit )
 		*( COMMON )
     kernel_bss_end = .;
+	}
+
+  /* this section will be removed after kernel initialization */
+    .text BLOCK(4K) : AT(ADDR(.text) - offset) ALIGN(4K) {
+    init_kernel_text = .;
+		*(.init_text)
+    init_kernel_text_end = .;
+	}
+
+  /* this section will be removed after kernel initialization */
+	.bss BLOCK(4K) : AT(ADDR(.bss) - offset) ALIGN(4K) {
+    init_kernel_bss = .;
+    *( .init_bss* )
+    init_kernel_bss_end = .;
 	}
 
 }

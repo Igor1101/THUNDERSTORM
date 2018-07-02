@@ -10,5 +10,6 @@
 #define ALIGN(X) __attribute__ ( ( aligned ( X ) ) )
 #define VISIBLE __attribute__ ( ( externally_visible ) )
 #define NOOPTIMIZE __attribute__ ( ( optimize("O0") ) )
+#define __init __attribute__ ( ( section(".init_text") ) )
 
 #endif /* GCC_OPT_H */

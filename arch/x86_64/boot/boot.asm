@@ -213,7 +213,7 @@ warning:
 section .data
 boot_magic: dq  0
 boot_info:  dq  0
-[section .init_bss nobits]
+[section .bss nobits]
 ;pgs info:
 align PG_SIZE
 p4_table:

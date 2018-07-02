@@ -1,4 +1,3 @@
-Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
 ![THUNDERSTORM_LOGO](TH.jpg)
 **Is an embedded UNIX-like system**, which aims 
 to be as portable as possible and use modern hardware features when possible.

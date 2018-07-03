@@ -4,6 +4,7 @@
  */
 #include <stdint.h>
 #include <TH/lld.h>
+#include <asm/serial.h>
 #define BEGINNING 0
 volatile 
 struct Text_mode_pointer text;
@@ -15,6 +16,14 @@ void tui_init(void)
   enable_cursor(BEGINNING, text.rows );
   text.columns = determine_columns();
   text.rows = determine_rows();
+#ifdef USE_SERIAL
+  /*
+  serial_disable_ints(SERIAL_MAIN);
+  serial_configure_fifo(SERIAL_MAIN);
+  serial_configure_line(SERIAL_MAIN);
+  serial_configure_baud_rate(SERIAL_MAIN, 3);// 38400 
+  */
+#endif /* USE_SERIAL */
 }
 
 void select_fgcolor(int color)
@@ -40,6 +49,11 @@ void newline(void)
 }
 void kputchar(int8_t chr)
 {
+#ifdef USE_SERIAL
+  serial_write_asyn(SERIAL_MAIN, chr);
+  if(chr=='\n')
+    serial_write_asyn(SERIAL_MAIN, '\r');
+#endif
   switch(chr)
   {
     case '\n': 

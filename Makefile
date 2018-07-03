@@ -1,9 +1,9 @@
 #Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
 
 include compile_opt_kernel.mk
+include parse_options.mk
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
-KERNEL_OPTIONS += -D $(KERNEL_OUTPUT) -D $(KERNEL_BUILD_MODE) 
 ARCH ?= x86_64
 INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include
 KERNEL = boot/THkernel
@@ -90,11 +90,20 @@ run: $(CDROMIMAGE)
 	qemu-system-x86_64 -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE); \
 	else \
 	qemu-system-x86_64 -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
+run_serial: $(CDROMIMAGE)
+	@if [ -f $(BIOS) ]; then \
+	qemu-system-x86_64 -serial mon:stdio -display none\
+		-bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE); \
+	else \
+	qemu-system-x86_64 -serial mon:stdio -display none \
+	-m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
 debug: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
-	qemu-system-x86_64 -S -s -d int -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);\
+	qemu-system-x86_64 -serial mon:stdio \
+	-S -s -d int -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);\
 	else \
-	qemu-system-x86_64 -S -s -d int -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
+	qemu-system-x86_64 -serial mon:stdio \
+	-S -s -d int -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \
 		if ! [ -e $$dir ]; then mkdir $$dir; fi;\

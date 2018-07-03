@@ -32,11 +32,12 @@ __________________________________________________________________________/_____
 #include <kstdio.h>
 #include <stdbool.h>
 #include <verify_kopt.h>
-#include <asm/int_handler.h>
-#include <asm/cpu_management.h>
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
+#include <asm/int_handler.h>
+#include <asm/cpu_management.h>
+#include <asm/bootinfo.h>
 
 /* declared vars */
 struct RAM_INFO RAM;
@@ -65,7 +66,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void* pcinfo)
 
 
   kputs("COMPUTER INFO:");
-  bootinfo(pcinfo);
+  bootinfo(boot_magic, pcinfo);
   if(init_video() == true)
   {
     tui_init();
@@ -84,7 +85,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void* pcinfo)
     select_fgcolor(Default);
   }
   kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
- COPYRIGHT Igor Muravyov (c) %s \n", RELEASE, YEARS);
+ COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
   print_RAM_info();
   /* initializing interrupts */
   set_exceptions();

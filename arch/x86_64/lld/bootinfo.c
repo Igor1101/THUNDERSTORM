@@ -21,13 +21,17 @@
 #include <kstdio.h>
 #include <TH/sysvars.h>
 #include <TH/lld.h>
+#include <TH/die.h>
 #include <TH/kcmdline.h>
+#include <asm/bootinfo.h>
 /**
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 
  * */
 
 char kcmdline[KCMDLINE_SIZE];
+
+__init static void multiboot2(void *pcinfo/* ebx */);
 
 FORCE_INLINE int vbe_mode(volatile void *ebx)
 {
@@ -186,19 +190,30 @@ FORCE_INLINE int framebuffer_info(volatile void * ebx)
 
 
 
-__init void bootinfo(volatile void * ebx)
+__init void bootinfo(uintptr_t bootmagic, void * pcinfo)
+{
+  switch(bootmagic)
+  {
+    case MULTIBOOT1_MAGIC:
+      kputs("MULTIBOOT1 recognized, but still not supported");
+      die("MULTIBOOT1 recognized, but still not supported");
+    case MULTIBOOT2_MAGIC:
+      multiboot2(pcinfo);
+  }
+}
+__init static void multiboot2(void *pcinfo/* ebx */)
 {
   /* total size of header*/
-  uint32_t header_size=*((uint32_t*)ebx);
+  uint32_t header_size=*((uint32_t*)pcinfo);
   while(header_size % sizeof (uint32_t) != 0) 
     header_size--;
   register volatile void* bp;
   kprintf("total size of boot struct=0x%x\n", header_size);
   /* reserved */
-  ebx += sizeof (uint32_t);
+  pcinfo += sizeof (uint32_t);
   /* parsing header info */
   /*Finding memory info */
-  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  for(bp = pcinfo + header_size; bp>=pcinfo;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == MEMORY)
     {
@@ -209,7 +224,7 @@ __init void bootinfo(volatile void * ebx)
     }
   }
   /* BOOTLOADER INFO */
-  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  for(bp = pcinfo + header_size; bp>=pcinfo;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == LOADER_NAME)
     {
@@ -220,7 +235,7 @@ __init void bootinfo(volatile void * ebx)
     }
   }
   /* BIOS and partition info */
-  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  for(bp = pcinfo + header_size; bp>=pcinfo;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == BOOTDEV)
     {
@@ -232,7 +247,7 @@ __init void bootinfo(volatile void * ebx)
   }
 
   /* boot command line */
-  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  for(bp = pcinfo + header_size; bp>=pcinfo;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == BOOTCMD)
     {
@@ -245,7 +260,7 @@ __init void bootinfo(volatile void * ebx)
 
   /* modules */
   register uint32_t times=0;
-  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  for(bp = pcinfo + header_size; bp>=pcinfo;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == MODULES)
     {
@@ -263,7 +278,7 @@ __init void bootinfo(volatile void * ebx)
   kprintf("%d modules found\n", times);
 
   /* VESA MODE INFO */
-  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  for(bp = pcinfo + header_size; bp>=pcinfo;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == VESAMODE)
     {
@@ -274,7 +289,7 @@ __init void bootinfo(volatile void * ebx)
     }
   }
 
-  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  for(bp = pcinfo + header_size; bp>=pcinfo;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == FRAMEBUFFER)
     {
@@ -284,7 +299,7 @@ __init void bootinfo(volatile void * ebx)
       }
     }
   }
-  for(bp = ebx + header_size; bp>=ebx;  bp -= sizeof (uint32_t) )
+  for(bp = pcinfo + header_size; bp>=pcinfo;  bp -= sizeof (uint32_t) )
   {
     if(*(uint32_t*)bp == MEMMAP)
     {

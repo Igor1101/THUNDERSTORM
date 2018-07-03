@@ -12,10 +12,7 @@ die:
 ;rdi <--- reason
 mov  si,   RED
 call kputstr_32
-mov  rdi,  .str
-call kputstr_32
 .die:  hlt
 jmp .die
 section .rodata
-.str: db "KERNEL DEAD",0
 section .text

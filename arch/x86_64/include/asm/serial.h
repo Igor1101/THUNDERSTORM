@@ -1,5 +1,7 @@
 /* 
  * Public Domain 
+ * https://littleosbook.github.io/#the-serial-ports
+ * https://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programming
  * */
 #include <stdint.h>
 /**

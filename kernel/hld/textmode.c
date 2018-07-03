@@ -17,12 +17,14 @@ void tui_init(void)
   text.columns = determine_columns();
   text.rows = determine_rows();
 #ifdef USE_SERIAL
-  /*
+  
   serial_disable_ints(SERIAL_MAIN);
   serial_configure_fifo(SERIAL_MAIN);
   serial_configure_line(SERIAL_MAIN);
+#ifdef RELEASE
+  /* baud rates setting faults on some x86_64 emulators */
   serial_configure_baud_rate(SERIAL_MAIN, 3);// 38400 
-  */
+#endif /* DEBUG */
 #endif /* USE_SERIAL */
 }
 

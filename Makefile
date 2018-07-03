@@ -99,10 +99,10 @@ run_serial: $(CDROMIMAGE)
 	-m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
 debug: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
-	qemu-system-x86_64 -serial mon:stdio \
+	qemu-system-x86_64 -smp 10 -serial mon:stdio \
 	-S -s -d int -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);\
 	else \
-	qemu-system-x86_64 -serial mon:stdio \
+	qemu-system-x86_64 -smp 10 -serial mon:stdio \
 	-S -s -d int -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \

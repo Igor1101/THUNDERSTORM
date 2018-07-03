@@ -32,7 +32,7 @@ but it is much better in qemu to run it with UEFI BIOS, since
 it is better supported.
 
 #### TODO this month (in case someone want`s to contribute):
-- [ ] add serial driver
+- [x] add serial driver
 - [ ] improve exceptions handling
 - [ ] TSS initialization
 - [ ] add multiboot 1.0 support to use more lightweight bootloader

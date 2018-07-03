@@ -29,27 +29,18 @@ uint32_t determine_rows(void)
 void update_cursor(int row, int col)
 {
 	uint16_t offset = (row * COLUMNS) + col;
-  io_wait();
   outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
-  io_wait();
   outb(FB_DATA_PORT,    ((offset >> 8) & 0x00FF));
-  io_wait();
   outb(FB_COMMAND_PORT, FB_LOW_BYTE_COMMAND);
-  io_wait();
   outb(FB_DATA_PORT,    offset & 0x00FF);
 }
 
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
-  io_wait();
 	outb(FB_COMMAND_PORT, 0x0A);
-  io_wait();
 	outb(FB_DATA_PORT, (inb(FB_DATA_PORT) & 0xC0) | cursor_start);
-  io_wait();
 	outb(FB_COMMAND_PORT, 0x0B);
-  io_wait();
 	//outb(FB_DATA_PORT, (inb(0x3E0) & 0xE0) | cursor_end);
-  io_wait();
 }
 
 void kputchar_to(

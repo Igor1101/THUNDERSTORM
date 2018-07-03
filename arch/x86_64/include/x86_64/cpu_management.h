@@ -22,7 +22,6 @@ FORCE_INLINE void io_wait(void)
 /* Input a byte from a port */
 FORCE_INLINE unsigned char inb(uint16_t port)
 {
-  io_wait();
   volatile unsigned char ret;
   asm volatile ("inb %%dx,%%al":"=a" (ret):"d" (port));
   return ret;
@@ -32,7 +31,6 @@ FORCE_INLINE unsigned char inb(uint16_t port)
 
 FORCE_INLINE void outb(uint16_t port, uint8_t value)
 {
-  io_wait();
   asm volatile ("outb %%al,%%dx": :"d" (port), "a" (value));
 }
 

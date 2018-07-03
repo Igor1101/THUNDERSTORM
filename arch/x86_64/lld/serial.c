@@ -13,11 +13,8 @@
  */
 void serial_configure_baud_rate(uint16_t com, uint16_t divisor)
 {
-  io_wait();
   outb(SERIAL_LINE_COMMAND_PORT(com), SERIAL_LINE_ENABLE_DLAB);
-  io_wait();
   outb(SERIAL_DATA_PORT(com), (divisor >> 8) & 0x00FF); /* HIGH */
-  io_wait();
   outb(SERIAL_DATA_PORT(com), divisor & 0x00FF); /* LOW */
 }
 /** serial_configure_line:

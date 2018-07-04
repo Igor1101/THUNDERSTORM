@@ -38,6 +38,7 @@ __________________________________________________________________________/_____
 #include <asm/int_handler.h>
 #include <asm/cpu_management.h>
 #include <asm/bootinfo.h>
+#include <asm/serial.h>
 
 /* declared vars */
 struct RAM_INFO RAM;
@@ -46,6 +47,15 @@ struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
 VISIBLE int start_kernel(uintptr_t boot_magic, void* pcinfo)
 {
+#ifdef USE_SERIAL
+  serial_disable_ints(SERIAL_MAIN);
+  serial_configure_fifo(SERIAL_MAIN);
+  serial_configure_line(SERIAL_MAIN);
+#ifdef RELEASE
+  /* baud rates setting faults on some x86_64 emulators */
+  serial_configure_baud_rate(SERIAL_MAIN, 3);// 38400 
+#endif /* RELEASE */
+#endif /* USE_SERIAL */
 #ifdef USE_VGA
   tui_init();
   select_fgcolor(Red);

@@ -116,4 +116,20 @@ dis: kernel
 	@objdump --disassembler-options=intel -D $(KERNEL) | less
 nm: kernel
 	@nm --numeric-sort $(KERNEL)|less
+help:
+	@echo ' make <target> '
+	@echo '	targets: '
+	@echo ' nm: print kernel symbols (less)'
+	@echo ' dis: print intell syntax dissassembly (less)'
+	@echo ' initialize: dont use this! just makes sure all source \
+	directories available '
+	@echo ' debug: open qemu in waiting for gdb state '
+	@echo ' run_serial : open qemu serial in console, don`t use graphics '
+	@echo '	run: run qemu with graphics '
+	@echo '	iso: build iso image with kernel inside'
+	@echo ' libc: build kernel libraries'
+	@echo ' clean: clean all the staff we built'
+	@echo ' kernel: build kernel, put it to boot/ '
+	@echo ' ports: build $$(ARCH) ports of kernel'
+	@echo ' all: will handle kernel, ports, libc.. all you need to run os after'
 

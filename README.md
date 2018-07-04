@@ -19,9 +19,9 @@ arch/$(ARCH)/include/$(ARCH) # specific to machine symbols/namespaces
 ##### Dependencies:
 nasm gcc binutils qemu-system-x86_64 OVMF(optional) grub-mkrescue
 #### Running it on qemu!
+please consult make tasks:
 ```
-make # elf image of kernel is placed to "boot/THkernel", "boot/" is placed to cd image "os.iso" with grub bootloader installed
-make run
+make help
 ```
 Running os with different BIOS(for example OVMF.fd, which is UEFI/BIOS):
 ```

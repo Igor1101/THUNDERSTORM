@@ -99,6 +99,7 @@ struct Framebuffer
   uint32_t bpp;
   uint32_t type;
   uint32_t colorinfo;
+  uint32_t cursor_enabled;
 };
 
 void tui_init(void);

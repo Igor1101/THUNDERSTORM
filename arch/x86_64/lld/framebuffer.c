@@ -11,12 +11,10 @@
 #include <stdbool.h>
 #include <kstring.h>
 #include <gcc_opt.h>
-bool video_initialized = false;
-bool cursor_enabled = false;
 
 LIKELY void kputpixel(uint32_t x, uint32_t y, uint32_t color)
 {
-  if(video_initialized == false)
+  if(sysfb.video_initialized == false)
     return;
   register uint8_t* vaddr= (uint8_t*)sysfb.virtaddr
     + y * sysfb.pitch + x * sysfb.bpp / 8;
@@ -64,12 +62,13 @@ UNLIKELY uint32_t determine_columns(void)
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
   /* getting rid of compiler warnings */
-  volatile uint8_t s=cursor_start; s=cursor_end;s--;
-  cursor_enabled = true;
+  (void)cursor_start;
+  (void)cursor_end;
+  sysfb.cursor_enabled = true;
 }
 LIKELY void make_newline(void)
 {
-  if(video_initialized == false)
+  if(sysfb.video_initialized == false)
     return;
   void* end = sysfb.virtaddr + 
     (1 * font -> height * sysfb.pitch / 8);
@@ -78,7 +77,7 @@ LIKELY void make_newline(void)
 
 LIKELY void update_cursor(int row, int col)
 {
-  if(cursor_enabled == true)
+  if(sysfb.cursor_enabled == true)
   {
     kputchar_to('_', row, col, Cyan, Black, TRANSPARENT);
   }

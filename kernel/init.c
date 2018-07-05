@@ -53,7 +53,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void* pcinfo)
   serial_configure_line(SERIAL_MAIN);
 #ifdef RELEASE
   /* baud rates setting faults on some x86_64 emulators */
-  serial_configure_baud_rate(SERIAL_MAIN, 3);// 38400 
+  serial_configure_baud_rate(SERIAL_MAIN, 1);// 115200 
 #endif /* RELEASE */
 #endif /* USE_SERIAL */
 #ifdef USE_VGA

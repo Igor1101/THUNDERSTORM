@@ -17,6 +17,7 @@
 
 #include <gcc_opt.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <kstring.h>
 #include <kstdio.h>
 #include <TH/sysvars.h>
@@ -185,6 +186,7 @@ FORCE_INLINE int framebuffer_info(volatile void * ebx)
       sysfb.addr, sysfb.pitch, sysfb.width);
   kprintf("bpp 0x%x type 0x%x \n", 
       sysfb.bpp, sysfb.type, sysfb.width);
+  sysfb.is_initialized = true;
   return 0;
 }
 

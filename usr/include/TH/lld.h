@@ -73,6 +73,7 @@ enum Color
 struct Text_mode_pointer
 /* suitable with VGA and VESA */
 {
+  bool is_initialized;
   uint32_t row;
   uint32_t col;
   uint32_t bgcolor;
@@ -84,6 +85,12 @@ struct Text_mode_pointer
 /* video framebuffer */
 struct Framebuffer
 {
+  bool is_initialized; /* 
+                        *  used by bootinfo() to make sure, 
+                        *  option found in bootloader structure
+                        *  */
+  bool video_initialized;/* if(is_initialized==false) video_initialized
+                          * must be also false */
   uintptr_t * virtaddr;
   uintptr_t * addr;
   uint32_t pitch;
@@ -93,6 +100,7 @@ struct Framebuffer
   uint32_t type;
   uint32_t colorinfo;
 };
+
 void tui_init(void);
 void make_newline(void);
 void update_cursor(int x, int y);

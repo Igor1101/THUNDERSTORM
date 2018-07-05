@@ -3,6 +3,7 @@
  * THUNDERSTORM VGA HL DRIVER *
  */
 #include <stdint.h>
+#include <stdbool.h>
 #include <TH/lld.h>
 #include <asm/serial.h>
 #define BEGINNING 0
@@ -16,6 +17,7 @@ void tui_init(void)
   enable_cursor(BEGINNING, text.rows );
   text.columns = determine_columns();
   text.rows = determine_rows();
+  text.is_initialized = true;
 }
 
 void select_fgcolor(int color)
@@ -42,10 +44,16 @@ void newline(void)
 void kputchar(int8_t chr)
 {
 #ifdef USE_SERIAL
+  /* even if tui not initialized, 
+   * it is possible to write to serial port through tui
+   */
   serial_write_asyn(SERIAL_MAIN, chr);
   if(chr=='\n')
     serial_write_asyn(SERIAL_MAIN, '\r');
 #endif
+  if(text.is_initialized == false) 
+    return;
+
   switch(chr)
   {
     case '\n': 

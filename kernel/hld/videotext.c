@@ -34,7 +34,7 @@ void kputchar_to(
     uint32_t attr
     )
 {
-  if( (video_initialized == false) ||
+  if( (sysfb.video_initialized == false) ||
     (row >= text.rows) || 
      (column >= text.columns) )
   {

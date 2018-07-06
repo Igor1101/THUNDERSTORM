@@ -30,7 +30,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #ifndef __need___va_list
 #define _STDARG_H
 #define _ANSI_STDARG_H_
-#endif /* not __need___va_list */
+#endif				/* not __need___va_list */
 #undef __need___va_list
 
 /* Define __gnuc_va_list.  */
@@ -75,13 +75,13 @@ typedef __builtin_va_list __gnuc_va_list;
 #ifndef _VA_LIST
 #define _VA_LIST va_list
 #endif
-#endif /* __i860__ */
+#endif				/* __i860__ */
 typedef __gnuc_va_list va_list;
 #ifdef _SCO_DS
 #define __VA_LIST
 #endif
-#endif /* _VA_LIST_ */
-#else /* not __svr4__ || _SCO_DS */
+#endif				/* _VA_LIST_ */
+#else				/* not __svr4__ || _SCO_DS */
 
 /* The macro _VA_LIST_ is the same thing used by this file in Ultrix.
    But on BSD NET2 we must not test or define or undef it.
@@ -97,10 +97,10 @@ typedef __gnuc_va_list va_list;
 /* The macro __va_list__ is used by BeOS.  */
 #ifndef __va_list__
 typedef __gnuc_va_list va_list;
-#endif /* not __va_list__ */
-#endif /* not _VA_LIST_T_H */
-#endif /* not _VA_LIST */
-#endif /* not _VA_LIST_DEFINED */
+#endif				/* not __va_list__ */
+#endif				/* not _VA_LIST_T_H */
+#endif				/* not _VA_LIST */
+#endif				/* not _VA_LIST_DEFINED */
 #if !(defined (__BSD_NET2__) || defined (____386BSD____) || defined (__bsdi__) || defined (__sequent__) || defined (__FreeBSD__))
 #define _VA_LIST_
 #endif
@@ -117,11 +117,11 @@ typedef __gnuc_va_list va_list;
 #define __va_list__
 #endif
 
-#endif /* not _VA_LIST_, except on certain systems */
+#endif				/* not _VA_LIST_, except on certain systems */
 
-#endif /* not __svr4__ */
+#endif				/* not __svr4__ */
 
-#endif /* _STDARG_H */
+#endif				/* _STDARG_H */
 
-#endif /* not _ANSI_STDARG_H_ */
-#endif /* not _STDARG_H */
+#endif				/* not _ANSI_STDARG_H_ */
+#endif				/* not _STDARG_H */

@@ -11,11 +11,11 @@
   select_fgcolor(Red);\
   kprintf("TH EXCEPTION:");\
   select_fgcolor(Default); \
-  //clear_interrupts();
+				//clear_interrupts();
 #define EXC_EXIT \
-  //set_interrupts();
+				//set_interrupts();
 
 void set_exceptions(void);
 void init_interrupts(void);
 
-#endif /* INT_HANDLER_H */
+#endif				/* INT_HANDLER_H */

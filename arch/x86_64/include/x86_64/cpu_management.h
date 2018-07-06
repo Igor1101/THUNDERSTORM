@@ -14,33 +14,31 @@
  */
 FORCE_INLINE void io_wait(void)
 {
-    /* Port 0x80 is used for 'checkpoints' during POST. */
-    /* The Linux kernel seems to think it is free for use :-/ */
-    asm volatile ( "outb %%al, $0x80" : : "a"(0) );
+	/* Port 0x80 is used for 'checkpoints' during POST. */
+	/* The Linux kernel seems to think it is free for use :-/ */
+	asm volatile ("outb %%al, $0x80"::"a" (0));
 }
 
 /* Input a byte from a port */
 FORCE_INLINE unsigned char inb(uint16_t port)
 {
-  volatile unsigned char ret;
-  asm volatile ("inb %%dx,%%al":"=a" (ret):"d" (port));
-  return ret;
+	volatile unsigned char ret;
+	asm volatile ("inb %%dx,%%al":"=a" (ret):"d"(port));
+	return ret;
 }
 
 /* Output a byte to a port */
 
 FORCE_INLINE void outb(uint16_t port, uint8_t value)
 {
-  asm volatile ("outb %%al,%%dx": :"d" (port), "a" (value));
+	asm volatile ("outb %%al,%%dx"::"d" (port), "a"(value));
 }
 
 FORCE_INLINE bool are_interrupts_enabled()
 {
-    unsigned long flags;
-    asm volatile ( "pushf\n\t"
-                   "pop %0"
-                   : "=g"(flags) );
-    return flags & (1 << 9);
+	unsigned long flags;
+	asm volatile ("pushf\n\t" "pop %0":"=g" (flags));
+	return flags & (1 << 9);
 }
 
 /* 
@@ -49,9 +47,9 @@ FORCE_INLINE bool are_interrupts_enabled()
  */
 FORCE_INLINE uint64_t rdtsc(void)
 {
-    uint32_t low, high;
-    asm volatile("rdtsc":"=a"(low),"=d"(high));
-    return ((uint64_t)high << 32) | low;
+	uint32_t low, high;
+	asm volatile ("rdtsc":"=a" (low), "=d"(high));
+	return ((uint64_t) high << 32) | low;
 }
 
 /*
@@ -59,9 +57,9 @@ FORCE_INLINE uint64_t rdtsc(void)
  */
 FORCE_INLINE unsigned long read_cr0(void)
 {
-    unsigned long val;
-    asm volatile ( "mov %%cr0, %0" : "=r"(val) );
-    return val;
+	unsigned long val;
+	asm volatile ("mov %%cr0, %0":"=r" (val));
+	return val;
 }
 
 /*
@@ -71,11 +69,8 @@ FORCE_INLINE static void wrmsr(uint64_t msr, uint64_t value)
 {
 	uint32_t low = value & 0xFFFFFFFF;
 	uint32_t high = value >> 32;
-	asm volatile (
-		"wrmsr"
-		:
-		: "c"(msr), "a"(low), "d"(high)
-	);
+	asm volatile ("wrmsr"::"c" (msr), "a"(low), "d"(high)
+	    );
 }
 
 /* 
@@ -84,40 +79,37 @@ FORCE_INLINE static void wrmsr(uint64_t msr, uint64_t value)
 FORCE_INLINE uint64_t rdmsr(uint64_t msr)
 {
 	uint32_t low, high;
-	asm volatile (
-		"rdmsr"
-		: "=a"(low), "=d"(high)
-		: "c"(msr)
-	);
-	return ((uint64_t)high << 32) | low;
+	asm volatile ("rdmsr":"=a" (low), "=d"(high)
+		      :"c"(msr)
+	    );
+	return ((uint64_t) high << 32) | low;
 }
 
 /* 
  * define new interrupt table
  */
-FORCE_INLINE void lidt(void* base, uint16_t size)
-{/*This function works in 32 and 64bit mode*/
-  struct 
-  {
-    uint16_t length;
-    void*    base;
-  } PACKED IDTR = { size, base };
-  asm ( "lidt %0" : : "m"(IDTR) );  /* let the compiler 
-                                     * choose an addressing mode*/
+FORCE_INLINE void lidt(void *base, uint16_t size)
+{				/*This function works in 32 and 64bit mode */
+	struct {
+		uint16_t length;
+		void *base;
+	} PACKED IDTR = { size, base };
+ asm("lidt %0": :"m"(IDTR));	/* let the compiler 
+				 * choose an addressing mode*/
 }
 
 FORCE_INLINE uint64_t get_SP(void)
 {
 	uint64_t rsp;
-	asm("mov %%rsp, %0" : "=r" (rsp) );
+ asm("mov %%rsp, %0":"=r"(rsp));
 	return rsp;
 }
 
 FORCE_INLINE uint64_t get_CS(void)
 {
 	uint64_t cs;
-	asm("mov %%cs, %0" : "=r" (cs) );
+ asm("mov %%cs, %0":"=r"(cs));
 	return cs;
 }
 
-#endif /* LL_CPU_MANAGEMENT_H */
+#endif				/* LL_CPU_MANAGEMENT_H */

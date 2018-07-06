@@ -5,8 +5,8 @@
 #define GCC_OPT_H
 
 #define FORCE_INLINE __attribute__ ( ( always_inline ) ) inline
-#define NORET __attribute__ ( ( noreturn ) ) 
-#define PACKED __attribute__ ( ( packed ) ) 
+#define NORET __attribute__ ( ( noreturn ) )
+#define PACKED __attribute__ ( ( packed ) )
 #define INTERRUPT __attribute__ ( ( interrupt ) )
 #define UNLIKELY __attribute__ ( ( cold ) )
 #define LIKELY __attribute__ ( ( hot ) )
@@ -15,4 +15,4 @@
 #define NOOPTIMIZE __attribute__ ( ( optimize("O0") ) )
 #define __init __attribute__ ( ( section(".init_text") ) )
 
-#endif /* GCC_OPT_H */
+#endif				/* GCC_OPT_H */

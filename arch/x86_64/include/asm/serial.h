@@ -10,11 +10,11 @@
  * order, but they start at different values.
  */
 
-#define SERIAL_COM1_BASE                0x3F8      /* COM1 base port */
-#define SERIAL_COM2_BASE                0x2F8      /* COM1 base port */
-#define SERIAL_COM3_BASE                0x3E8      /* COM1 base port */
-#define SERIAL_COM4_BASE                0x2E8      /* COM1 base port */
-#define SERIAL_MAIN SERIAL_COM1_BASE                
+#define SERIAL_COM1_BASE                0x3F8	/* COM1 base port */
+#define SERIAL_COM2_BASE                0x2F8	/* COM1 base port */
+#define SERIAL_COM3_BASE                0x3E8	/* COM1 base port */
+#define SERIAL_COM4_BASE                0x2E8	/* COM1 base port */
+#define SERIAL_MAIN SERIAL_COM1_BASE
 #define SERIAL_DATA_PORT(base)          (base)
 #define SERIAL_FIFO_COMMAND_PORT(base)  (base + 2)
 #define SERIAL_LINE_COMMAND_PORT(base)  (base + 3)
@@ -29,7 +29,7 @@
  */
 #define SERIAL_LINE_ENABLE_DLAB         0x80
 
-void serial_disable_ints(uint16_t com);   
+void serial_disable_ints(uint16_t com);
 /** serial_configure_baud_rate:
  *  Sets the speed of the data being sent. The default speed of a serial
  *  port is 115200 bits/s. The argument is a divisor of that number, hence
@@ -45,7 +45,7 @@ void serial_configure_baud_rate(uint16_t com, uint16_t divisor);
  *  disabled.
  *
  *  @param com  The serial port to configure
- */                                                                            
+ */
 void serial_configure_line(uint16_t com);
 /** serial_configure_fifo:
  * enable, clear, 14 bytes treshold
@@ -65,14 +65,14 @@ int serial_is_transmit_fifo_empty(uint16_t com);
  * @param com com to write
  * @param ch char we write
  */
-void serial_write_asyn(uint16_t com, char ch) ;
+void serial_write_asyn(uint16_t com, char ch);
 
 /**serial_received:
  * @param com com to receive from 
  * @return 0 if no char received
  *         1 if char received
  */
-int serial_received(uint16_t com) ;
+int serial_received(uint16_t com);
 
 /**serial_read_asyn:
  * wait for characters to receive

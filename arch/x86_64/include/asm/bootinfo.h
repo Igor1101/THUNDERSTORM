@@ -10,6 +10,6 @@
  * @bootmagic: boot spec verification
  * @pcinfo: pointer to provided information by bootloader
  * */
-void bootinfo(uintptr_t bootmagic, void * pcinfo);
+void bootinfo(uintptr_t bootmagic, void *pcinfo);
 
-#endif /* BOOTINFO_H */
+#endif				/* BOOTINFO_H */

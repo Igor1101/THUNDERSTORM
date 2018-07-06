@@ -23,40 +23,38 @@
 
 typedef unsigned long long int uword_t;
 
-struct interrupt_frame
-{
-  uword_t rip;
-  uword_t cs;
-  uword_t rflags;
-  uword_t rsp;
-  uword_t ss;
+struct interrupt_frame {
+	uword_t rip;
+	uword_t cs;
+	uword_t rflags;
+	uword_t rsp;
+	uword_t ss;
 } PACKED;
 typedef struct interrupt_frame int_frame;
 
-struct IDTdesc 
-{
-   uint16_t offset_0_15; // offset bits 0..15
-   uint16_t selector; // a code segment selector in GDT or LDT
-   uint8_t ist;       /* bits 0..2 hold Interrupt Stack Table offset
-                       *  , rest of bits - zero.*/
-   uint8_t type_attr; // type and attributes
-   uint16_t offset_16_31; // offset bits 16..31
-   uint32_t offset_32_63; // offset bits 32..63
-   uint32_t zero;     // reserved
+struct IDTdesc {
+	uint16_t offset_0_15;	// offset bits 0..15
+	uint16_t selector;	// a code segment selector in GDT or LDT
+	uint8_t ist;		/* bits 0..2 hold Interrupt Stack Table offset
+				 *  , rest of bits - zero.*/
+	uint8_t type_attr;	// type and attributes
+	uint16_t offset_16_31;	// offset bits 16..31
+	uint32_t offset_32_63;	// offset bits 32..63
+	uint32_t zero;		// reserved
 } PACKED;
 extern struct IDTdesc idt_table[NUM_OF_DESC];
 
-extern void idt_set_vector(uint8_t num, uint64_t addr, 
-    uint16_t sel, uint8_t attr, uint8_t ist);
+extern void idt_set_vector(uint8_t num, uint64_t addr,
+			   uint16_t sel, uint8_t attr, uint8_t ist);
 
 FORCE_INLINE void idt_clear_vectors(void)
 {
-  kmemset_show(idt_table, 0, sizeof(idt_table));
+	kmemset_show(idt_table, 0, sizeof(idt_table));
 }
 
 FORCE_INLINE void idt_set_trap(uint8_t num, uint64_t addr, uint8_t ist)
 {
-  idt_set_vector( num, addr, get_CS(), TRAP|PRESENT, ist );
+	idt_set_vector(num, addr, get_CS(), TRAP | PRESENT, ist);
 }
 
-#endif /* x86_64_IDT_H */
+#endif				/* x86_64_IDT_H */

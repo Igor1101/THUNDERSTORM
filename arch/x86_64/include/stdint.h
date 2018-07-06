@@ -230,8 +230,8 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 #undef WINT_MIN
 #define WINT_MIN __WINT_MIN__
 
-#endif /* (!defined __cplusplus || __cplusplus >= 201103L
-	   || defined __STDC_LIMIT_MACROS)  */
+#endif				/* (!defined __cplusplus || __cplusplus >= 201103L
+				   || defined __STDC_LIMIT_MACROS)  */
 
 #if (!defined __cplusplus || __cplusplus >= 201103L \
      || defined __STDC_CONSTANT_MACROS)
@@ -257,8 +257,8 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 #undef UINTMAX_C
 #define UINTMAX_C(c) __UINTMAX_C(c)
 
-#endif /* (!defined __cplusplus || __cplusplus >= 201103L
-	   || defined __STDC_CONSTANT_MACROS) */
+#endif				/* (!defined __cplusplus || __cplusplus >= 201103L
+				   || defined __STDC_CONSTANT_MACROS) */
 
 #ifdef __STDC_WANT_IEC_60559_BFP_EXT__
 /* TS 18661-1 widths of integer types.  */
@@ -361,4 +361,4 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 
 #endif
 
-#endif /* _GCC_STDINT_H */
+#endif				/* _GCC_STDINT_H */

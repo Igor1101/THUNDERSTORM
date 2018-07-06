@@ -4,7 +4,6 @@
 #ifndef VIDEO_INIT_H
 #define VIDEO_INIT_H
 
+uintptr_t *map_video(volatile void *addr);
 
-uintptr_t* map_video(volatile void* addr);
-
-#endif /* VIDEO_INIT_H */
+#endif				/* VIDEO_INIT_H */

@@ -6,7 +6,6 @@ email, or any other method with the owners of this repository before making a ch
 Please, note, that there are no warnings or errors occuring before contributing, otherwise
 pull requests will be ignored.
 ### Standards, used in THUNDERSTORM kernel
-* use tab = 2 spaces
 * snake case is much more preferred
-* linux kernel style indentation
+* linux kernel style indentation (spaces over tabs are preferred)
 * The use of ["The power of ten rules"](http://spinroot.com/gerard/pdf/P10.pdf) is prefered(if possible).

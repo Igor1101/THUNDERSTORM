@@ -8,5 +8,5 @@ pull requests will be ignored.
 ### Standards, used in THUNDERSTORM kernel
 * use tab = 2 spaces
 * snake case is much more preferred
-* Allman \ BSD indentation style, or linux kernel style. (But Allman \ BSD is prefered and much easier).
+* linux kernel style indentation
 * The use of ["The power of ten rules"](http://spinroot.com/gerard/pdf/P10.pdf) is prefered(if possible).

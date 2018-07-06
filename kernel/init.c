@@ -45,73 +45,68 @@ struct RAM_INFO RAM;
 struct Framebuffer sysfb;
 struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
-VISIBLE int start_kernel(uintptr_t boot_magic, void* pcinfo)
+VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 {
 #ifdef USE_SERIAL
-  serial_disable_ints(SERIAL_MAIN);
-  serial_configure_fifo(SERIAL_MAIN);
-  serial_configure_line(SERIAL_MAIN);
+	serial_disable_ints(SERIAL_MAIN);
+	serial_configure_fifo(SERIAL_MAIN);
+	serial_configure_line(SERIAL_MAIN);
 #ifdef RELEASE
-  /* baud rates setting faults on some x86_64 emulators */
-  serial_configure_baud_rate(SERIAL_MAIN, 1);// 115200 
-#endif /* RELEASE */
-#endif /* USE_SERIAL */
+	/* baud rates setting faults on some x86_64 emulators */
+	serial_configure_baud_rate(SERIAL_MAIN, 1);	// 115200 
+#endif				/* RELEASE */
+#endif				/* USE_SERIAL */
 #ifdef USE_VGA
-  tui_init();
-  select_fgcolor(Red);
-  kputs("Note, that VGA mode is Legacy, used only for debbuging and text");
-  select_fgcolor(Default);
-#endif /* USE_VGA */
-  static char verifier=100;
-  if(verifier != 100)
-  {
-    return (1);/* GOT is not working, 
-                  smth wrong with bss */
-  }
+	tui_init();
+	select_fgcolor(Red);
+	kputs
+	    ("Note, that VGA mode is Legacy, used only for debbuging and text");
+	select_fgcolor(Default);
+#endif				/* USE_VGA */
+	static char verifier = 100;
+	if (verifier != 100) {
+		return (1);	/* GOT is not working, 
+				   smth wrong with bss */
+	}
 #ifdef DEBUG
-  select_fgcolor(Red);
-  kputs("This is a DEBUG version of kernel");
-  select_fgcolor(Default);
-#endif /* DEBUG */
+	select_fgcolor(Red);
+	kputs("This is a DEBUG version of kernel");
+	select_fgcolor(Default);
+#endif				/* DEBUG */
 
+	kputs("COMPUTER INFO:");
+	bootinfo(boot_magic, pcinfo);
+	if (init_video() == true) {
+		tui_init();
+		kputs("videomode successfully started");
+		print_video_info();
+		/* verifying bounds of display */
+		kputchar_to('\0', text.rows - 1, text.columns - 1,
+			    Red, Red, NOTRANSPARENT);
+		kputchar_to('\0', 0, text.columns - 1, Red, Red, NOTRANSPARENT);
+		kputchar_to('\0', text.rows - 1, 0, Red, Red, NOTRANSPARENT);
 
-  kputs("COMPUTER INFO:");
-  bootinfo(boot_magic, pcinfo);
-  if(init_video() == true)
-  {
-    tui_init();
-    kputs("videomode successfully started");
-    print_video_info();
-    /* verifying bounds of display*/
-    kputchar_to('\0', text.rows - 1, text.columns - 1, 
-        Red, Red, NOTRANSPARENT);
-    kputchar_to('\0', 0, text.columns - 1, Red, Red, NOTRANSPARENT);
-    kputchar_to('\0', text.rows - 1, 0, Red, Red, NOTRANSPARENT);
-
-    select_fgcolor(Cyan);
-    select_bgcolor(Blue);
-    kputs(SMALL_SYS_EMBLEM);
-    select_bgcolor(Black);
-    select_fgcolor(Default);
-  }
-  kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
+		select_fgcolor(Cyan);
+		select_bgcolor(Blue);
+		kputs(SMALL_SYS_EMBLEM);
+		select_bgcolor(Black);
+		select_fgcolor(Default);
+	}
+	kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
-  print_RAM_info();
-  /* initializing interrupts */
-  set_exceptions();
-  init_interrupts();
-  asm volatile (
-      " exc: \n"
-      " mov $1, %rax\n"
-      " mov $2, %rdx\n"
-      " mov $3, %rcx\n"
-      " mov $8, %r8\n"
-      " mov $9, %r9\n"
-      " mov $10, %r10\n"
-      " mov $11, %r11\n"
-      " mov $-1, %rsi\n"
-      " .quad 0xFFFFFFFFFFFFFFFF"
-                );
-  cpu_halt();
-  while(1);
+	print_RAM_info();
+	/* initializing interrupts */
+	set_exceptions();
+	init_interrupts();
+	asm volatile (" exc: \n"
+		      " mov $1, %rax\n"
+		      " mov $2, %rdx\n"
+		      " mov $3, %rcx\n"
+		      " mov $8, %r8\n"
+		      " mov $9, %r9\n"
+		      " mov $10, %r10\n"
+		      " mov $11, %r11\n"
+		      " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");
+	cpu_halt();
+	while (1) ;
 }

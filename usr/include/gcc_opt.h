@@ -15,4 +15,4 @@
 #define NOOPTIMIZE __attribute__ ( ( optimize("O0") ) )
 #define __init __attribute__ ( ( section(".init_text") ) )
 
-#endif				/* GCC_OPT_H */
+#endif                          /* GCC_OPT_H */

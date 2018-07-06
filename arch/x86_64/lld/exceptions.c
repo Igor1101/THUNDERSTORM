@@ -7,10 +7,10 @@
 
 INTERRUPT void divide_error(int_frame * frame)
 {
-	EXC_START;
-	kputs("divide by zero");
-	catch_regs(frame, (void *)get_SP());
-	kpanic("Exception \"divide by zero\"");
+        EXC_START;
+        kputs("divide by zero");
+        catch_regs(frame, (void *)get_SP());
+        kpanic("Exception \"divide by zero\"");
 }
 
 INTERRUPT void debug(int_frame * frame)
@@ -28,8 +28,8 @@ INTERRUPT void int3(int_frame * frame)
 
 INTERRUPT void overflow(int_frame * frame)
 {
-	EXC_START;
-	kputs("overflow");
+        EXC_START;
+        kputs("overflow");
 };
 
 INTERRUPT void bounds(int_frame * frame)
@@ -38,25 +38,25 @@ INTERRUPT void bounds(int_frame * frame)
 
 INTERRUPT void invalid_op(int_frame * frame)
 {
-	EXC_START;
-	kputs("invalid opcode");
-	catch_regs(frame, (void *)get_SP());
-	kpanic("Exception \"invalid opcode\"");
-	EXC_EXIT;
+        EXC_START;
+        kputs("invalid opcode");
+        catch_regs(frame, (void *)get_SP());
+        kpanic("Exception \"invalid opcode\"");
+        EXC_EXIT;
 }
 
 INTERRUPT void device_not_available(int_frame * frame)
 {
-	EXC_START;
-	kputs("device not available");
+        EXC_START;
+        kputs("device not available");
 };
 
 INTERRUPT void double_fault(int_frame * frame)
 {
-	EXC_START;
-	kprintf("SYSTEM CRASH");
-	catch_regs(frame, (void *)get_SP());
-	kpanic("Exception \"double fault\"");
+        EXC_START;
+        kprintf("SYSTEM CRASH");
+        catch_regs(frame, (void *)get_SP());
+        kpanic("Exception \"double fault\"");
 };
 
 INTERRUPT void coprocessor_segment_overrun(int_frame * frame)

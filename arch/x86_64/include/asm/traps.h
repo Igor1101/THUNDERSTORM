@@ -9,7 +9,7 @@
 #include <gcc_opt.h>
 #include <x86_64/idt.h>
 #define CONFIG_X86_64
-#define dotraplinkage		//looks like do_* functions are useless here
+#define dotraplinkage           //looks like do_* functions are useless here
 /* exceptions */
 INTERRUPT void divide_error(int_frame * frame);
 INTERRUPT void debug(int_frame * frame);
@@ -60,7 +60,7 @@ INTERRUPT void xen_coprocessor_error(int_frame * frame);
 INTERRUPT void xen_alignment_check(int_frame * frame);
 #ifdef CONFIG_X86_MCE
 INTERRUPT void xen_machine_check(int_frame * frame);
-#endif				/* CONFIG_X86_MCE */
+#endif                          /* CONFIG_X86_MCE */
 INTERRUPT void xen_simd_coprocessor_error(int_frame * frame);
 #endif
 /*
@@ -98,12 +98,12 @@ extern void (*exceptions_array[]);
 /*
 static inline int get_si_code(unsigned long condition)
 {
-	if (condition & DR_STEP)
-		return TRAP_TRACE;
-	else if (condition & (DR_TRAP0|DR_TRAP1|DR_TRAP2|DR_TRAP3))
-		return TRAP_HWBKPT;
-	else
-		return TRAP_BRKPT;
+        if (condition & DR_STEP)
+                return TRAP_TRACE;
+        else if (condition & (DR_TRAP0|DR_TRAP1|DR_TRAP2|DR_TRAP3))
+                return TRAP_HWBKPT;
+        else
+                return TRAP_BRKPT;
 }
 
 extern int panic_on_unrecovered_nmi;
@@ -122,52 +122,52 @@ extern void ist_end_non_atomic(void);
 
 #ifdef CONFIG_VMAP_STACK
 void __noreturn handle_stack_overflow(const char *message,
-				      struct pt_regs *regs,
-				      unsigned long fault_address);
+                                      struct pt_regs *regs,
+                                      unsigned long fault_address);
 #endif
 */
 /* Interrupts/Exceptions */
 enum {
-	X86_TRAP_DE = 0,	/*  0, Divide-by-zero */
-	X86_TRAP_DB,		/*  1, Debug */
-	X86_TRAP_NMI,		/*  2, Non-maskable Interrupt */
-	X86_TRAP_BP,		/*  3, Breakpoint */
-	X86_TRAP_OF,		/*  4, Overflow */
-	X86_TRAP_BR,		/*  5, Bound Range Exceeded */
-	X86_TRAP_UD,		/*  6, Invalid Opcode */
-	X86_TRAP_NM,		/*  7, Device Not Available */
-	X86_TRAP_DF,		/*  8, Double Fault */
-	X86_TRAP_OLD_MF,	/*  9, Coprocessor Segment Overrun */
-	X86_TRAP_TS,		/* 10, Invalid TSS */
-	X86_TRAP_NP,		/* 11, Segment Not Present */
-	X86_TRAP_SS,		/* 12, Stack Segment Fault */
-	X86_TRAP_GP,		/* 13, General Protection Fault */
-	X86_TRAP_PF,		/* 14, Page Fault */
-	X86_TRAP_SPURIOUS,	/* 15, Spurious Interrupt */
-	X86_TRAP_MF,		/* 16, x87 Floating-Point Exception */
-	X86_TRAP_AC,		/* 17, Alignment Check */
-	X86_TRAP_MC,		/* 18, Machine Check */
-	X86_TRAP_XF,		/* 19, SIMD Floating-Point Exception */
-	X86_TRAP_IRET = 32,	/* 32, IRET Exception */
+        X86_TRAP_DE = 0,        /*  0, Divide-by-zero */
+        X86_TRAP_DB,            /*  1, Debug */
+        X86_TRAP_NMI,           /*  2, Non-maskable Interrupt */
+        X86_TRAP_BP,            /*  3, Breakpoint */
+        X86_TRAP_OF,            /*  4, Overflow */
+        X86_TRAP_BR,            /*  5, Bound Range Exceeded */
+        X86_TRAP_UD,            /*  6, Invalid Opcode */
+        X86_TRAP_NM,            /*  7, Device Not Available */
+        X86_TRAP_DF,            /*  8, Double Fault */
+        X86_TRAP_OLD_MF,        /*  9, Coprocessor Segment Overrun */
+        X86_TRAP_TS,            /* 10, Invalid TSS */
+        X86_TRAP_NP,            /* 11, Segment Not Present */
+        X86_TRAP_SS,            /* 12, Stack Segment Fault */
+        X86_TRAP_GP,            /* 13, General Protection Fault */
+        X86_TRAP_PF,            /* 14, Page Fault */
+        X86_TRAP_SPURIOUS,      /* 15, Spurious Interrupt */
+        X86_TRAP_MF,            /* 16, x87 Floating-Point Exception */
+        X86_TRAP_AC,            /* 17, Alignment Check */
+        X86_TRAP_MC,            /* 18, Machine Check */
+        X86_TRAP_XF,            /* 19, SIMD Floating-Point Exception */
+        X86_TRAP_IRET = 32,     /* 32, IRET Exception */
 };
 
 /*
  * Page fault error code bits:
  *
- *   bit 0 ==	 0: no page found	1: protection fault
- *   bit 1 ==	 0: read access		1: write access
- *   bit 2 ==	 0: kernel-mode access	1: user-mode access
- *   bit 3 ==				1: use of reserved bit detected
- *   bit 4 ==				1: fault was an instruction fetch
- *   bit 5 ==				1: protection keys block access
+ *   bit 0 ==    0: no page found       1: protection fault
+ *   bit 1 ==    0: read access         1: write access
+ *   bit 2 ==    0: kernel-mode access  1: user-mode access
+ *   bit 3 ==                           1: use of reserved bit detected
+ *   bit 4 ==                           1: fault was an instruction fetch
+ *   bit 5 ==                           1: protection keys block access
  */
 enum x86_pf_error_code {
-	X86_PF_PROT = 1 << 0,
-	X86_PF_WRITE = 1 << 1,
-	X86_PF_USER = 1 << 2,
-	X86_PF_RSVD = 1 << 3,
-	X86_PF_INSTR = 1 << 4,
-	X86_PF_PK = 1 << 5,
+        X86_PF_PROT = 1 << 0,
+        X86_PF_WRITE = 1 << 1,
+        X86_PF_USER = 1 << 2,
+        X86_PF_RSVD = 1 << 3,
+        X86_PF_INSTR = 1 << 4,
+        X86_PF_PK = 1 << 5,
 };
 
-#endif				/* _ASM_X86_TRAPS_H */
+#endif                          /* _ASM_X86_TRAPS_H */

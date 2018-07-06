@@ -13,4 +13,4 @@ extern char init_kernel_bss_end;
 extern char kernel_bss;
 extern char kernel_bss_end;
 
-#endif				/* LINKER_INFO_H */
+#endif                          /* LINKER_INFO_H */

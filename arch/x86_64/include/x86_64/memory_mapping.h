@@ -10,4 +10,4 @@ extern uint64_t *p4_table;
 extern uint64_t *p3_table;
 extern uint64_t *p2_table;
 extern uint64_t *p1_table;
-#endif				/*MEMMAP */
+#endif                          /*MEMMAP */

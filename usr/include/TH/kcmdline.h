@@ -7,8 +7,8 @@
 #ifndef KCMDLINE_SIZE
 
 #define KCMDLINE_SIZE 200
-#endif				/* KCMDLINE_SIZE */
+#endif                          /* KCMDLINE_SIZE */
 
 extern char kcmdline[KCMDLINE_SIZE];
 
-#endif				/* KCMDLINE_H */
+#endif                          /* KCMDLINE_H */

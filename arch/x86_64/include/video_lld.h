@@ -6,4 +6,4 @@
 
 uintptr_t *map_video(volatile void *addr);
 
-#endif				/* VIDEO_INIT_H */
+#endif                          /* VIDEO_INIT_H */

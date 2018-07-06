@@ -11,4 +11,4 @@ void show_progress(void);
 void init_progress(void);
 void stop_progress(void);
 
-#endif				/* SHOW_H */
+#endif                          /* SHOW_H */

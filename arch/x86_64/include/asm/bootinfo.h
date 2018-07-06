@@ -12,4 +12,4 @@
  * */
 void bootinfo(uintptr_t bootmagic, void *pcinfo);
 
-#endif				/* BOOTINFO_H */
+#endif                          /* BOOTINFO_H */

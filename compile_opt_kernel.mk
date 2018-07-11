@@ -4,7 +4,7 @@
 # USE_VESA - default
 # USE_VGA - for legacy systems and debbuging purposes on real hardware
 # NO_VIDEOMODE - for embedded systems
-KERNEL_OUTPUT=USE_VESA
+KERNEL_OUTPUT=NO_VIDEOMODE
 
 # (Y/N) use serial as output
 KERNEL_USE_SERIAL=Y

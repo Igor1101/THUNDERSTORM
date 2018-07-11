@@ -18,7 +18,7 @@ global boot_info
 GREEN equ 0x2
 RED equ 0x4f
 
-STK_SIZE equ 1024 * 1024; 1MB for kernel stack
+STK_SIZE equ 1024*16 ; 16 KB for kernel initialization stack
 PG_SIZE equ 512*8; in bytes
 PG_SIZE_QW equ PG_SIZE/8
 global _start; EBX <-- pointer to boot information format

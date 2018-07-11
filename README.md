@@ -27,7 +27,7 @@ qemu-system-x86_64(optional),
 OVMF(optional), 
 grub-mkrescue,
 xorriso
-#### compillation have been verified under:
+#### compilation have been verified under:
 Arch linux,
 FreeBSD 11
 #### Running it on qemu!

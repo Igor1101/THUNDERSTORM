@@ -53,7 +53,6 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #endif
 /* On FreeBSD 5, machine/ansi.h does not exist anymore... */
 #if defined (__FreeBSD__) && (__FreeBSD__ >= 5)
-#include <sys/_types.h>
 #endif
 
 /* In 4.3bsd-net2, machine/ansi.h defines these symbols, which are

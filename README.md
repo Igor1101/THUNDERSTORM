@@ -17,7 +17,19 @@ arch/$(ARCH)/include/$(ARCH) # specific to machine symbols/namespaces
 ....
 
 ##### Dependencies:
-nasm gcc binutils qemu-system-x86_64 OVMF(optional) grub-mkrescue
+GNU make,
+nasm,
+gcc(version >=7), 
+binutils, 
+coreutils,
+Unix shell(sh),
+qemu-system-x86_64(optional),
+OVMF(optional), 
+grub-mkrescue,
+xorriso
+#### compillation have been verified under:
+Arch linux,
+FreeBSD 11
 #### Running it on qemu!
 please consult make tasks:
 ```

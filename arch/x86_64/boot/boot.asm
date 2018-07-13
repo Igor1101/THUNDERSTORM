@@ -18,7 +18,7 @@ global boot_info
 GREEN equ 0x2
 RED equ 0x4f
 
-STK_SIZE equ 1024*16 ; 16 KB for kernel initialization stack
+STK_SIZE equ 1024 * 1024; 1MB for kernel initialization stack
 PG_SIZE equ 512*8; in bytes
 PG_SIZE_QW equ PG_SIZE/8
 global _start; EBX <-- pointer to boot information format
@@ -216,7 +216,7 @@ boot_magic: dq  0
 boot_info:  dq  0
 section .bss
 ;pgs info:
-align PG_SIZE
+  alignb PG_SIZE
 p4_table:
   resb PG_SIZE
 p3_table:
@@ -226,9 +226,10 @@ p2_table:
 p1_table:
   resb PG_SIZE
  ; memory, reserved for STACK:
-align PG_SIZE
+  alignb PG_SIZE
 stack_bottom: ; 
   resb STK_SIZE
+  alignb PG_SIZE
 stack_top:
   resb PG_SIZE
 section .text

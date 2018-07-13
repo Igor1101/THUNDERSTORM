@@ -90,6 +90,54 @@ void kputchar_to(
 
 #endif                          /* USE_VESA */
 
+void invert_char(uint32_t row, uint32_t column)
+{
+        if ((sysfb.video_initialized == false) ||
+            (row >= text.rows) || (column >= text.columns)) {
+                return;
+        }
+        /* cast the address to PSF header struct */
+        font = (PSF_font *) & _font_start;
+        uint32_t scanline = sysfb.width * sysfb.bpp / 32;       /*usually bpp=32 */
+        /* we need to know how many bytes encode one row */
+        int bytesperline = (font->width + 7) / 8;
+        /* get the glyph for the character. If there's no
+           glyph for a given character, we'll display the first glyph. */
+        unsigned char *glyph =
+            (unsigned char *)&_font_start +
+            font->headersize;
+        /* calculate the upper left corner on screen where 
+         * we want to display.*/
+        auto int offs =
+            (row * font->height * sysfb.pitch / 4) +
+            (column * (font->width + 1) * sysfb.bpp / 32);
+        /* finally display pixels according to the bitmap */
+        register uint32_t x, y, line, mask;
+        for (y = 0; y < font->height; y++) {
+                /* save the starting position of the line */
+                line = offs;
+                mask = 1 << (font->width - 1);
+                /* display a row */
+                for (x = 0; x < font->width; x++) {
+                        register uint32_t *volatile vaddr =
+                            (uint32_t *) sysfb.virtaddr + line;
+                        if (verify_addr(vaddr) == 0) {
+                                        *vaddr = ~ ( *vaddr );
+                                }
+                        else {
+                                return; /* out of bounds */
+                        }
+                        /* adjust to the next pixel */
+                        mask >>= 1;
+                        line += 1;
+                }
+                /* adjust to the next line */
+                glyph += bytesperline;
+                offs += scanline;
+        }
+}
+
+
 void print_video_info(void)
 {
         kprintf("Resolution: %dx%d\n", sysfb.width, sysfb.height);

@@ -33,8 +33,10 @@ void select_bgcolor(int color)
 void newline(void)
 {
         if (text.row >= text.rows - 1) {
+                invert_char(text.row, text.col);
                 make_newline();
                 text.col = BEGINNING;
+                text.cursor_not_clear = true;
                 return;
         }
         text.row++;
@@ -56,18 +58,12 @@ void kputchar(int8_t chr)
 
         switch (chr) {
         case '\n':
-                /* clear last cursor */
-                kputchar_to(' ', text.row, text.col, Black, Black,
-                            NOTRANSPARENT);
                 newline();
-                update_cursor(text.row, text.col + 1);
+                update_cursor(text.row, text.col);
                 return;
         case '\r':
-                /* clear last cursor */
-                kputchar_to(' ', text.row, text.col, Black, Black,
-                            NOTRANSPARENT);
                 text.col = BEGINNING;
-                update_cursor(text.row, text.col + 1);
+                update_cursor(text.row, text.col);
                 return;
         case '\b':
                 text.col--;

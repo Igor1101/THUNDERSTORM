@@ -76,9 +76,17 @@ LIKELY void make_newline(void)
 
 LIKELY void update_cursor(int row, int col)
 {
+        static int oldrow;
+        static int oldcol;
         if (sysfb.cursor_enabled == true) {
-                kputchar_to('_', row, col, Cyan, Black, TRANSPARENT);
+                invert_char(row, col);
         }
+        if( (!text.cursor_not_clear) && (sysfb.cursor_enabled) ){
+                invert_char(oldrow, oldcol);
+        }
+        text.cursor_not_clear = false;
+        oldrow = row;
+        oldcol = col;
 }
 
 #endif

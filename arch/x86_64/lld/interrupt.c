@@ -5,6 +5,7 @@
 #include <x86_64/idt.h>
 #include <x86_64/cpu_management.h>
 
+/* *INDENT-OFF* */
 void (*exceptions_array[]) = {
         divide_error,           //0
             debug,              //1
@@ -25,8 +26,20 @@ void (*exceptions_array[]) = {
             alignment_check,    //17
             machine_check,      //18
             simd_coprocessor_error,     //19
-            undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined  //31
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined, 
+            undefined  //31
 };
+/* *INDENT-ON* */
 
 UNLIKELY void init_interrupts(void)
 {

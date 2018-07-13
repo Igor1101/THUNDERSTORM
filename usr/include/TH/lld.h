@@ -64,11 +64,12 @@ extern "C" {
                 Default = 0x2A7225,
                 DefaultBG = Black
         };
+
+        void invert_char(uint32_t row, uint32_t column);
 #endif                          /*USE_VESA */
 
-        struct Text_mode_pointer
 /* suitable with VGA and VESA */
-        {
+        struct Text_mode_pointer {
                 bool is_initialized;
                 uint32_t row;
                 uint32_t col;
@@ -76,6 +77,7 @@ extern "C" {
                 uint32_t fgcolor;
                 uint32_t rows;  /* in chars */
                 uint32_t columns;       /* in chars */
+                bool cursor_not_clear; /* (true) will not clear cursor one time */
         };
 
 /* video framebuffer */

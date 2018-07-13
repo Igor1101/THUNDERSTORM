@@ -88,7 +88,6 @@ void kputchar_to(
         }
 }
 
-#endif                          /* USE_VESA */
 
 void invert_char(uint32_t row, uint32_t column)
 {
@@ -137,6 +136,7 @@ void invert_char(uint32_t row, uint32_t column)
         }
 }
 
+#endif                          /* USE_VESA */
 
 void print_video_info(void)
 {

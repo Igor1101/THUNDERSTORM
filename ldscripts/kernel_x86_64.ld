@@ -43,5 +43,6 @@ SECTIONS {
     *( .init_bss* )
     init_kernel_bss_end = .;
 	}
+        kernel_end = .;
 
 }

@@ -33,9 +33,11 @@ void print_RAM_info(void)
                     (uintptr_t *) & kernel_phys_base < ram_map[i + 1].base_addr)
                 {
                         kprintf
-                            ("<-- kernel: \ntext: 0x%x, \ndata: 0x%x, \n init_bss: 0x%x, \nbss: 0x%x, \nend of bss: 0x%x",
-                             &kernel_text, &kernel_data, &init_kernel_bss,
-                             &kernel_bss, &kernel_bss_end);
+                            ("<-- kernel:\n text: 0x%x,\n data: 0x%x,\
+                             \n bss: 0x%x,\n init_text: 0x%x, \
+                             \n init_bss: 0x%x, \n kernel_end: 0x%x",
+                             &kernel_text, &kernel_data, &kernel_bss, &init_kernel_text,
+                             &init_kernel_bss, &kernel_end);
                 }
 
                 if ((uintptr_t *) sysfb.addr >= ram_map[i].base_addr &&

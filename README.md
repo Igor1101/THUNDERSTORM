@@ -1,4 +1,4 @@
-![THUNDERSTORM_LOGO](TH.jpg)
+![THUNDERSTORM_LOGO](boot/TH.jpg)
 **Is an embedded UNIX-like system**, which aims 
 to be as portable as possible and use modern hardware features when possible.
 Have similar to UNIX sources tree:

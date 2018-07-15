@@ -1,5 +1,5 @@
 # here choose one of output modes "USE_VESA", "USE_VGA"
-ifeq ( $(KERNEL_OUTPUT), )
+ifeq ($(strip $(KERNEL_OUTPUT)),)
 	KERNEL_OPTIONS += -D USE_VESA
 else
 	KERNEL_OPTIONS += -D $(KERNEL_OUTPUT)

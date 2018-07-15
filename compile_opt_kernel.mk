@@ -2,9 +2,11 @@
 
 # here choose one of output modes "USE_VESA", "USE_VGA", "NO_VIDEOMODE":
 # USE_VESA - default
-# USE_VGA - for legacy systems and debbuging purposes on real hardware
+# USE_VGA - for legacy systems and debbuging purposes on real hardware 
+# note, that kernel is not supported with legacy videocards, such as cirrus,
+# use vga console instead.
 # NO_VIDEOMODE - for embedded systems
-KERNEL_OUTPUT=USE_VESA
+KERNEL_OUTPUT=
 
 # (Y/N) use serial as output
 KERNEL_USE_SERIAL=Y

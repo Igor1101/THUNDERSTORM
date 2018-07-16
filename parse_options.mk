@@ -13,7 +13,7 @@ endif
 # debug mode:
 # -early output enabled (still experimental)
 # -VGA mode output slowdown to make it more readable
-ifeq ($(KERNEL_BUILD_MODE), )
+ifeq ($(strip $(KERNEL_BUILD_MODE)),)
 	KERNEL_OPTIONS += -D RELEASE
 else
 	KERNEL_OPTIONS += -D $(KERNEL_BUILD_MODE)

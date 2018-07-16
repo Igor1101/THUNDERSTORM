@@ -6,11 +6,13 @@ extern kputstr_32
 extern kputchar_to
 extern kernel_phys_base
 extern kernel_init
+extern tss_table
 
 global p4_table
 global p3_table
 global p2_table
 global p1_table
+global GDT_tss_desc; <-- for further initialization
 global init_paging; 
 global boot_magic
 global boot_info
@@ -26,13 +28,13 @@ bits 32
 section .text
 _start:
     cli
-    mov esp,  stack_top ; creating stack:
-    mov si,   GREEN ;<- <cl> color info;
-    mov [boot_magic], eax ; Store BOOT MAGIC and put as 1st arg
-    mov [boot_info], ebx ; Store BOOT info and put as 2nd arg
+    mov esp,            stack_top ; creating stack:
+    mov si,             GREEN ;<- <cl> color info;
+    mov [boot_magic],   eax ; Store BOOT MAGIC and put as 1st arg
+    mov [boot_info],    ebx ; Store BOOT info and put as 2nd arg
 section .rodata
-thinfo: db "THUNDERSTORM 0.0 Embedded system x86_64 port layer",0
-chk_cpuid: db "cpuid checked!",0
+thinfo:         db "THUNDERSTORM 0.0 Embedded system x86_64 port layer",0
+chk_cpuid:      db "cpuid checked!",0
 section .text
     mov   edi,    thinfo
     call  kputstr_32
@@ -43,11 +45,13 @@ section .text
     ;start cpu reinitialization
     call set_paging
     call init_paging
-    lgdt [GDT64.Pointer]
+    lgdt [GDT64.pointer]
     ; already x86_64 here
-    jmp  GDT64.Code:.init64; update CS
+    jmp  GDT64.code:.init64; update CS
+
 .init64:
 bits 64
+; clearing all legacy garbage
     mov ax, 0
     mov ss, ax
     mov ds, ax
@@ -55,33 +59,51 @@ bits 64
     mov fs, ax
     mov gs, ax
     jmp kernel_init
+
 bits 32
-section .rodata
+section .data
 ; GDT long mode initialization
     align 8
 GDT64:                           ; Global Descriptor Table (64-bit).
-    .Null: equ $ - GDT64         ; The null descriptor.
+    .null: equ $ - GDT64         ; The null descriptor.
     dw 0xFFFF                    ; Limit (low).
     dw 0                         ; Base (low).
     db 0                         ; Base (middle)
     db 0                         ; Access.
     db 1                         ; Granularity.
     db 0                         ; Base (high).
-    .Code: equ $ - GDT64         ; The code descriptor.
+    .code: equ $ - GDT64         ; The code descriptor.
     dw 0                         ; Limit (low).
     dw 0                         ; Base (low).
     db 0                         ; Base (middle)
     db 10011010b                 ; Access (exec/read).
     db 10101111b                 ; Granularity, 64 bits flag, limit19:16.
     db 0                         ; Base (high).
-    .Data: equ $ - GDT64         ; The data descriptor.
+    .data: equ $ - GDT64         ; The data descriptor.
     dw 0                         ; Limit (low).
     dw 0                         ; Base (low).
     db 0                         ; Base (middle)
     db 10010010b                 ; Access (read/write).
     db 00000000b                 ; Granularity.
     db 0                         ; Base (high).
-    .Pointer:                    ; The GDT-pointer.
+    ;tss descriptor will be initialized after,
+    ; now it`s filled with NULL descriptors
+    .tss: equ $ - GDT64          ; TSS descriptor
+    .tss_late_init:
+    dw 0xFFFF                    ; Limit (low).
+    dw 0                         ; Base (low).  
+    db 0                         ; Base (middle)
+    db 0                         ; Access.
+    db 1                         ; Granularity.
+    db 0                         ; Base (high).
+    dw 0xFFFF                    ; Limit (low).
+    dw 0                         ; Base (low).  
+    db 0                         ; Base (middle)
+    db 0                         ; Access.
+    db 1                         ; Granularity.
+    db 0                         ; Base (high).
+
+    .pointer:                    ; The GDT-pointer.
     dw $ - GDT64 - 1             ; Limit.
     dq GDT64                     ; Base.
     dq 0
@@ -211,10 +233,13 @@ warning:
     ret
 
 ;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;
+
 section .data
-boot_magic: dq  0
-boot_info:  dq  0
+boot_magic:     dq  0
+boot_info:      dq  0
+GDT_tss_desc:   dq GDT64.tss_late_init
 section .bss
+
 ;pgs info:
   alignb PG_SIZE
 p4_table:

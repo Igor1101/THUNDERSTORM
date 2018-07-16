@@ -97,6 +97,8 @@ run_serial: $(CDROMIMAGE)
 	else \
 	qemu-system-x86_64 -serial mon:stdio -display none \
 	-m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
+run_bochs: $(CDROMIMAGE)
+	@bochs -q
 debug: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
 	qemu-system-x86_64 -smp 10 -serial mon:stdio \
@@ -126,10 +128,12 @@ help:
 	@echo ' debug: open qemu in waiting for gdb state '
 	@echo ' run_serial : open qemu serial in console, don`t use graphics '
 	@echo '	run: run qemu with graphics '
+	@echo ' run_bochs: run under BOCHS emulator instead of qemu'
 	@echo '	iso: build iso image with kernel inside'
 	@echo ' libc: build kernel libraries'
 	@echo ' clean: clean all the staff we built'
 	@echo ' kernel: build kernel, put it to boot/ '
 	@echo ' ports: build $$(ARCH) ports of kernel'
-	@echo ' all: will handle kernel, ports, libc.. all you need to run os after'
+	@echo ' all: will handle kernel, ports, libc.. \
+	all you need to run os after'
 

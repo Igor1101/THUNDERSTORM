@@ -30,7 +30,7 @@ struct tss_format {
         uint32_t ist7_high;
         uint32_t reserved3;
         uint32_t reserved4;
-        uint16_t base;
+        uint16_t io_base;
         uint16_t reserved5;
 } PACKED;
 
@@ -49,5 +49,6 @@ struct tss_desc {
 
 extern struct tss_desc* GDT_tss_desc;
 void set_tss_desc(void);
+void set_tss_table(void);
 
 #endif /* TSS_H */

@@ -17,6 +17,12 @@ global init_paging;
 global boot_magic
 global boot_info
 
+global exc_stack_bottom
+global exc_stack_top
+
+global stack_bottom; Main stack
+global stack_top
+
 GREEN equ 0x2
 RED equ 0x4f
 
@@ -257,4 +263,8 @@ stack_bottom: ;
   alignb PG_SIZE
 stack_top:
   resb PG_SIZE
+exc_stack_bottom:
+  resb STK_SIZE
+  alignb PG_SIZE
+exc_stack_top:
 section .text

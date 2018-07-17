@@ -49,7 +49,18 @@ UNLIKELY NORET void kpanic(char *reason)
 \nR9=0x%x,\
 \nR10=0x%x,\
 \nR11=0x%x,\n\
-INTERRUPT RSP=0x%x\n", int_regs.rax, int_regs.rdx, int_regs.rcx, int_regs.rsi, int_regs.rdi, int_regs.r8, int_regs.r9, int_regs.r10, int_regs.r11, int_regs.rsp_cur);
+INTERRUPT RSP=0x%x\n", 
+                int_regs.rax, 
+                int_regs.rdx, 
+                int_regs.rcx, 
+                int_regs.rsi, 
+                int_regs.rdi, 
+                int_regs.r8, 
+                int_regs.r9, 
+                int_regs.r10, 
+                int_regs.r11, 
+                int_regs.rsp_cur
+        );
         cpu_halt();
 }
 

@@ -3,6 +3,7 @@
  */
 #include <asm/traps.h>
 #include <x86_64/idt.h>
+#include <x86_64/tss.h>
 #include <x86_64/cpu_management.h>
 
 /* *INDENT-OFF* */
@@ -52,4 +53,6 @@ UNLIKELY void set_exceptions(void)
         for (uint32_t num = 0; num < NUM_OF_EXCEPTIONS; num++) {
                 idt_set_trap(num, (uint64_t) exceptions_array[num], 0);
         }
+        /* set TSS descriptor in GDT table*/
+        set_tss_desc();
 }

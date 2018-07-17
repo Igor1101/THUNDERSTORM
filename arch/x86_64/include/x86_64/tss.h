@@ -33,6 +33,7 @@ struct tss_format {
         uint16_t base;
         uint16_t reserved5;
 } PACKED;
+
 extern struct tss_format tss_table;
 
 struct tss_desc {
@@ -45,6 +46,8 @@ struct tss_desc {
         uint16_t base_63_32;
         uint32_t reserved;
 } PACKED;
-//extern struct tss_desc GDT64.tss_late_init;
+
+extern struct tss_desc* GDT_tss_desc;
+void set_tss_desc(void);
 
 #endif /* TSS_H */

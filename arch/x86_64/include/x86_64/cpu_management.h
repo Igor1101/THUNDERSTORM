@@ -98,6 +98,11 @@ FORCE_INLINE void lidt(void *base, uint16_t size)
                                  * choose an addressing mode*/
 }
 
+FORCE_INLINE void ltr(uint16_t selector)
+{
+        asm("ltr %0 " : : "r" (selector));
+}
+
 FORCE_INLINE uint64_t get_SP(void)
 {
         uint64_t rsp;

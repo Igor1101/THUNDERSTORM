@@ -71,6 +71,10 @@ void kputchar(int8_t chr)
                 text.col--;
                 update_cursor(text.row, text.col + 1);
                 return;
+        case '\t':
+                text.col += text.col % 2 + 2;/* now tab=2spaces */
+                update_cursor(text.row, text.col + 1);
+                return;
         default:
                 break;
         }

@@ -34,6 +34,7 @@ __________________________________________________________________________/_____
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
+#include <TH/stack.h>
 #include <asm/int_handler.h>
 #include <asm/cpu_management.h>
 #include <asm/bootinfo.h>
@@ -95,6 +96,8 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
         print_RAM_info();
         /* initializing interrupts */
+        kprintf("clearing kernel stacks: ");
+        clear_kernel_stacks();
         set_exceptions();
         init_interrupts();
         asm volatile (" exc: \n"

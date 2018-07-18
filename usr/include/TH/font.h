@@ -27,7 +27,7 @@ extern "C" {
         extern char _font_start;        /* < ------------ font in rodata */
         extern char _font_end;
 
-        PSF_font *font;
+        extern PSF_font *font;
 
 #ifdef __cplusplus
 }

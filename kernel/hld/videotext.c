@@ -1,7 +1,9 @@
 /*
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
+#include <gcc_opt.h>
 #include <kstdio.h>
+#include <kstring.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -12,7 +14,7 @@
 
 #ifdef USE_VESA
 
-int verify_addr(uint32_t * addr)
+LIKELY int verify_addr(uint32_t * addr)
   /* verify if we are writing to permissible address */
 {
         if (addr >= (uint32_t *) sysfb.virtaddr + sysfb.width * sysfb.height) {
@@ -21,7 +23,10 @@ int verify_addr(uint32_t * addr)
         return 0;
 }
 
-void kputchar_to(
+/* This function has been copied from 
+ * wiki.OSdev.org
+ */
+LIKELY void kputchar_to(
                         /* unicode character */
                         unsigned short int c,
                         /* cursor position on screen in characters */
@@ -36,7 +41,6 @@ void kputchar_to(
                 return;
         }
         /* cast the address to PSF header struct */
-        font = (PSF_font *) & _font_start;
         uint32_t scanline = sysfb.width * sysfb.bpp / 32;       /*usually bpp=32 */
         /* we need to know how many bytes encode one row */
         int bytesperline = (font->width + 7) / 8;
@@ -52,7 +56,7 @@ void kputchar_to(
             (c > 0 && c < (font->numglyph) ? c : 0) * font->bytesperglyph;
         /* calculate the upper left corner on screen where 
          * we want to display.*/
-        auto int offs =
+        register int offs =
             (row * font->height * sysfb.pitch / 4) +
             (column * (font->width + 1) * sysfb.bpp / 32);
         /* finally display pixels according to the bitmap */
@@ -89,14 +93,13 @@ void kputchar_to(
 }
 
 
-void invert_char(uint32_t row, uint32_t column)
+LIKELY void invert_char(uint32_t row, uint32_t column)
 {
         if ((sysfb.video_initialized == false) ||
             (row >= text.rows) || (column >= text.columns)) {
                 return;
         }
         /* cast the address to PSF header struct */
-        font = (PSF_font *) & _font_start;
         uint32_t scanline = sysfb.width * sysfb.bpp / 32;       /*usually bpp=32 */
         /* we need to know how many bytes encode one row */
         int bytesperline = (font->width + 7) / 8;
@@ -107,7 +110,7 @@ void invert_char(uint32_t row, uint32_t column)
             font->headersize;
         /* calculate the upper left corner on screen where 
          * we want to display.*/
-        auto int offs =
+        register int offs =
             (row * font->height * sysfb.pitch / 4) +
             (column * (font->width + 1) * sysfb.bpp / 32);
         /* finally display pixels according to the bitmap */
@@ -136,9 +139,63 @@ void invert_char(uint32_t row, uint32_t column)
         }
 }
 
+UNLIKELY uint32_t determine_rows(void)
+{
+        /* system font should already be processed
+         * */
+        int row = 1;
+        while ((row * font->height) < sysfb.height) {
+                row++;
+        }
+        return row - 1;
+}
+
+UNLIKELY uint32_t determine_columns(void)
+{
+        /* system font should already be processed
+         * */
+        uint32_t column = 1;
+        while (column * (font->width + 1) * sysfb.bpp / 32 < sysfb.width) {
+                column++;
+        }
+        return column - 1;
+}
+
+UNLIKELY void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
+{
+        /* getting rid of compiler warnings */
+        (void)cursor_start;
+        (void)cursor_end;
+        sysfb.cursor_enabled = true;
+}
+
+LIKELY void make_newline(void)
+{
+        if (sysfb.video_initialized == false)
+                return;
+        void *end = sysfb.virtaddr + (1 * font->height * sysfb.pitch / 8);
+        kmemcpy_ptr(sysfb.virtaddr, end,
+                    sysfb.width * sysfb.height * sysfb.bpp / 8);
+}
+
+LIKELY void update_cursor(int row, int col)
+{
+        static int oldrow;
+        static int oldcol;
+        if (sysfb.cursor_enabled == true) {
+                invert_char(row, col);
+        }
+        if( (!text.cursor_not_clear) && (sysfb.cursor_enabled) ){
+                invert_char(oldrow, oldcol);
+        }
+        text.cursor_not_clear = false;
+        oldrow = row;
+        oldcol = col;
+}
+
 #endif                          /* USE_VESA */
 
-void print_video_info(void)
+UNLIKELY void print_video_info(void)
 {
         kprintf("Resolution: %dx%d\n", sysfb.width, sysfb.height);
         kprintf("chars per row: %d\n", text.columns);

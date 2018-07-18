@@ -24,6 +24,7 @@ asm(".section .rodata\n"
     "_font_end: \n" ".section .text\n");
 
 uint16_t *unicode = NULL;
+PSF_font *font;
 
 int font_info(void)
 {

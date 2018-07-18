@@ -54,10 +54,8 @@ UNLIKELY void set_exceptions(void)
         idt_clear_vectors();
         
         for (uint32_t num = 0; num < NUM_OF_EXCEPTIONS; num++) {
-                idt_set_trap(num, (uint64_t) exceptions_array[num], 0);
+                idt_set_trap(num, (uint64_t) exceptions_array[num], 1);
         }
-        //idt_set_trap(6, (uint64_t)exceptions_array[6],1);
-        idt_set_trap(INVALID_OP, (uint64_t)exceptions_array[INVALID_OP],1);
         /* set TSS descriptor in GDT table*/
         set_tss_desc();
         set_tss_table();

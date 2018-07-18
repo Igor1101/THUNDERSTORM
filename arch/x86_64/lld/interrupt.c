@@ -23,7 +23,8 @@ void (*exceptions_array[]) = {
             stack_segment,      //12
             general_protection, //13
             page_fault,         //14
-            undefined, coprocessor_error,       //16  FPU legacy error
+            undefined, 
+            coprocessor_error,       //16  FPU legacy error
             alignment_check,    //17
             machine_check,      //18
             simd_coprocessor_error,     //19
@@ -45,6 +46,7 @@ void (*exceptions_array[]) = {
 UNLIKELY void init_interrupts(void)
 {
         lidt(idt_table, EARLY_SIZE_OF_IDT);
+        init_tss();
 }
 
 UNLIKELY void set_exceptions(void)
@@ -54,7 +56,8 @@ UNLIKELY void set_exceptions(void)
         for (uint32_t num = 0; num < NUM_OF_EXCEPTIONS; num++) {
                 idt_set_trap(num, (uint64_t) exceptions_array[num], 0);
         }
-        idt_set_trap(6, (uint64_t)exceptions_array[6],1);
+        //idt_set_trap(6, (uint64_t)exceptions_array[6],1);
+        idt_set_trap(INVALID_OP, (uint64_t)exceptions_array[INVALID_OP],1);
         /* set TSS descriptor in GDT table*/
         set_tss_desc();
         set_tss_table();

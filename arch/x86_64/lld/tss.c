@@ -1,6 +1,8 @@
+#include <stdint.h>
+#include <TH/stack.h>
+#include <asm/traps.h>
 #include <x86_64/idt.h>
 #include <x86_64/tss.h>
-#include <TH/stack.h>
 
 #define x64_LOW(X) ( (uint64_t) (X) & 0xFFFF )
 #define x64_MIDDLE_LOW(X) ( (uint64_t) (X) >> 16 & 0xFF )
@@ -12,12 +14,14 @@ struct tss_format tss_table;
 
 void set_tss_desc(void)
 {
+        uint64_t base = (uint64_t)&tss_table;
+        uint64_t limit = sizeof(struct tss_format) + base - 1;
         *GDT_tss_desc = (struct tss_desc){
-                .low_limit      =       0xFFFF,
+                .low_limit      =       x64_LOW(limit),
                 .base_15_0      =       x64_LOW(&tss_table),
                 .base_23_16     =       x64_MIDDLE_LOW(&tss_table),
                 .type           =       PRESENT|0b1001,
-                .high_limit     =       0xFF,
+                .high_limit     =       x64_MIDDLE_LOW(limit),
                 .base_31_24     =       x64_MIDDLE_HIGH(&tss_table),
                 .base_63_32     =       x64_HIGH(&tss_table),
                 .reserved       =       0
@@ -35,8 +39,8 @@ void set_tss_table(void)
                 .rsp2_high      =       HIGH(&exc_stack_top),
                 .reserved1      =       0,
                 .reserved2      =       0,
-                .ist1_low       =       LOW(&idt_table),
-                .ist1_high      =       HIGH(&idt_table),
+                .ist1_low       =       LOW(&idt_table[INVALID_OP]),
+                .ist1_high      =       HIGH(&idt_table[INVALID_OP]),
                 .ist2_low       =       LOW(&idt_table),
                 .ist2_high      =       HIGH(&idt_table),
                 .ist3_low       =       LOW(&idt_table),

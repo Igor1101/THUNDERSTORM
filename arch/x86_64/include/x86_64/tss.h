@@ -3,6 +3,8 @@
 
 #include <gcc_opt.h>
 #include <stdint.h>
+#include <x86_64/cpu_management.h>
+#define TSS_SELECTOR 24
 
 struct tss_format {
         uint32_t reserved0;
@@ -48,7 +50,12 @@ struct tss_desc {
 } PACKED;
 
 extern struct tss_desc* GDT_tss_desc;
+
 void set_tss_desc(void);
 void set_tss_table(void);
 
+FORCE_INLINE void init_tss(void)
+{
+        ltr(TSS_SELECTOR);
+}
 #endif /* TSS_H */

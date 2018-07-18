@@ -7,7 +7,11 @@
 #include <stdbool.h>
 #include <TH/lld.h>
 #include <TH/sysvars.h>
+#include <TH/font.h>
 #include <video_lld.h>
+
+uint32_t scanline;
+uint32_t bytesperline;
 
 bool init_video(void)
   /* without this function 
@@ -29,5 +33,10 @@ bool init_video(void)
          * to somewhere in kernel memory */
         sysfb.virtaddr = map_video((volatile void *)sysfb.addr);
 #endif
+        /* init vars */
+        scanline = sysfb.width * sysfb.bpp /32;
+        /* bytes encode one line */
+        bytesperline = (font -> width + 7) / 8;
+        /* unicode translation */
         return sysfb.video_initialized;
 }

@@ -29,6 +29,9 @@ extern "C" {
 
         extern PSF_font *font;
 
+        extern uint32_t scanline;
+        extern uint32_t bytesperline;
+
 #ifdef __cplusplus
 }
 #endif

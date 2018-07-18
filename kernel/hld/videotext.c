@@ -40,14 +40,11 @@ LIKELY void kputchar_to(
             (row >= text.rows) || (column >= text.columns)) {
                 return;
         }
-        /* cast the address to PSF header struct */
-        uint32_t scanline = sysfb.width * sysfb.bpp / 32;       /*usually bpp=32 */
-        /* we need to know how many bytes encode one row */
-        int bytesperline = (font->width + 7) / 8;
         /* unicode translation */
+        /* Now useless
         if (unicode != NULL) {
                 c = unicode[c];
-        }
+        }*/
         /* get the glyph for the character. If there's no
            glyph for a given character, we'll display the first glyph. */
         unsigned char *glyph =
@@ -99,10 +96,6 @@ LIKELY void invert_char(uint32_t row, uint32_t column)
             (row >= text.rows) || (column >= text.columns)) {
                 return;
         }
-        /* cast the address to PSF header struct */
-        uint32_t scanline = sysfb.width * sysfb.bpp / 32;       /*usually bpp=32 */
-        /* we need to know how many bytes encode one row */
-        int bytesperline = (font->width + 7) / 8;
         /* get the glyph for the character. If there's no
            glyph for a given character, we'll display the first glyph. */
         unsigned char *glyph =
@@ -113,7 +106,6 @@ LIKELY void invert_char(uint32_t row, uint32_t column)
         register int offs =
             (row * font->height * sysfb.pitch / 4) +
             (column * (font->width + 1) * sysfb.bpp / 32);
-        /* finally display pixels according to the bitmap */
         register uint32_t x, y, line, mask;
         for (y = 0; y < font->height; y++) {
                 /* save the starting position of the line */

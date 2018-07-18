@@ -9,7 +9,31 @@
 #include <gcc_opt.h>
 #include <x86_64/idt.h>
 #define CONFIG_X86_64
-#define dotraplinkage           //looks like do_* functions are useless here
+#define dotraplinkage //looks like do_* functions are useless here
+
+/* Exc numbers */
+
+#define DIVIDE_ERROR            0
+#define DEBUG                   1
+#define NMI                     2
+#define INT3                    3
+#define OVERFLOW                4
+#define BOUNDS                  5
+#define INVALID_OP              6
+#define DEVICE_NOT_AVAILABLE    7
+#define DOUBLE_FAULT            8
+#define COPROCESSOR_SO          9
+#define INVALID_TSS             10
+#define SEGMENT_NOT_PRESENT     11
+#define STACK_SEGMENT           12
+#define GENERAL_PROTECTION      13
+#define PAGE_FAULT              14
+#define UNDEFINED               15
+#define COPROCESSOR_ERROR       16
+#define ALIGMENT_CHECK          17
+#define MACHINE_CHECK           18
+#define SIMD_CPU_ERROR          19
+
 /* exceptions */
 INTERRUPT void divide_error(int_frame * frame);
 INTERRUPT void debug(int_frame * frame);

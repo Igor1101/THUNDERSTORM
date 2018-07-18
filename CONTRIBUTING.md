@@ -1,10 +1,12 @@
 # Contributing
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
+* When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
 
-Please, note, that there are no warnings or errors occuring before contributing, otherwise
+* Please, note, that there are no warnings or errors occuring before contributing, otherwise
 pull requests will be ignored.
+
+* And contribute to experimental branch instead of master, if it exists.
 ### Standards, used in THUNDERSTORM kernel
 * snake case is much more preferred
 * linux kernel style indentation (spaces over tabs are preferred)

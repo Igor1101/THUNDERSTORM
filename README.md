@@ -45,7 +45,7 @@ it is better supported.
 
 #### TODO this month (in case someone want`s to contribute):
 - [x] add serial driver
-- [ ] improve exceptions handling
-- [ ] TSS initialization
+- [x] improve exceptions handling
+- [x] TSS initialization
 - [ ] add multiboot 1.0 support to use more lightweight bootloader
 - [ ] port multitasking from [THUNDERSTORM-OLD](http://github.com/Igor1101/THUNDERSTORM-OLD)

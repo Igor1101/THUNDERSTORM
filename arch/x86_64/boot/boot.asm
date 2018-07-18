@@ -26,7 +26,7 @@ global stack_top
 GREEN equ 0x2
 RED equ 0x4f
 
-STK_SIZE equ 1024 * 8 ; 8KB for kernel initialization stack
+STK_SIZE equ 1024 * 16 ; 16KB for kernel initialization stack
 PG_SIZE equ 512*8; in bytes
 PG_SIZE_QW equ PG_SIZE/8
 global _start; EBX <-- pointer to boot information format
@@ -52,6 +52,7 @@ section .text
     call set_paging
     call init_paging
     lgdt [GDT64.pointer]
+    call pause
     ; already x86_64 here
     jmp  GDT64.code:.init64; update CS
 
@@ -238,6 +239,13 @@ warning:
     mov si, GREEN
     ret
 
+pause:
+        mov ax, -1
+.jmp:
+        dec ax
+        cmp ax, 0
+        jne .jmp
+        ret
 ;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;
 
 section .data
@@ -263,8 +271,4 @@ stack_bottom: ;
   alignb PG_SIZE
 stack_top:
   resb PG_SIZE
-exc_stack_bottom:
-  resb STK_SIZE
-  alignb PG_SIZE
-exc_stack_top:
 section .text

@@ -7,6 +7,7 @@
 /*declared in kstdlib.h */
 void show_progress(void)
 {
+        kputchar('\b');
         static uint8_t stat;
         switch (stat) {
         case 0:
@@ -29,15 +30,14 @@ void show_progress(void)
                 kputchar('+');
                 stat = 0;
         }
-        kputchar('\b');
 }
 
 void init_progress(void)
 {
-        kprintf("\n <---------\r");
+        kprintf("\t\t");
 }
 
 void stop_progress(void)
 {
-        kputchar('\n');
+        kprintf("\t\t");
 }

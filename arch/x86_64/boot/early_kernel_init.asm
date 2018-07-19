@@ -1,6 +1,6 @@
 ;Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
 bits 64
-global kernel_init
+global early_kernel_init
 extern kputstr_32
 extern start_kernel
 extern boot_magic
@@ -10,12 +10,13 @@ GREEN equ 0x2
 section .rodata
   verify_x64: db " Long mode initialized", 0
 section .text
-kernel_init:
+early_kernel_init:
   mov rax, 0x1122334455667788
   mov rax, verify_x64
   mov cl, GREEN
   call kputstr_32
   mov rdi,  [boot_magic] ; EAX <-- boot magic (via multiboot spec)
   mov rsi,  [boot_info]  ; EBX <-- boot info
+.start_kernel:
   call start_kernel
-  hlt
+  jmp .start_kernel

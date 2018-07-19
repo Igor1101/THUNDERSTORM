@@ -5,7 +5,7 @@
 extern kputstr_32
 extern kputchar_to
 extern kernel_phys_base
-extern kernel_init
+extern early_kernel_init
 extern tss_table
 
 global p4_table
@@ -65,7 +65,7 @@ bits 64
     mov es, ax
     mov fs, ax
     mov gs, ax
-    jmp kernel_init
+    jmp early_kernel_init
 
 bits 32
 section .data
@@ -246,12 +246,17 @@ pause:
         cmp ax, 0
         jne .jmp
         ret
-;;;;;;;;;;;;;;;;;;; RAM ;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;; GLOBAL ;;;;;;;;;;;;;;;;;;;;;;;;
+; constants:
+section .rodata
+GDT_tss_desc:   dq GDT64.tss_late_init
+GDT_tss_sel:    dq GDT64.tss
+; data:
 section .data
 boot_magic:     dq  0
 boot_info:      dq  0
-GDT_tss_desc:   dq GDT64.tss_late_init
+; bss:
 section .bss
 
 ;pgs info:
@@ -271,4 +276,3 @@ stack_bottom: ;
   alignb PG_SIZE
 stack_top:
   resb PG_SIZE
-section .text

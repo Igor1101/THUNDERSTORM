@@ -13,6 +13,7 @@ global p3_table
 global p2_table
 global p1_table
 global GDT_tss_desc; <-- for further initialization
+global GDT_tss_sel
 global init_paging; 
 global boot_magic
 global boot_info

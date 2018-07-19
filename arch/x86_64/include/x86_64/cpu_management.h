@@ -103,13 +103,6 @@ FORCE_INLINE void ltr(uint16_t selector)
         asm("ltr %0 " : : "r" (selector));
 }
 
-FORCE_INLINE uint64_t get_SP(void)
-{
-        uint64_t rsp;
- asm("mov %%rsp, %0":"=r"(rsp));
-        return rsp;
-}
-
 FORCE_INLINE uint64_t get_CS(void)
 {
         uint64_t cs;

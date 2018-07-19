@@ -56,6 +56,11 @@ UNLIKELY void set_exceptions(void)
         for (uint32_t num = 0; num < NUM_OF_EXCEPTIONS; num++) {
                 idt_set_trap(num, (uint64_t) exceptions_array[num], 1);
         }
+        idt_set_trap(DOUBLE_FAULT, (uint64_t) exceptions_array[DOUBLE_FAULT], 7);
+        idt_set_trap(GENERAL_PROTECTION, 
+                        (uint64_t) exceptions_array[GENERAL_PROTECTION], 6);
+        idt_set_trap(NMI, (uint64_t) exceptions_array[NMI], 5);
+        idt_set_trap(PAGE_FAULT, (uint64_t) exceptions_array[PAGE_FAULT], 4);
         /* set TSS descriptor in GDT table*/
         set_tss_desc();
         set_tss_table();

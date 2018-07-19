@@ -22,4 +22,15 @@ NORET FORCE_INLINE void cpu_halt(void)
                 asm volatile ("hlt");
 }
 
+/*
+ * The use of this function in portable 
+ * (HL) source is appropriate
+ */
+FORCE_INLINE uint64_t get_SP(void)
+{
+        uint64_t rsp;
+        asm("mov %%rsp, %0":"=r"(rsp));
+        return rsp;
+}
+
 #endif                          /* CPU_HL_MANAGMENT */

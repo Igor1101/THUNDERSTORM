@@ -4,7 +4,6 @@
 #include <gcc_opt.h>
 #include <stdint.h>
 #include <x86_64/cpu_management.h>
-#define TSS_SELECTOR 24
 
 struct tss_format {
         uint32_t reserved0;
@@ -54,8 +53,9 @@ extern struct tss_desc* GDT_tss_desc;
 void set_tss_desc(void);
 void set_tss_table(void);
 
+extern uint64_t GDT_tss_sel;
 FORCE_INLINE void init_tss(void)
 {
-        ltr(TSS_SELECTOR);
+        ltr(GDT_tss_sel);
 }
 #endif /* TSS_H */

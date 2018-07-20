@@ -52,6 +52,7 @@ section .text
     ;start cpu reinitialization
     call set_paging
     call init_paging
+    call pause
     lgdt [GDT64.pointer]
     call pause
     ; already x86_64 here
@@ -241,10 +242,10 @@ warning:
     ret
 
 pause:
-        mov ax, -1
+        mov eax, 0xFFFFFF
 .jmp:
-        dec ax
-        cmp ax, 0
+        dec eax
+        cmp eax, 0
         jne .jmp
         ret
 

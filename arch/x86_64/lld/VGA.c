@@ -62,7 +62,7 @@ void kputchar_to(
 void make_newline(void)
 {
 #ifdef DEBUG
-        kpause();
+        //kpause();
 #endif
         memcpy((void *)VGAADDR, (void *)VGAADDR + 160,
                ROWS * COLUMNS * 2 + COLUMNS * 2);

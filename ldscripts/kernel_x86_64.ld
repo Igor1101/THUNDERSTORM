@@ -31,7 +31,7 @@ SECTIONS {
 	}
 
   /* this section will be removed after kernel initialization */
-    .text BLOCK(4K) : AT(ADDR(.text) - offset) ALIGN(4K) {
+    .bss BLOCK(4K) : AT(ADDR(.bss) - offset) ALIGN(4K) {
     init_kernel_text = .;
 		*(.init_text)
     init_kernel_text_end = .;

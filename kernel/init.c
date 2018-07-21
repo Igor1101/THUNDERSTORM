@@ -29,7 +29,7 @@ __________________________________________________________________________/_____
 /* High level TH kernel initialization */
 
 /* indentation from top of display in chars*/
-#define OFFSET_FROM_TOP 10
+#define OFFSET_FROM_TOP 6
 
 #include <kstring.h>
 #include <kstdlib.h>
@@ -39,6 +39,7 @@ __________________________________________________________________________/_____
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
 #include <TH/stack.h>
+#include <TH/die.h>
 #include <asm/int_handler.h>
 #include <asm/cpu_management.h>
 #include <asm/bootinfo.h>
@@ -66,11 +67,11 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kputs
             ("Note, that VGA mode is Legacy, used only for debbuging and text");
         select_fgcolor(Default);
-#endif                          /* USE_VGA */
+#endif/* USE_VGA */
         static char verifier = 100;
         if (verifier != 100) {
-                return (1);     /* GOT is not working, 
-                                   smth wrong with bss */
+                die("GOT error");/* GOT is not working, 
+                                  * smth wrong with bss */
         }
 #ifdef DEBUG
         select_fgcolor(Red);

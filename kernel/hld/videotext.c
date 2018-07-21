@@ -139,7 +139,7 @@ UNLIKELY uint32_t determine_rows(void)
         while ((row * font->height) < sysfb.height) {
                 row++;
         }
-        return row - 1;
+        return row;
 }
 
 UNLIKELY uint32_t determine_columns(void)

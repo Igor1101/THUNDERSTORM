@@ -41,9 +41,12 @@ kernel: initialize ports libc
 	# KERNEL COMPILATION
 	@for cfile in $(KERNEL_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
-		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS) \
-	; done
+		if [ ! -f $$CFILE ] || [ $$cfile -nt $$CFILE ] ;\
+		then \
+			printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
+			$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS) ;\
+		fi;\
+	done
 	$(LD) --nmagic -o $(KERNEL) -T ldscripts/kernel_x86_64.ld $(KERNEL_BUILD_PATH)/* $(LD_FLAGS) $(THLIBC)
 
 clean:
@@ -55,24 +58,33 @@ clean:
 ports: initialize
 	# NASM PORTS
 	@for cfile in $(LLD_NASM_SOURCES);do \
-	CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
-	printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-	nasm $(KERNEL_OPTIONS) -f elf64  -o $$CFILE $$cfile; \
+		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
+		if [ ! -f $$CFILE ] || [ $$cfile -nt $$CFILE ] ;\
+		then \
+			printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ;\
+			nasm $(KERNEL_OPTIONS) -f elf64  -o $$CFILE $$cfile; \
+		fi;\
 	done
 	# C PORTS
 	@for cfile in $(LLD_C_SOURCES); do \
 		CFILE=$(KERNEL_BUILD_PATH)/$$(basename $$cfile.o); \
-		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS) \
-	; done
+		if [ ! -f $$CFILE ] || [ $$cfile -nt $$CFILE ] ;\
+		then \
+			printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
+			$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS) ; \
+		fi;\
+	done
 
 # compile libraries:
 libc: initialize
 	# LIBC
 	@for cfile in $(LIBC_C_SOURCES); do \
 		CFILE=$(LIBC_BUILD_PATH)/$$(basename $$cfile.o); \
-		printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
-		$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS); \
+		if [ ! -f $$CFILE ] || [ $$cfile -nt $$CFILE ] ;\
+		then \
+			printf 'COMPILING:\033[32m %s -> %s\n\033[0m', $$cfile, $$CFILE ; \
+			$(CC) -c $$cfile -o $$CFILE $(KERNEL_CC_FLAGS); \
+		fi;\
 	done; 
 	# LIBC COMPRESSING
 	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*
@@ -108,7 +120,7 @@ debug: $(CDROMIMAGE)
 	-S -s -d int -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
 initialize: # add directories
 	for dir in $(DIRECTORIES); do \
-		if ! [ -e $$dir ]; then mkdir $$dir; fi;\
+		if [ ! -e $$dir ]; then mkdir $$dir; fi;\
  	done
 ksize: kernel
 	@size  $(KERNEL)

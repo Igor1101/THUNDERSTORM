@@ -15,7 +15,7 @@ AR = ar
 OBJCOPY = objcopy
 AS_FLAGS =
 CC_FLAGS = -O3 -g -fno-stack-protector\
- 	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib -Wno-unused-parameter -Wno-unused-variable
+ 	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib 
 KERNEL_CC_FLAGS = -mgeneral-regs-only -nostdinc -mno-red-zone $(CC_FLAGS) $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
 LD_FLAGS = -nostdlib -static 
 BOOT_PORTS_PATH = arch/$(ARCH)/boot

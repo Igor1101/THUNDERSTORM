@@ -116,6 +116,7 @@ INTERRUPT void coprocessor_segment_overrun(int_frame * frame)
 INTERRUPT void invalid_TSS(int_frame * frame, uword_t err)
 {
         EXC_START;
+        kprintf("ERROR CODE: 0x%x", err);
         catch_regs(frame, (void *)get_SP());
         kpanic(exception_messages[INVALID_TSS]);
 };
@@ -123,6 +124,7 @@ INTERRUPT void invalid_TSS(int_frame * frame, uword_t err)
 INTERRUPT void segment_not_present(int_frame * frame, uword_t err)
 {
         EXC_START;
+        kprintf("ERROR CODE: 0x%x", err);
         catch_regs(frame, (void *)get_SP());
         kpanic(exception_messages[SEGMENT_NOT_PRESENT]);
 };
@@ -130,6 +132,7 @@ INTERRUPT void segment_not_present(int_frame * frame, uword_t err)
 INTERRUPT void stack_segment(int_frame * frame, uword_t err)
 {
         EXC_START;
+        kprintf("ERROR CODE: 0x%x", err);
         catch_regs(frame, (void *)get_SP());
         kpanic(exception_messages[STACK_SEGMENT]);
 };
@@ -145,6 +148,7 @@ INTERRUPT void general_protection(int_frame * frame, uword_t err)
 INTERRUPT void page_fault(int_frame * frame, uword_t err)
 {
         EXC_START;
+        kprintf("ERROR CODE: 0x%x", err);
         catch_regs(frame, (void *)get_SP());
         kpanic(exception_messages[PAGE_FAULT]);
 };
@@ -173,6 +177,7 @@ INTERRUPT void coprocessor_error(int_frame * frame)
 INTERRUPT void alignment_check(int_frame * frame, uword_t err)
 {
         EXC_START;
+        kprintf("ERROR CODE: 0x%x", err);
         catch_regs(frame, (void *)get_SP());
         kpanic(exception_messages[ALIGMENT_CHECK]);
 };

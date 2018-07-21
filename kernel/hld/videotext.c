@@ -165,8 +165,9 @@ LIKELY void make_newline(void)
 {
         if (sysfb.video_initialized == false)
                 return;
-        void *end = sysfb.virtaddr + (1 * font->height * sysfb.pitch / 8);
-        kmemcpy_ptr(sysfb.virtaddr, end,
+        uintptr_t offset = text.lines_offset * font-> height * sysfb.pitch / 8;
+        void *src = sysfb.virtaddr + (1 * font->height * sysfb.pitch / 8) + offset;
+        kmemcpy_ptr(sysfb.virtaddr + offset, src,
                     sysfb.width * sysfb.height * sysfb.bpp / 8);
 }
 

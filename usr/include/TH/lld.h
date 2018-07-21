@@ -69,15 +69,17 @@ extern "C" {
 #endif                          /*USE_VESA */
 
 /* suitable with VGA and VESA */
+        typedef uint32_t text_t;
         struct Text_mode_pointer {
                 bool is_initialized;
-                uint32_t row;
-                uint32_t col;
-                uint32_t bgcolor;
-                uint32_t fgcolor;
-                uint32_t rows;  /* in chars */
-                uint32_t columns;       /* in chars */
+                text_t row;
+                text_t col;
+                text_t bgcolor;
+                text_t fgcolor;
+                text_t rows;  /* in chars */
+                text_t columns;       /* in chars */
                 bool cursor_not_clear; /* (true) will not clear cursor one time */
+                text_t lines_offset;
         };
 
 /* video framebuffer */
@@ -96,10 +98,10 @@ extern "C" {
                 uint32_t bpp;
                 uint32_t type;
                 uint32_t colorinfo;
-                uint32_t cursor_enabled;
+                bool cursor_enabled;
         };
 
-        void tui_init(void);
+        void tui_init(text_t lines_offset);
         void select_fgcolor(int color);
         void select_bgcolor(int color);
 

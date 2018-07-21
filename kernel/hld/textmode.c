@@ -9,9 +9,10 @@
 #define BEGINNING 0
 volatile
 struct Text_mode_pointer text;
-void tui_init(void)
+void tui_init(text_t lines_offset)
 {
-        text.row = BEGINNING;
+        text.lines_offset = lines_offset;
+        text.row = BEGINNING + text.lines_offset;
         text.col = BEGINNING;
         text.fgcolor = Default;
         enable_cursor(BEGINNING, text.rows);

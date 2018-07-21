@@ -27,6 +27,10 @@ __________________________________________________________________________/_____
 */
 
 /* High level TH kernel initialization */
+
+/* indentation from top of display in chars*/
+#define OFFSET_FROM_TOP 10
+
 #include <kstring.h>
 #include <kstdlib.h>
 #include <kstdio.h>
@@ -57,7 +61,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 #endif                          /* RELEASE */
 #endif                          /* USE_SERIAL */
 #ifdef USE_VGA
-        tui_init();
+        tui_init(OFFSET_FROM_TOP);
         select_fgcolor(Red);
         kputs
             ("Note, that VGA mode is Legacy, used only for debbuging and text");
@@ -77,7 +81,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kputs("COMPUTER INFO:");
         bootinfo(boot_magic, pcinfo);
         if (init_video() == true) {
-                tui_init();
+                tui_init(OFFSET_FROM_TOP);
                 kputs("videomode successfully started");
                 print_video_info();
                 /* verifying bounds of display */

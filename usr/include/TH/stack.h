@@ -14,7 +14,7 @@
  * with size SIZEOF_EXC_STACK / 8
  * */
 #ifndef SIZEOF_EXC_STACK
-#define SIZEOF_EXC_STACK 1024 * 1024
+#define SIZEOF_EXC_STACK 1024 * 4 * 8
 #endif /* SIZEOF_EXC_STACK */
 
 #define EXCEPTION_STK_END \

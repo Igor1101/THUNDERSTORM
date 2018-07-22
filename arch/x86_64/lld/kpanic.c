@@ -9,6 +9,7 @@
 #include <asm/cpu_management.h>
 #include <x86_64/idt.h>
 
+/* *INDENT-OFF* */
 /*
  * TAB=2 SPACES
  * After exception\ int occured we have in stack:
@@ -67,15 +68,17 @@ INTERRUPT RSP=0x%x\n",
 void catch_regs(int_frame * regs, void *current_SP)
 {
         int_regs = (__int_regs) {
-        .rax = *(uint64_t *) (current_SP),.rdx =
-                    *(uint64_t *) (current_SP + 8),.rcx =
-                    *(uint64_t *) (current_SP + 16),.rsi =
-                    *(uint64_t *) (current_SP + 24),.rdi =
-                    *(uint64_t *) (current_SP + 32),.r8 =
-                    *(uint64_t *) (current_SP + 40),.r9 =
-                    *(uint64_t *) (current_SP + 48),.r10 =
-                    *(uint64_t *) (current_SP + 56),.r11 =
-                    *(uint64_t *) (current_SP + 64),.rsp_cur =
-                    (uint64_t) current_SP};
+                .rax = *(uint64_t *) (current_SP),
+                .rdx = *(uint64_t *) (current_SP + 8),
+                .rcx = *(uint64_t *) (current_SP + 16),
+                .rsi = *(uint64_t *) (current_SP + 24),
+                .rdi = *(uint64_t *) (current_SP + 32),
+                .r8 = *(uint64_t *) (current_SP + 40),
+                .r9 = *(uint64_t *) (current_SP + 48),
+                .r10 = *(uint64_t *) (current_SP + 56),
+                .r11 = *(uint64_t *) (current_SP + 64),
+                .rsp_cur = (uint64_t) current_SP
+        };
         int_regs.fr = *regs;
 }
+/* *INDENT-ON* */

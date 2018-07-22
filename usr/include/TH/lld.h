@@ -127,7 +127,16 @@ extern "C" {
                                 uint32_t fg, uint32_t bg,
                                 /* character attributes */
                                 uint32_t attr);
-#endif /* NO_VIDEOMODE */
+LIKELY void copy_char(
+                        /* cursor position on screen in characters 
+                         * for destination */
+                        uint32_t d_row, uint32_t d_column,
+                        /* cursor position on screen in characters 
+                         * for source */
+                        uint32_t s_row, uint32_t s_column
+                );
+
+#endif /* VIDEOMODE exists*/
 
 /* miscelaneous */
 /* cpu management */

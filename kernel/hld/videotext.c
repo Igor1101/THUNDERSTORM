@@ -131,6 +131,57 @@ LIKELY void invert_char(uint32_t row, uint32_t column)
         }
 }
 
+LIKELY void copy_char(
+                        /* cursor position on screen in characters 
+                         * for destination */
+                        uint32_t d_row, uint32_t d_column,
+                        uint32_t s_row, uint32_t s_column
+                )
+{
+        if ((sysfb.video_initialized == false) ||
+            (d_row >= text.rows) || (d_column >= text.columns) ||
+            (s_row >= text.rows) || (s_column >= text.columns)
+            ) {
+                return;
+        }
+        /* calculate the upper left corner on screen where 
+         * we want to display.*/
+        register int d_offs =
+            (d_row * font->height * sysfb.pitch / 4) +
+            (d_column * (font->width + 1) * sysfb.bpp / 32);
+        register int s_offs =
+            (s_row * font->height * sysfb.pitch / 4) +
+            (s_column * (font->width + 1) * sysfb.bpp / 32);
+        /* finally display pixels according to the bitmap */
+        register uint32_t x, y, d_line, s_line, mask;
+        for (y = 0; y < font->height; y++) {
+                /* save the starting position of the line */
+                d_line = d_offs;
+                s_line = s_offs;
+                mask = 1 << (font->width - 1);
+                /* display a row */
+                for (x = 0; x < font->width; x++) {
+                        register uint32_t *volatile d_vaddr =
+                            (uint32_t *) sysfb.virtaddr + d_line;
+                        register uint32_t *volatile s_vaddr =
+                            (uint32_t *) sysfb.virtaddr + s_line;
+                        if ( (verify_addr(d_vaddr) == 0 ) && 
+                                        verify_addr(s_vaddr) == 0) {
+                                        *d_vaddr = *s_vaddr;
+                        } else {
+                                return; /* out of bounds, but ignore */
+                        }
+                        /* adjust to the next pixel */
+                        mask >>= 1;
+                        d_line += 1;
+                        s_line += 1;
+                }
+                /* adjust to the next line */
+                s_offs += scanline;
+                d_offs += scanline;
+        }
+}
+
 UNLIKELY uint32_t determine_rows(void)
 {
         /* system font should already be processed
@@ -165,10 +216,13 @@ LIKELY void make_newline(void)
 {
         if (sysfb.video_initialized == false)
                 return;
-        uintptr_t offset = text.lines_offset * font-> height * sysfb.pitch / 8;
-        void *src = sysfb.virtaddr + (1 * font->height * sysfb.pitch / 8) + offset;
+        uintptr_t offset = 
+                text.lines_offset * font-> height * sysfb.pitch / 8;
+        void *src = 
+                sysfb.virtaddr + (1 * font->height * sysfb.pitch / 8) + offset;
         kmemcpy_ptr(sysfb.virtaddr + offset, src,
-                    sysfb.width * sysfb.height * sysfb.bpp / 8);
+                    sysfb.width * sysfb.height * sysfb.bpp / 8 
+                    - 1 * (font -> height * sysfb.pitch / 8) );
 }
 
 LIKELY void update_cursor(int row, int col)

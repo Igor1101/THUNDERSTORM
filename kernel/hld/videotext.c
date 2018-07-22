@@ -153,28 +153,21 @@ LIKELY void copy_char(
             (s_row * font->height * sysfb.pitch / 4) +
             (s_column * (font->width + 1) * sysfb.bpp / 32);
         /* finally display pixels according to the bitmap */
-        register uint32_t x, y, d_line, s_line, mask;
+        register uint32_t x, y, d_line, s_line;
         for (y = 0; y < font->height; y++) {
                 /* save the starting position of the line */
                 d_line = d_offs;
                 s_line = s_offs;
-                mask = 1 << (font->width - 1);
                 /* display a row */
                 for (x = 0; x < font->width; x++) {
                         register uint32_t *volatile d_vaddr =
                             (uint32_t *) sysfb.virtaddr + d_line;
                         register uint32_t *volatile s_vaddr =
                             (uint32_t *) sysfb.virtaddr + s_line;
-                        if ( (verify_addr(d_vaddr) == 0 ) && 
-                                        verify_addr(s_vaddr) == 0) {
-                                        *d_vaddr = *s_vaddr;
-                        } else {
-                                return; /* out of bounds, but ignore */
-                        }
+                        *d_vaddr = *s_vaddr;
                         /* adjust to the next pixel */
-                        mask >>= 1;
-                        d_line += 1;
-                        s_line += 1;
+                        d_line ++;
+                        s_line ++;
                 }
                 /* adjust to the next line */
                 s_offs += scanline;
@@ -212,6 +205,30 @@ UNLIKELY void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
         sysfb.cursor_enabled = true;
 }
 
+
+LIKELY void make_newline(void)
+{
+        if (sysfb.video_initialized == false)
+                return;
+        for(
+                        text_t dline=0, sline=1;
+                        dline<text.rows;
+                        dline++, sline++){
+                for(
+                                text_t dcol=0, scol=0;
+                                dcol<=text.columns;
+                                dcol++, scol++) {
+                        copy_char(dline, dcol, sline, scol);
+                }
+        }
+        /* clearing last line */
+        for(text_t col=0; col<=text.columns; col++) {
+                kputchar_to(0, text.rows - 1, col, 
+                                DefaultBG, DefaultBG, NOTRANSPARENT);
+        }
+}
+
+/*deprecated but may be still useful
 LIKELY void make_newline(void)
 {
         if (sysfb.video_initialized == false)
@@ -223,7 +240,7 @@ LIKELY void make_newline(void)
         kmemcpy_ptr(sysfb.virtaddr + offset, src,
                     sysfb.width * sysfb.height * sysfb.bpp / 8 
                     - 1 * (font -> height * sysfb.pitch / 8) );
-}
+}*/
 
 LIKELY void update_cursor(int row, int col)
 {

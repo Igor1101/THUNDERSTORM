@@ -76,7 +76,7 @@ extern "C" {
                 text_t col;
                 text_t bgcolor;
                 text_t fgcolor;
-                text_t rows;  /* in chars */
+                text_t rows;  /* amount of rows in chars */
                 text_t columns;       /* in chars */
                 bool cursor_not_clear; /* (true) will not clear cursor one time */
                 text_t lines_offset;

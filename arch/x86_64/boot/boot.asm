@@ -233,15 +233,15 @@ section .text
         mov edi, chk_long_failed
         jmp die
 warning:
-    mov si, RED
-    call kputstr_32
-    mov si, GREEN
-    ret
+        mov si, RED
+        call kputstr_32
+        mov si, GREEN
+        ret
 
 pause:
         mov ax, -1
 .jmp:
-        dec ax
+        sub ax, 1
         cmp ax, 0
         jne .jmp
         ret

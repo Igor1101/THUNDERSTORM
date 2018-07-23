@@ -42,6 +42,7 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
         outb(FB_DATA_PORT, (inb(FB_DATA_PORT) & 0xC0) | cursor_start);
         outb(FB_COMMAND_PORT, 0x0B);
         //outb(FB_DATA_PORT, (inb(0x3E0) & 0xE0) | cursor_end);
+        (void)cursor_end;
 }
 
 void kputchar_to(
@@ -54,6 +55,7 @@ void kputchar_to(
                         /* useless here */
                         uint32_t attr)
 {                               /*bgcolor - useless var */
+        (void)attr;
         bg++;
         register volatile int16_t *vga_addr = VGAADDR + 2 * (cx * 80 + cy);
         *vga_addr = (uint16_t) c | ((uint16_t) fg) << 8;

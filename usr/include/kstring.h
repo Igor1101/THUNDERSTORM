@@ -15,6 +15,7 @@ void *kmemset_show(void *dest, register int val, register size_t len);
 void *memset(void *dest, register int val, register size_t len);
 
 void *memcpy(void *dest, const void *src, size_t len);
+void *memmove(void *dest, const void *src, size_t len);
 size_t strlen(const char *s);
 
 #endif                          /* KSTRING_H */

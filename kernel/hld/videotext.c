@@ -146,10 +146,10 @@ LIKELY void copy_char(
         }
         /* calculate the upper left corner on screen where 
          * we want to display.*/
-        register int d_offs =
+        register uint32_t d_offs =
             (d_row * font->height * sysfb.pitch / 4) +
             (d_column * (font->width + 1) * sysfb.bpp / 32);
-        register int s_offs =
+        register uint32_t s_offs =
             (s_row * font->height * sysfb.pitch / 4) +
             (s_column * (font->width + 1) * sysfb.bpp / 32);
         /* finally display pixels according to the bitmap */
@@ -160,11 +160,8 @@ LIKELY void copy_char(
                 s_line = s_offs;
                 /* display a row */
                 for (x = 0; x < font->width; x++) {
-                        register uint32_t *volatile d_vaddr =
-                            (uint32_t *) sysfb.virtaddr + d_line;
-                        register uint32_t *volatile s_vaddr =
-                            (uint32_t *) sysfb.virtaddr + s_line;
-                        *d_vaddr = *s_vaddr;
+                        *( (uint32_t *) sysfb.virtaddr + d_line ) = 
+                                    *( (uint32_t *) sysfb.virtaddr + s_line);
                         /* adjust to the next pixel */
                         d_line ++;
                         s_line ++;

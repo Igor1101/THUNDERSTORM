@@ -29,7 +29,7 @@ __________________________________________________________________________/_____
 /* High level TH kernel initialization */
 
 /* indentation from top of display in chars*/
-#define OFFSET_FROM_TOP 6
+#define OFFSET_FROM_TOP 8
 
 #include <kstring.h>
 #include <kstdlib.h>

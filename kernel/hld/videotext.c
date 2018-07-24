@@ -208,7 +208,8 @@ LIKELY void make_newline(void)
         if (sysfb.video_initialized == false)
                 return;
         for(
-                        text_t dline=0, sline=1;
+                        text_t dline=text.lines_offset, 
+                        sline=text.lines_offset+1;
                         dline<text.rows;
                         dline++, sline++){
                 for(

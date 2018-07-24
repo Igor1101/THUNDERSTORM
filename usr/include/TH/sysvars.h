@@ -55,7 +55,9 @@ extern "C" {
 
         void *select_RAM(void);
         void print_RAM_info(void);
+
 #ifdef __cplusplus
 }
 #endif
+
 #endif                          /* sysvars */

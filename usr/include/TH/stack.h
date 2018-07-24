@@ -1,6 +1,10 @@
 #ifndef STACK_H
 #define STACK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * TH static memory stacks
  */
@@ -40,4 +44,8 @@ FORCE_INLINE void clear_kernel_stacks(void)
         kmemset_show(&exception_stk, 0, sizeof (exception_stk));
 }
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* STACK_H */

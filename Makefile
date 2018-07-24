@@ -131,21 +131,23 @@ dis: kernel
 nm: kernel
 	@nm --numeric-sort $(KERNEL)|less
 help:
-	@echo ' make <target> '
-	@echo '	targets: '
-	@echo ' nm: print kernel symbols (less)'
-	@echo ' dis: print intell syntax dissassembly (less)'
-	@echo ' initialize: dont use this! just makes sure all source \
-	directories available '
-	@echo ' debug: open qemu in waiting for gdb state '
-	@echo ' run_serial : open qemu serial in console, don`t use graphics '
-	@echo '	run: run qemu with graphics '
-	@echo ' run_bochs: run under BOCHS emulator instead of qemu'
-	@echo '	iso: build iso image with kernel inside'
-	@echo ' libc: build kernel libraries'
-	@echo ' clean: clean all the staff we built'
-	@echo ' kernel: build kernel, put it to boot/ '
-	@echo ' ports: build $$(ARCH) ports of kernel'
-	@echo ' all: will handle kernel, ports, libc.. \
-	all you need to run os after'
+	@printf ' make <\033[32mtarget\033[0m> \n'
+	@printf ' note, that if you modified any *.c, *.asm, *.S file, it `ll be recognized and\n'
+	@printf ' recompiled automatically, if there are another changes, please run `make clean` before recompilation\n'
+	@printf '	targets: \n'
+	@printf ' \033[32mnm\033[0m: print kernel symbols (less)\n'
+	@printf ' \033[32mdis\033[0m: print intell syntax dissassembly (less)\n'
+	@printf ' \033[32minitialize\033[0m: dont use this! just makes sure all source \
+	directories available \n'
+	@printf ' \033[32mdebug\033[0m: open qemu in waiting for gdb state \n'
+	@printf ' \033[32mrun_serial\033[0m : open qemu serial in console, don`t use graphics \n'
+	@printf '	\033[32mrun\033[0m: run qemu with graphics \n'
+	@printf ' \033[32mrun_bochs\033[0m: run under BOCHS emulator instead of qemu\n'
+	@printf '	\033[32miso\033[0m: build iso image with kernel inside\n'
+	@printf ' \033[32mlibc\033[0m: build kernel libraries\n'
+	@printf ' \033[32mclean\033[0m: clean all the staff we built\n'
+	@printf ' \033[32mkernel\033[0m: build kernel, put it to boot/ \n'
+	@printf ' \033[32mports\033[0m: build $$(ARCH) ports of kernel\n'
+	@printf ' \033[32mall\033[0m: will handle kernel, ports, libc.. \
+	all you need to run os after\n'
 

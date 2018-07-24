@@ -35,4 +35,5 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
 #endif                          /* FONT_H */

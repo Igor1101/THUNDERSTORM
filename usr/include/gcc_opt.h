@@ -4,6 +4,10 @@
 #ifndef GCC_OPT_H
 #define GCC_OPT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define FORCE_INLINE __attribute__ ( ( always_inline ) ) inline
 #define NORET __attribute__ ( ( noreturn ) )
 #define PACKED __attribute__ ( ( packed ) )
@@ -15,5 +19,9 @@
 #define NOOPTIMIZE __attribute__ ( ( optimize("O0") ) )
 #define __init __attribute__ ( ( section(".init_text") ) )
 #define HIDDEN __attribute__ ( ( visibility("hidden") ) )
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif                          /* GCC_OPT_H */

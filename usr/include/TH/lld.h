@@ -4,13 +4,14 @@
 #ifndef LLD_TH
 #define LLD_TH
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <gcc_opt.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #if defined USE_VGA || defined NO_VIDEOMODE
         enum Color {
@@ -185,7 +186,9 @@ LIKELY void copy_char(
         }
 
 #endif /* NO_VIDEOMODE */
+
 #ifdef __cplusplus
 }
 #endif
+
 #endif                          /* LLD_TH */

@@ -97,12 +97,12 @@ iso: kernel
 	grub-mkrescue  \
 		-o $(CDROMIMAGE) /tmp/.THUNDERSTORM 2> /dev/null
 	rm -r /tmp/.THUNDERSTORM
-run: $(CDROMIMAGE)
+run_qemu: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
 	qemu-system-x86_64 -bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE); \
 	else \
 	qemu-system-x86_64 -m $(QEMU_MEM) -cdrom $(CDROMIMAGE);fi
-run_serial: $(CDROMIMAGE)
+run: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \
 	qemu-system-x86_64 -serial mon:stdio -display none\
 		-bios $(BIOS) -m $(QEMU_MEM) -cdrom $(CDROMIMAGE); \
@@ -140,8 +140,8 @@ help:
 	@printf ' \033[32minitialize\033[0m: dont use this! just makes sure all source \
 	directories available \n'
 	@printf ' \033[32mdebug\033[0m: open qemu in waiting for gdb state \n'
-	@printf ' \033[32mrun_serial\033[0m : open qemu serial in console, don`t use graphics \n'
-	@printf '	\033[32mrun\033[0m: run qemu with graphics \n'
+	@printf ' \033[32mrun\033[0m : open qemu serial in console, don`t use graphics \n'
+	@printf '	\033[32mrun_qemu\033[0m: run qemu with graphics \n'
 	@printf ' \033[32mrun_bochs\033[0m: run under BOCHS emulator instead of qemu\n'
 	@printf '	\033[32miso\033[0m: build iso image with kernel inside\n'
 	@printf ' \033[32mlibc\033[0m: build kernel libraries\n'

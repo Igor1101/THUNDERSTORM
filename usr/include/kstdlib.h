@@ -11,6 +11,9 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 
+#define EXIT_FAILURE 1
+#define EXIT_SUCCESS 0
+
 #define ITOA_BUF_SIZE 33
 
         void itoa(char *buf, intptr_t base, intptr_t value);

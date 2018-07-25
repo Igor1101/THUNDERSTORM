@@ -19,18 +19,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <kstring.h>
+#include <kstdlib.h>
 #include <kstdio.h>
 #include <TH/sysvars.h>
 #include <TH/lld.h>
 #include <TH/die.h>
 #include <TH/kcmdline.h>
 #include <asm/bootinfo.h>
-/**
- * bootinfo() function x86_64 port
- * recognizes computer system info via multiboot2 spec 
- * */
 
 char kcmdline[KCMDLINE_SIZE];
+
 
 __init static void multiboot2(void *pcinfo /* ebx */ );
 
@@ -38,10 +36,10 @@ FORCE_INLINE int vbe_mode(volatile void *ebx)
 {
         /* verify if it really is provided info */
         if (*(int *)(ebx + sizeof(uint32_t)) != 784 /* fixed size */ ) {
-                return -1;
+                return EXIT_FAILURE;
         }
         kprintf("vbe_mode: 0x%x", *(uint16_t *) (ebx + 2 * sizeof(uint32_t)));
-        return 0;
+        return EXIT_SUCCESS;
 }
 
 FORCE_INLINE int loader_name(volatile void *ebx)
@@ -52,7 +50,7 @@ FORCE_INLINE int loader_name(volatile void *ebx)
                 return -1;
         }
         kprintf("loader is %s\n", (char *)(ebx + 2 * sizeof(uint32_t)));
-        return 0;
+        return EXIT_SUCCESS;
 }
 
 FORCE_INLINE int boot_cmd(volatile void *ebx)
@@ -60,19 +58,19 @@ FORCE_INLINE int boot_cmd(volatile void *ebx)
         /* verify if it really is provided info */
         if (strlen((char *)(ebx + 2 * sizeof(uint32_t))) < 4 ||
             *(int32_t *) (ebx + sizeof(uint32_t)) <= 0) {
-                return -1;
+                return EXIT_FAILURE;
         }
         strncpy(kcmdline, (char *)(ebx + 2 * sizeof(uint32_t)),
                 sizeof(kcmdline));
         kprintf("kcmdline:  %s\n", kcmdline);
-        return 0;
+        return EXIT_SUCCESS;
 }
 
 FORCE_INLINE int boot_device(volatile void *ebx)
 {
         /* verify if it really is provided info */
         if (*(uint32_t *) (ebx + sizeof(uint32_t)) != 20 /* fixed size */ ) {
-                return -1;
+                return EXIT_FAILURE;
         }
         kprintf("BOOTDEV IS  0x%x\n",
                 *(uint32_t *) (ebx + 2 * sizeof(uint32_t)));
@@ -80,7 +78,7 @@ FORCE_INLINE int boot_device(volatile void *ebx)
                 *(uint32_t *) (ebx + 3 * sizeof(uint32_t)));
         kprintf("SUBPARTITION:  0x%x\n",
                 *(uint32_t *) (ebx + 4 * sizeof(uint32_t)));
-        return 0;
+        return EXIT_SUCCESS;
 }
 
 FORCE_INLINE int memory(volatile void *ebx)
@@ -88,7 +86,7 @@ FORCE_INLINE int memory(volatile void *ebx)
         /* verify if it really is provided info */
         if (*(uint32_t volatile *)(ebx + 1 * sizeof(uint32_t)) !=
             16 /* fixed size */ ) {
-                return -1;
+                return EXIT_FAILURE;
         }
         RAM.lowest = (uintptr_t *) (uintptr_t volatile)
             (1024 * *(uint32_t *) (ebx + 2 * sizeof(uint32_t)));
@@ -102,7 +100,7 @@ FORCE_INLINE int memory(volatile void *ebx)
         kprintf("RAM lowestlimit: 0x%x K, highest: 0x%x K\n",
                 ((volatile uintptr_t)RAM.lowest) / 0x400,
                 ((volatile uintptr_t)RAM.highest) / 0x400);
-        return 0;
+        return EXIT_SUCCESS;
 }
 
 FORCE_INLINE int modules_proc(volatile void *ebx, uint32_t num)
@@ -110,13 +108,13 @@ FORCE_INLINE int modules_proc(volatile void *ebx, uint32_t num)
         /* verify if it really is provided info */
         if (strlen((char *)(ebx + 4 * sizeof(uint32_t))) < 4
             || *(int32_t *) (ebx + sizeof(uint32_t)) <= 2) {
-                return -1;
+                return EXIT_FAILURE;
         }
         modules[num].ext_name = (char *)(ebx + 4 * sizeof(uint32_t));
         modules[num].phys_addr_end = *(uint32_t *) (ebx + 3 * sizeof(uint32_t));
         modules[num].phys_addr = *(uint32_t *) (ebx + 2 * sizeof(uint32_t));
         kprintf("module:  %s\n", modules[num].ext_name);
-        return 0;
+        return EXIT_SUCCESS;
 }
 
 FORCE_INLINE int memmap(volatile void *ebx)
@@ -124,7 +122,7 @@ FORCE_INLINE int memmap(volatile void *ebx)
 {
         /* verify if it really is provided info */
         if (*(int32_t *) (ebx + sizeof(int32_t)) < 16) {
-                return -1;
+                return EXIT_FAILURE;
         }
         auto volatile uint32_t size = *(uint32_t *) (ebx + sizeof(uint32_t));
         auto volatile uint32_t entry_size =
@@ -166,13 +164,13 @@ FORCE_INLINE int memmap(volatile void *ebx)
                         i, ram_map[i].base_addr,
                         ram_map[i].length / 1024 / 1024, type);
         }
-        return 0;
+        return EXIT_SUCCESS;
 }
 
 FORCE_INLINE int framebuffer_info(volatile void *ebx)
 {
         if (*(int32_t *) (ebx + 1 * sizeof(uint32_t)) <= 16) {
-                return -1;
+                return EXIT_FAILURE;
         }
         sysfb.addr = (uint64_t *) (*(uint64_t *) (ebx + 2 * sizeof(uint32_t)));
         sysfb.pitch = *(uint32_t *) (ebx + 2 * sizeof(uint32_t)
@@ -185,13 +183,24 @@ FORCE_INLINE int framebuffer_info(volatile void *ebx)
                                   + sizeof(uint64_t));
         sysfb.type = *(uint8_t *) (ebx + 5 * sizeof(uint32_t)
                                    + sizeof(uint64_t) + sizeof(uint8_t));
-        kprintf("framebuffer addr 0x%x pitch 0x%x width 0x%x height 0x%x ",
+        kprintf("\nframebuffer : \n\taddr 0x%x \t\n\tpitch\
+ 0x%x \n\twidth 0x%x \n\theight 0x%x \n\tbpp 0x%x \n\ttype 0x%x",
                 sysfb.addr, sysfb.pitch, sysfb.width);
-        kprintf("bpp 0x%x type 0x%x \n", sysfb.bpp, sysfb.type, sysfb.width);
+        kprintf("bpp 0x%x type 0x%x \n", 
+                        sysfb.bpp, 
+                        sysfb.type, 
+                        sysfb.width,
+                        sysfb.height,
+                        sysfb.bpp,
+                        sysfb.type);
         sysfb.is_initialized = true;
-        return 0;
+        return EXIT_SUCCESS;
 }
 
+/**
+ * bootinfo() function x86_64 port
+ * recognizes computer system info via multiboot2 spec 
+ * */
 __init void bootinfo(uintptr_t bootmagic, void *pcinfo)
 {
         switch (bootmagic) {
@@ -200,11 +209,18 @@ __init void bootinfo(uintptr_t bootmagic, void *pcinfo)
                 die("MULTIBOOT1 recognized, but still not supported");
         case MULTIBOOT2_MAGIC:
                 multiboot2(pcinfo);
+                break;
+        default:
+                kputs("Bootloader is not supported, giving up");
+                die("Bootloader is not supported");
         }
 }
 
 __init static void multiboot2(void *pcinfo /* ebx */ )
 {
+        /* array shows if info is processed */
+        static bool is_done[10];
+        memset(is_done, false, sizeof (is_done) );
         /* total size of header */
         uint32_t header_size = *((uint32_t *) pcinfo);
         while (header_size % sizeof(uint32_t) != 0)
@@ -213,77 +229,67 @@ __init static void multiboot2(void *pcinfo /* ebx */ )
         kprintf("total size of boot struct=0x%x\n", header_size);
         /* reserved */
         pcinfo += sizeof(uint32_t);
+        register uint32_t modules_times = 0;
+
         /* parsing header info */
-        /*Finding memory info */
         for (bp = pcinfo + header_size; bp >= pcinfo; bp -= sizeof(uint32_t)) {
-                if (*(uint32_t *) bp == MEMORY) {
-                        if (memory(bp) == 0) {
+                switch(*(uint32_t *) bp ) {
+                        case MEMORY:
+                                if(is_done[MEMORY] != true) {
+                                        if(memory(bp) == EXIT_SUCCESS)
+                                                is_done[MEMORY] = true;
+                                }
                                 break;
-                        }
-                }
-        }
-        /* BOOTLOADER INFO */
-        for (bp = pcinfo + header_size; bp >= pcinfo; bp -= sizeof(uint32_t)) {
-                if (*(uint32_t *) bp == LOADER_NAME) {
-                        if (loader_name(bp) == 0) {
+                        case LOADER_NAME:
+                                if(is_done[LOADER_NAME] != true) {
+                                        if(loader_name(bp) == 0)
+                                                is_done[LOADER_NAME] = true;
+                                }
                                 break;
-                        }
-                }
-        }
-        /* BIOS and partition info */
-        for (bp = pcinfo + header_size; bp >= pcinfo; bp -= sizeof(uint32_t)) {
-                if (*(uint32_t *) bp == BOOTDEV) {
-                        if (boot_device(bp) == 0) {
+                        case BOOTDEV:
+                                if(is_done[BOOTDEV] != true) {
+                                        if(boot_device(bp) == EXIT_SUCCESS)
+                                                is_done[BOOTDEV] = true;
+                                }
                                 break;
-                        }
-                }
-        }
+                        case BOOTCMD:
+                                if(is_done[MEMORY] != true) {
+                                        if(boot_cmd(bp) == EXIT_SUCCESS)
+                                                is_done[BOOTCMD] = true;
+                                }
+                                break;
+                        case VESAMODE:
+                                if(is_done[MEMORY] != true) {
+                                        if(vbe_mode(bp) == EXIT_SUCCESS)
+                                                is_done[VESAMODE] = true;
+                                }
+                                break;
+                        case FRAMEBUFFER:
+                                if(is_done[MEMORY] != true) {
+                                        if(framebuffer_info(bp) == EXIT_SUCCESS)
+                                                is_done[FRAMEBUFFER] = true;
+                                }
+                                break;
 
-        /* boot command line */
-        for (bp = pcinfo + header_size; bp >= pcinfo; bp -= sizeof(uint32_t)) {
-                if (*(uint32_t *) bp == BOOTCMD) {
-                        if (boot_cmd(bp) == 0) {
+                        case MEMMAP:
+                                if(is_done[MEMMAP] != true) {
+                                        if(memmap(bp) == EXIT_SUCCESS)
+                                                is_done[MEMMAP] = true;
+                                }
                                 break;
-                        }
-                }
-        }
+                        case MODULES:
+                                if(is_done[MODULES] != true) {
+                                        if(modules_proc(bp, modules_times)
+                                                        == EXIT_SUCCESS) {
+                                                modules_times++;
+                                        }
+                                        if (modules_times >= MAX_MODULES) {
+                                                is_done[MODULES] = true;
+                                        }
+                                }
+                                break;
 
-        /* modules */
-        register uint32_t times = 0;
-        for (bp = pcinfo + header_size; bp >= pcinfo; bp -= sizeof(uint32_t)) {
-                if (*(uint32_t *) bp == MODULES) {
-                        if (modules_proc(bp, times) == 0) {
-                                times++;
-                        }
-                        if (times >= MAX_MODULES) {
-                                break;
-                        }
                 }
         }
-        module_entries = times;
-        kprintf("%d modules found\n", times);
-
-        /* VESA MODE INFO */
-        for (bp = pcinfo + header_size; bp >= pcinfo; bp -= sizeof(uint32_t)) {
-                if (*(uint32_t *) bp == VESAMODE) {
-                        if (vbe_mode(bp) == 0) {
-                                break;
-                        }
-                }
-        }
-
-        for (bp = pcinfo + header_size; bp >= pcinfo; bp -= sizeof(uint32_t)) {
-                if (*(uint32_t *) bp == FRAMEBUFFER) {
-                        if (framebuffer_info(bp) == 0) {
-                                break;
-                        }
-                }
-        }
-        for (bp = pcinfo + header_size; bp >= pcinfo; bp -= sizeof(uint32_t)) {
-                if (*(uint32_t *) bp == MEMMAP) {
-                        if (memmap(bp) == 0) {
-                                break;
-                        }
-                }
-        }
+        module_entries = modules_times;
 }

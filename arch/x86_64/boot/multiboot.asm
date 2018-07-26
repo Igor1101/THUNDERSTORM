@@ -36,16 +36,20 @@ multiboot_start:
   dd multiboot_end - multiboot_start
   dd 0x100000000 - (MAGIC + ARCH + (multiboot_end - multiboot_start))
 address_tag_start:
+
 %ifdef USE_VESA
-framebuffer_tag_start:
+framebuffer_tag:
   dw 5 ; 
   dw 1 ; optional
-  dd .end - framebuffer_tag_start ; size
+  dd .end - framebuffer_tag ; size
   dd 0  ;width
   dd 0 ;heiht
   dd 0 ;bpp
 .end:
 %endif
+module_alignment_tag:
+  dw 6
+  dw 1
 tags_end:
 ; terminate tags:
 ;  dw 0

@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+#include <stddef.h>
 #include <TH/lld.h>
 #ifndef MAX_RAM_ENTRIES
 #define MAX_RAM_ENTRIES 100     /*max amount of 
@@ -26,10 +27,10 @@ extern "C" {
              * looks like this struct is useless in
              * x86_64 arch */
         {
-                /* highest RAM info, loaded from bootloader */
-                uintptr_t *highest;
-                /* lowest RAM info, loaded from bootloader */
-                uintptr_t *lowest;
+                /* highest RAM size (in kbytes), loaded from bootloader */
+                size_t highest;
+                /* lowest RAM size, loaded from bootloader */
+                size_t lowest;
         } RAM;
 
 /* bootloaded kernel modules structure */

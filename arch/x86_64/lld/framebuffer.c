@@ -7,7 +7,6 @@
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 #include <TH/font.h>
-#include <video_lld.h>
 #include <stdbool.h>
 #include <kstring.h>
 #include <gcc_opt.h>

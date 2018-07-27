@@ -8,11 +8,15 @@
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 #include <TH/font.h>
-#include <video_lld.h>
+#include <memmapping.h>
 
 uint32_t scanline;
 uint32_t bytesperline;
 
+/**
+ * bool init_video(void)
+ * @return: if false then we coudn`t initialize it;
+ */
 bool init_video(void)
   /* without this function 
    * access to videomemory can corrupt kernel

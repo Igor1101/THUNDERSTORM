@@ -160,7 +160,7 @@ set_paging:
         or  eax,  0b10000011; writable, exists, extended
         mov [p2_table + ebx * 8], eax
         add ebx,  1; sizeof QW
-        cmp ebx,  PG_SIZE_QW - 8; (4) <--- Section for videomemory (8 * 2MB);
+        cmp ebx,  PG_SIZE_QW;
         jne .map
         ret
 

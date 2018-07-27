@@ -20,15 +20,6 @@
 
 char kcmdline[KCMDLINE_SIZE];
 
-
-
-
-
-
-
-
-
-
 /**
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 
@@ -51,7 +42,7 @@ __init void bootinfo(uintptr_t bootmagic, void *pcinfo)
 __init static void multiboot2(void *pcinfo /* ebx */ )
 {
         /* array shows if info is processed */
-        static bool is_done[10];
+        static bool is_done[30];
         memset(is_done, false, sizeof (is_done) );
         /* total size of header */
         uint32_t header_size = *((uint32_t *) pcinfo);

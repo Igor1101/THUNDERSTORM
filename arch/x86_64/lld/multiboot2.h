@@ -18,6 +18,7 @@
 
 __init static void multiboot2(void *pcinfo /* ebx */ );
 
+/* We `ll not use this BIOS - dependent info */
 FORCE_INLINE int vbe_mode(volatile void *ebx)
 {
         /* verify if it really is provided info */
@@ -33,7 +34,7 @@ FORCE_INLINE int loader_name(volatile void *ebx)
         /* verify if it really is provided info */
         if (strlen((char *)(ebx + 2 * sizeof(uint32_t))) < 5 ||
             *(int32_t *) (ebx + sizeof(uint32_t)) <= 0) {
-                return -1;
+                return EXIT_FAILURE;
         }
         kprintf("loader is %s\n", (char *)(ebx + 2 * sizeof(uint32_t)));
         return EXIT_SUCCESS;
@@ -87,14 +88,18 @@ FORCE_INLINE int memory(volatile void *ebx)
 FORCE_INLINE int modules_proc(volatile void *ebx, uint32_t num)
 {
         /* verify if it really is provided info */
-        if (strlen((char *)(ebx + 4 * sizeof(uint32_t))) < 4
+        if (strlen((char *)(ebx + 4 * sizeof(uint32_t))) < 3
             || *(int32_t *) (ebx + sizeof(uint32_t)) <= 2) {
                 return EXIT_FAILURE;
         }
         modules[num].ext_name = (char *)(ebx + 4 * sizeof(uint32_t));
         modules[num].phys_addr_end = *(uint32_t *) (ebx + 3 * sizeof(uint32_t));
         modules[num].phys_addr = *(uint32_t *) (ebx + 2 * sizeof(uint32_t));
-        kprintf("module:  %s\n", modules[num].ext_name);
+        kprintf("module:  %s, addr 0x%x to 0x%x\n", 
+                        modules[num].ext_name,
+                        modules[num].phys_addr,
+                        modules[num].phys_addr_end
+                        );
         return EXIT_SUCCESS;
 }
 
@@ -165,16 +170,14 @@ FORCE_INLINE int framebuffer_info(volatile void *ebx)
         sysfb.type = *(uint8_t *) (ebx + 5 * sizeof(uint32_t)
                                    + sizeof(uint64_t) + sizeof(uint8_t));
         kprintf("\nframebuffer : \n\taddr 0x%x \t\n\tpitch\
- 0x%x \n\twidth 0x%x \n\theight 0x%x \n\tbpp 0x%x \n\ttype 0x%x",
-                sysfb.addr, sysfb.pitch, sysfb.width);
-        kprintf("bpp 0x%x type 0x%x \n", 
-                        sysfb.bpp, 
-                        sysfb.type, 
-                        sysfb.width,
-                        sysfb.height,
-                        sysfb.bpp,
-                        sysfb.type);
-        sysfb.is_initialized = true;
+ 0x%x \n\twidth 0x%x \n\theight 0x%x \n\tbpp 0x%x \n\ttype 0x%x\n",
+                sysfb.addr, sysfb.pitch, sysfb.width,
+                sysfb.height,
+                sysfb.bpp,
+                sysfb.type);
+        /* only direct RGB is supported */
+        if(sysfb.type == 1)
+                sysfb.is_initialized = true;
         return EXIT_SUCCESS;
 }
 

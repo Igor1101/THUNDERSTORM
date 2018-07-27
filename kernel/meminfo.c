@@ -8,6 +8,7 @@
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <stdbool.h>
+#include <memmapping.h>
 
 void print_RAM_info(void)
 {                               /* for each region */
@@ -26,7 +27,7 @@ void print_RAM_info(void)
                 default:
                         type = "RESERVED";
                 }
-                kprintf("entry %d: addr 0x%x, length %dM, type %s",
+                kprintf("entry %d: addr 0x%x, length %dM, type %s\n",
                         i, ram_map[i].base_addr,
                         ram_map[i].length / (2 << 20), type);
                 if ((uintptr_t *) & kernel_phys_base >= ram_map[i].base_addr &&
@@ -35,22 +36,35 @@ void print_RAM_info(void)
                         kprintf
                             ("<-- kernel:\n text: 0x%x,\n data: 0x%x,\
                              \n bss: 0x%x,\n init_text: 0x%x, \
-                             \n init_bss: 0x%x, \n kernel_end: 0x%x",
-                             &kernel_text, &kernel_data, &kernel_bss, &init_kernel_text,
-                             &init_kernel_bss, &kernel_end);
+                             \n init_bss: 0x%x, \n kernel_end: 0x%x\n",
+                             &kernel_text, 
+                             &kernel_data, 
+                             &kernel_bss, 
+                             &init_kernel_text,
+                             &init_kernel_bss, 
+                             &kernel_end
+                             );
+                        /*modules addr info */
+                        for (uint32_t i = 0; i < module_entries; i++) {
+                                kprintf
+                                        (
+                                         "\tmodule %s, 0x%x, 0x%x\n", 
+                                        modules[i].ext_name,
+                                        modules[i].phys_addr, 
+                                        modules[i].phys_addr_end
+                                        );
+                        }
                 }
 
                 if ((uintptr_t *) sysfb.addr >= ram_map[i].base_addr &&
                     (uintptr_t *) sysfb.addr < ram_map[i + 1].base_addr) {
-                        kprintf("<-- fb ( 0x%x )", sysfb.virtaddr);
+                        kprintf("<-- fb ( 0x%x )\n", sysfb.virtaddr);
+                }
+                if ((uintptr_t *) last_addr() >= ram_map[i].base_addr &&
+                    (uintptr_t *) last_addr() < ram_map[i + 1].base_addr) {
+                        kprintf("<-- last kernel addr 0x%x\n", last_addr());
                 }
 
-                kputchar('\n');
-        }
-        /*modules addr info */
-        for (uint32_t i = 0; i < module_entries; i++) {
-                kprintf("module %s, 0x%x, 0x%x\n", modules[i].ext_name,
-                        modules[i].phys_addr, modules[i].phys_addr_end);
         }
 }
 

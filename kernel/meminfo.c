@@ -31,7 +31,7 @@ void find_usable_RAM(void)
                 }
                 kprintf("entry %d: addr 0x%x, length %dM, type %s\n",
                         i, ram_map[i].base_addr,
-                        ram_map[i].length / (2 << 20), type);
+                        ram_map[i].length / (1 << 20), type);
                 if ((void *) & kernel_phys_base >= ram_map[i].base_addr &&
                     (void *) & kernel_phys_base < ram_map[i + 1].base_addr) {
                         kprintf
@@ -68,15 +68,37 @@ void find_usable_RAM(void)
                                     (ram_map[i].base_addr + ram_map[i].length) );
                         else
                                 add_RAM((void*)biggest,  last_addr());
+                        /* in case there are no modules */
+                        if(module_entries == 0) {
+                                if(last_addr() 
+                                > ( ram_map[i].base_addr + ram_map[i].length ) )
+                                        add_RAM(&init_kernel_text, 
+                                        (ram_map[i].base_addr + ram_map[i].length) );
+                                else
+                                        add_RAM(&init_kernel_text,  last_addr());
+                        }
+
+
                 }
                 else {
                         /* RAM entry without kernel */
-                        if(ram_map[i].type == PHYSRAM) {
+                        if(ram_map[i].type == PHYSRAM 
+                                        && (ram_map[i].base_addr + ram_map[i].length)
+                                        > last_addr()) {
                                 add_RAM(
                                        ram_map[i].base_addr, 
                                        (ram_map[i].base_addr + ram_map[i].length) 
                                        );
                         }
+                        if(ram_map[i].type == PHYSRAM 
+                                        && (ram_map[i].base_addr + ram_map[i].length)
+                                        <= last_addr()) {
+                                add_RAM(
+                                       ram_map[i].base_addr, 
+                                       last_addr()
+                                       );
+                        }
+
                 }
 
 

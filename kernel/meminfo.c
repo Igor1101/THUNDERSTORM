@@ -87,7 +87,7 @@ void find_usable_RAM(void)
                                         > last_addr()) {
                                 add_RAM(
                                        ram_map[i].base_addr, 
-                                       (ram_map[i].base_addr + ram_map[i].length) 
+                                       last_addr()
                                        );
                         }
                         if(ram_map[i].type == PHYSRAM 
@@ -95,7 +95,7 @@ void find_usable_RAM(void)
                                         <= last_addr()) {
                                 add_RAM(
                                        ram_map[i].base_addr, 
-                                       last_addr()
+                                       (ram_map[i].base_addr + ram_map[i].length) 
                                        );
                         }
 

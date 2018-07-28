@@ -29,7 +29,7 @@ extern "C" {
         {
                 /* highest RAM size (in kbytes), loaded from bootloader */
                 size_t highest;
-                /* lowest RAM size, loaded from bootloader */
+                /* lowest RAM size, (in kbytes) loaded from bootloader */
                 size_t lowest;
         } RAM;
 
@@ -43,19 +43,30 @@ extern "C" {
         uint32_t module_entries;
 
         extern struct RAM_MAP {
-                uintptr_t *base_addr;
+                void *base_addr;
                 uintptr_t length;
                 uint32_t type;
         } ram_map[MAX_RAM_ENTRIES];
-/* amount of ram entries currently stored */
-        uint32_t ram_entries;
+/* amount of ram entries currently stored in RAM_MAP*/
+        extern uint32_t ram_entries;
+
+        extern struct USABLE_RAM_MAP {
+                void *base_addr;
+                void *end_addr;
+        } usable_ram_map[MAX_RAM_ENTRIES];
+
+        extern uint32_t usable_ram_entries;
+
 
 /* video info */
         extern struct Text_mode_pointer text;
         extern struct Framebuffer sysfb;
 
+
+        int add_RAM(void* start, void* end);
         void *select_RAM(void);
-        void print_RAM_info(void);
+        void print_usable_RAM(void);
+        void find_usable_RAM(void);
 
 #ifdef __cplusplus
 }

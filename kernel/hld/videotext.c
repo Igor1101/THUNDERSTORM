@@ -179,7 +179,7 @@ UNLIKELY uint32_t determine_rows(void)
         while ((row * font->height) < sysfb.height) {
                 row++;
         }
-        return row;
+        return row - 1;
 }
 
 UNLIKELY uint32_t determine_columns(void)
@@ -202,6 +202,7 @@ UNLIKELY void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 }
 
 
+/*
 LIKELY void make_newline(void)
 {
         if (sysfb.video_initialized == false)
@@ -218,26 +219,25 @@ LIKELY void make_newline(void)
                         copy_char(dline, dcol, sline, scol);
                 }
         }
-        /* clearing last line */
         for(text_t col=0; col<=text.columns; col++) {
                 kputchar_to(0, text.rows - 1, col, 
                                 DefaultBG, DefaultBG, NOTRANSPARENT);
         }
-}
+}*/
 
-/*deprecated but may be still useful
 LIKELY void make_newline(void)
 {
         if (sysfb.video_initialized == false)
                 return;
         uintptr_t offset = 
-                text.lines_offset * font-> height * sysfb.pitch / 8;
+                text.lines_offset * 
+                font -> width * font -> height * sysfb.pitch / 8;
         void *src = 
-                sysfb.virtaddr + (1 * font->height * sysfb.pitch / 8) + offset;
-        kmemcpy_ptr(sysfb.virtaddr + offset, src,
+                sysfb.virtaddr + (font -> width * font -> height * sysfb.pitch / 8) + offset;
+        memmove(sysfb.virtaddr + offset, src,
                     sysfb.width * sysfb.height * sysfb.bpp / 8 
                     - 1 * (font -> height * sysfb.pitch / 8) );
-}*/
+}
 
 LIKELY void update_cursor(int row, int col)
 {

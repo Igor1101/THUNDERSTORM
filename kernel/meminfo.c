@@ -1,17 +1,19 @@
 /*
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
+#include <kstdlib.h>
+#include <kstdio.h>
+#include <stdbool.h>
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
 #include <TH/linker_info.h>
-#include <kstdlib.h>
-#include <kstdio.h>
-#include <stdbool.h>
 #include <memmapping.h>
 
-void print_RAM_info(void)
-{                               /* for each region */
+
+void find_usable_RAM(void)
+{
+        /* for each region */
         for (uint32_t i = 0; i < ram_entries; i++) {
                 char *type;
                 switch (ram_map[i].type) {
@@ -30,9 +32,8 @@ void print_RAM_info(void)
                 kprintf("entry %d: addr 0x%x, length %dM, type %s\n",
                         i, ram_map[i].base_addr,
                         ram_map[i].length / (2 << 20), type);
-                if ((uintptr_t *) & kernel_phys_base >= ram_map[i].base_addr &&
-                    (uintptr_t *) & kernel_phys_base < ram_map[i + 1].base_addr)
-                {
+                if ((void *) & kernel_phys_base >= ram_map[i].base_addr &&
+                    (void *) & kernel_phys_base < ram_map[i + 1].base_addr) {
                         kprintf
                             ("<-- kernel:\n text: 0x%x,\n data: 0x%x,\
                              \n bss: 0x%x,\n init_text: 0x%x, \
@@ -44,7 +45,9 @@ void print_RAM_info(void)
                              &init_kernel_bss, 
                              &kernel_end
                              );
-                        /*modules addr info */
+                        /*modules addr info, find smallest and biggest addr */
+                        uintptr_t biggest = modules[0].phys_addr_end;
+                        uintptr_t smallest = modules[0].phys_addr;
                         for (uint32_t i = 0; i < module_entries; i++) {
                                 kprintf
                                         (
@@ -53,15 +56,37 @@ void print_RAM_info(void)
                                         modules[i].phys_addr, 
                                         modules[i].phys_addr_end
                                         );
+                                if(smallest > modules[i].phys_addr)
+                                        smallest = modules[i].phys_addr;
+                                if(biggest < modules[i].phys_addr_end)
+                                        biggest = modules[i].phys_addr_end;
+                        }
+                        add_RAM(&init_kernel_text, (void*)smallest);
+                        if(last_addr() 
+                         > ( ram_map[i].base_addr + ram_map[i].length ) )
+                                add_RAM((void*)biggest, 
+                                    (ram_map[i].base_addr + ram_map[i].length) );
+                        else
+                                add_RAM((void*)biggest,  last_addr());
+                }
+                else {
+                        /* RAM entry without kernel */
+                        if(ram_map[i].type == PHYSRAM) {
+                                add_RAM(
+                                       ram_map[i].base_addr, 
+                                       (ram_map[i].base_addr + ram_map[i].length) 
+                                       );
                         }
                 }
 
-                if ((uintptr_t *) sysfb.addr >= ram_map[i].base_addr &&
-                    (uintptr_t *) sysfb.addr < ram_map[i + 1].base_addr) {
+
+
+                if ( sysfb.addr >= ram_map[i].base_addr &&
+                    sysfb.addr < ram_map[i + 1].base_addr) {
                         kprintf("<-- fb ( 0x%x )\n", sysfb.virtaddr);
                 }
-                if ((uintptr_t *) last_addr() >= ram_map[i].base_addr &&
-                    (uintptr_t *) last_addr() < ram_map[i + 1].base_addr) {
+                if ( last_addr() >= ram_map[i].base_addr &&
+                     last_addr() < ram_map[i + 1].base_addr) {
                         kprintf("<-- last kernel addr 0x%x\n", last_addr());
                 }
 

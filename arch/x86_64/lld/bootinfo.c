@@ -20,6 +20,8 @@
 
 char kcmdline[KCMDLINE_SIZE];
 
+uint32_t ram_entries;
+
 /**
  * bootinfo() function x86_64 port
  * recognizes computer system info via multiboot2 spec 

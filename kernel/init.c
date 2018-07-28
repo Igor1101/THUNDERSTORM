@@ -99,12 +99,14 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         }
         kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
-        print_RAM_info();
+        find_usable_RAM();
+        print_usable_RAM();
         /* initializing interrupts */
         kprintf("clearing kernel stacks: ");
         clear_kernel_stacks();
         set_exceptions();
         init_interrupts();
+        /*
         asm volatile (" exc: \n"
                       " mov $1, %rax\n"
                       " mov $2, %rdx\n"
@@ -113,7 +115,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $9, %r9\n"
                       " mov $10, %r10\n"
                       " mov $11, %r11\n"
-                      " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");
+                      " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
         cpu_halt();
         while (1) ;
 }

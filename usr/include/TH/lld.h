@@ -91,8 +91,8 @@ extern "C" {
                                          *  */
                 bool video_initialized; /* if(is_initialized==false) video_initialized
                                          * must be also false */
-                uintptr_t *virtaddr;
-                uintptr_t *addr;
+                void *virtaddr;
+                void *addr;
                 uint32_t pitch;
                 uint32_t width;
                 uint32_t height;

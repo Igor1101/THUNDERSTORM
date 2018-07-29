@@ -81,6 +81,14 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 
         kputs("COMPUTER INFO:");
         bootinfo(boot_magic, pcinfo);
+        find_usable_RAM();
+        /* init kernel heap allocation */
+        if(kalloc_init() == EXIT_SUCCESS) {
+                kputs("Kalloc successfully initialized");
+        } else {
+                kputs("Kalloc initialize failure, some kernel features \
+                                cannot be used");
+        }
         if (init_video() == true) {
                 tui_init(OFFSET_FROM_TOP);
                 kputs("videomode successfully started");
@@ -99,13 +107,12 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         }
         kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
-        find_usable_RAM();
-        print_usable_RAM();
         /* initializing interrupts */
         kprintf("clearing kernel stacks: ");
         clear_kernel_stacks();
         set_exceptions();
         init_interrupts();
+        print_usable_RAM();
         /*
         asm volatile (" exc: \n"
                       " mov $1, %rax\n"

@@ -19,6 +19,15 @@ extern "C" {
         void itoa(char *buf, intptr_t base, intptr_t value);
         void itoap(char *buf, size_t width, intptr_t base, uintptr_t value);
         void utoa(char *buf, uintptr_t value);
+        /* kernel memory allocation */
+#define MAX_RAM_ALLOCS 10
+/**
+ * int kalloc_init(void)
+ * @return: SUCCESS if OK
+ * FAILURE if memory cannot be allocated
+ */
+        int kalloc_init(void);
+        void *kcalloc(size_t size);
 
 #ifdef __cplusplus
 }

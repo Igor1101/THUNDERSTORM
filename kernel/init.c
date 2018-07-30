@@ -82,6 +82,10 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kputs("COMPUTER INFO:");
         bootinfo(boot_magic, pcinfo);
         find_usable_RAM();
+        kprintf("clearing kernel stacks: ");
+        clear_kernel_stacks();
+        set_exceptions();
+        init_interrupts();
         /* init kernel heap allocation */
         if(kalloc_init() == EXIT_SUCCESS) {
                 kputs("Kalloc successfully initialized");
@@ -108,10 +112,6 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
         /* initializing interrupts */
-        kprintf("clearing kernel stacks: ");
-        clear_kernel_stacks();
-        set_exceptions();
-        init_interrupts();
         print_usable_RAM();
         /*
         asm volatile (" exc: \n"

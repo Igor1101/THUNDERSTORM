@@ -2,6 +2,7 @@
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
 #include <kstdio.h>
+#include <kstdlib.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -36,6 +37,9 @@ bool init_video(void)
         /* low level map this address
          * to somewhere in kernel memory */
         sysfb.virtaddr = map_video((volatile void *)sysfb.addr);
+        /* init copy address 
+         * if kcalloc is unsuccessfull (NULL), we`ll use old method */
+        sysfb.copy = kcalloc(sysfb.width * sysfb.height * sysfb.bpp / 8);
 #endif
         /* init vars */
         scanline = sysfb.width * sysfb.bpp /32;

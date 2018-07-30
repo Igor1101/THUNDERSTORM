@@ -62,18 +62,31 @@ LIKELY void kputchar_to(
                 line = offs;
                 mask = 1 << (font->width - 1);
                 /* display a row */
+                register uint32_t *volatile vaddr;
+                register uint32_t *volatile copy;
                 for (x = 0; x < font->width; x++) {
-                        register uint32_t *volatile vaddr =
-                            (uint32_t *) sysfb.virtaddr + line;
+                        vaddr = (uint32_t *) sysfb.virtaddr + line;
+                        copy = (uint32_t*) sysfb.copy  + line;
                         if (verify_addr(vaddr) == 0) {
                                 if (attr == TRANSPARENT) {
                                         *vaddr |=
                                             ((uint32_t) *
                                              glyph) & (mask) ? fg : bg;
+                                        if(sysfb.copy != NULL) {
+                                                *copy |= 
+                                                        ((uint32_t) * glyph)
+                                                        & (mask) ? fg : bg;
+                                        }
+
                                 } else {
                                         *vaddr =
                                             ((uint32_t) *
                                              glyph) & (mask) ? fg : bg;
+                                        if(sysfb.copy != NULL) {
+                                                *copy = 
+                                                        ((uint32_t) * glyph) 
+                                                        & (mask) ? fg : bg;
+                                        }
                                 }
                         } else {
                                 return; /* out of bounds */
@@ -86,6 +99,17 @@ LIKELY void kputchar_to(
                 glyph += bytesperline;
                 offs += scanline;
         }
+}
+
+LIKELY void fb_display_update(void)
+{
+        if(sysfb.copy == NULL)
+                return;
+        kmemcpy_ptr(
+                        sysfb.virtaddr, 
+                        sysfb.copy, 
+                    sysfb.width * sysfb.height * sysfb.bpp / 8 
+                    );
 }
 
 
@@ -111,11 +135,16 @@ LIKELY void invert_char(uint32_t row, uint32_t column)
                 line = offs;
                 mask = 1 << (font->width - 1);
                 /* display a row */
+                register uint32_t *volatile vaddr;
+                register uint32_t *volatile copy;
                 for (x = 0; x < font->width; x++) {
-                        register uint32_t *volatile vaddr =
-                            (uint32_t *) sysfb.virtaddr + line;
+                        vaddr = (uint32_t *) sysfb.virtaddr + line;
+                        copy = (uint32_t *) sysfb.copy + line;
                         if (verify_addr(vaddr) == 0) {
                                         *vaddr = ~ ( *vaddr );
+                                        if(sysfb.copy != NULL) {
+                                                *copy = ~ ( *copy);
+                                        }
                                 }
                         else {
                                 return; /* out of bounds */
@@ -158,9 +187,11 @@ LIKELY void copy_char(
                 d_line = d_offs;
                 s_line = s_offs;
                 /* display a row */
+                uint32_t *virtaddr;
+                virtaddr = (uint32_t*)sysfb.virtaddr;
                 for (x = 0; x < font->width; x++) {
-                        *( (uint32_t *) sysfb.virtaddr + d_line ) = 
-                                    *( (uint32_t *) sysfb.virtaddr + s_line);
+                        *( virtaddr + d_line ) = 
+                                    *( virtaddr + s_line);
                         /* adjust to the next pixel */
                         d_line ++;
                         s_line ++;
@@ -232,11 +263,25 @@ LIKELY void make_newline(void)
         uintptr_t offset = 
                 text.lines_offset * 
                 font -> width * font -> height * sysfb.pitch / 8;
-        void *src = 
-                sysfb.virtaddr + (font -> width * font -> height * sysfb.pitch / 8) + offset;
-        memmove(sysfb.virtaddr + offset, src,
+        void *src, *dest;
+        if(sysfb.copy == NULL) {
+                src = 
+                        sysfb.virtaddr + 
+                        (font -> width * font -> height * sysfb.pitch / 8)
+                        + offset;
+                dest = sysfb.virtaddr + offset;
+        }
+        else {
+                src = 
+                        sysfb.copy + 
+                        (font -> width * font -> height * sysfb.pitch / 8)
+                        + offset;
+                dest = sysfb.copy + offset;
+        }
+        memmove(dest, src,
                     sysfb.width * sysfb.height * sysfb.bpp / 8 
                     - 1 * (font -> height * sysfb.pitch / 8) );
+        fb_display_update();
 }
 
 LIKELY void update_cursor(int row, int col)

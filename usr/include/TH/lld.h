@@ -92,7 +92,10 @@ extern "C" {
                 bool video_initialized; /* if(is_initialized==false) video_initialized
                                          * must be also false */
                 void *virtaddr;
+                /* physical */
                 void *addr;
+                /* copy in kernel memory */
+                void *copy;
                 uint32_t pitch;
                 uint32_t width;
                 uint32_t height;
@@ -119,6 +122,7 @@ extern "C" {
         uint32_t determine_rows(void);
         void update_cursor(int row, int col);
         void make_newline(void);
+        void fb_display_update(void);
         void kputchar_to(
                                 /* unicode character */
                                 unsigned short int c,

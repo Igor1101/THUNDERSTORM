@@ -43,9 +43,12 @@ Note, that THUNDERSTORM aims to be BIOS independent,
 but it is much better in qemu to run it with UEFI BIOS, since
 it is better supported.
 
-#### TODO this month (in case someone want`s to contribute):
-- [x] add serial driver
-- [x] improve exceptions handling
-- [x] TSS initialization
-- [ ] add multiboot 1.0 support to use more lightweight bootloader
+#### TODO up to 2019 (in case someone want`s to contribute):
 - [ ] port multitasking from [THUNDERSTORM-OLD](http://github.com/Igor1101/THUNDERSTORM-OLD)
+- [ ] ACPI support and power management
+- [ ] PIC management
+- [ ] local and IO APIC initialization \ management
+- [ ] basic POSIX system calls
+- [ ] add modules support
+- [ ] Extended fs support (module)
+- [ ] ISO 9660 support (module)

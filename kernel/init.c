@@ -113,6 +113,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
         /* initializing interrupts */
         print_usable_RAM();
+        detect_cpu();
         /*
         asm volatile (" exc: \n"
                       " mov $1, %rax\n"

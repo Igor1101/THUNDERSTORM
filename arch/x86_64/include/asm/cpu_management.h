@@ -33,4 +33,6 @@ FORCE_INLINE uint64_t get_SP(void)
         return rsp;
 }
 
+/* this function detects and prints cpuinfo */
+int detect_cpu(void);
 #endif                          /* CPU_HL_MANAGMENT */

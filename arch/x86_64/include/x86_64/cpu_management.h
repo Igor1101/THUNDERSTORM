@@ -110,4 +110,8 @@ FORCE_INLINE uint64_t get_CS(void)
         return cs;
 }
 
+/*
+ * CPUID
+ */
+
 #endif                          /* LL_CPU_MANAGEMENT_H */

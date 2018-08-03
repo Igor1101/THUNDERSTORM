@@ -184,9 +184,12 @@ INTERRUPT void alignment_check(int_frame * frame, uword_t err)
 
 INTERRUPT void undefined(int_frame * frame)
 {
+        (void)frame;
+        /*
         EXC_START;
         catch_regs(frame, (void *)get_SP());
         kpanic(exception_messages[UNDEFINED]);
+        */
 };
 
 INTERRUPT void machine_check(int_frame * frame)

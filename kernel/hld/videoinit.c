@@ -39,7 +39,7 @@ bool init_video(void)
         sysfb.virtaddr = map_video((volatile void *)sysfb.addr);
         /* init copy address 
          * if kcalloc is unsuccessfull (NULL), we`ll use old method */
-        sysfb.copy = kcalloc(sysfb.width * sysfb.height * sysfb.bpp / 8);
+        sysfb.copy = kcalloc(sysfb.width * sysfb.height * sysfb.bpp / 4);
 #endif
         /* init vars */
         scanline = sysfb.width * sysfb.bpp /32;

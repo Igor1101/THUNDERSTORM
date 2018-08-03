@@ -5,6 +5,7 @@
 #include <x86_64/idt.h>
 #include <x86_64/tss.h>
 #include <x86_64/cpu_management.h>
+#include <x86_64/apic.h>
 
 /* *INDENT-OFF* */
 void (*exceptions_array[]) = {
@@ -64,4 +65,10 @@ UNLIKELY void set_exceptions(void)
         /* set TSS descriptor in GDT table*/
         set_tss_desc();
         set_tss_table();
+        /* APIC \ PIC initializations */
+        if(apic_present()) {
+                kputs("APIC is present");
+        } else {
+                kputs("APIC is not present");
+        }
 }

@@ -85,7 +85,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kprintf("clearing kernel stacks: ");
         clear_kernel_stacks();
         set_exceptions();
-        init_interrupts();
+        early_init_interrupts();
         /* init kernel heap allocation */
         if(kalloc_init() == EXIT_SUCCESS) {
                 kputs("Kalloc successfully initialized");
@@ -114,6 +114,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         /* initializing interrupts */
         print_usable_RAM();
         detect_cpu();
+        init_interrupts();
         /*
         asm volatile (" exc: \n"
                       " mov $1, %rax\n"

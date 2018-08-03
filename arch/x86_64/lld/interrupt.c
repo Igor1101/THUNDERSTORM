@@ -6,6 +6,7 @@
 #include <x86_64/tss.h>
 #include <x86_64/cpu_management.h>
 #include <x86_64/apic.h>
+#include <x86_64/pic.h>
 
 /* *INDENT-OFF* */
 void (*exceptions_array[]) = {
@@ -44,7 +45,7 @@ void (*exceptions_array[]) = {
 };
 /* *INDENT-ON* */
 
-UNLIKELY void init_interrupts(void)
+UNLIKELY void early_init_interrupts(void)
 {
         lidt(idt_table, EARLY_SIZE_OF_IDT);
         init_tss();
@@ -65,9 +66,14 @@ UNLIKELY void set_exceptions(void)
         /* set TSS descriptor in GDT table*/
         set_tss_desc();
         set_tss_table();
+}
+
+UNLIKELY void init_interrupts(void)
+{        
         /* APIC \ PIC initializations */
         if(apic_present()) {
                 kputs("APIC is present");
+                pic_disable();
         } else {
                 kputs("APIC is not present");
         }

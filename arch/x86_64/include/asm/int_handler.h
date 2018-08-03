@@ -16,6 +16,7 @@
                                 //set_interrupts();
 
 void set_exceptions(void);
+void early_init_interrupts(void);
 void init_interrupts(void);
 
 #endif                          /* INT_HANDLER_H */

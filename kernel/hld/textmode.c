@@ -35,8 +35,10 @@ void select_bgcolor(int color)
 void newline(void)
 {
         if (text.row >= text.rows - 1) {
+#ifdef USE_VESA
                 if(sysfb.copy == NULL) 
                         invert_char(text.row, text.col);
+#endif /* USE_VESA */
                 make_newline();
                 text.col = BEGINNING;
                 text.cursor_not_clear = true;

@@ -42,6 +42,10 @@ char *exception_messages[] = {
         "Unknown Interrupt"
 };
 
+INTERRUPT void verify_handler(int_frame * frame)
+{
+        catch_regs(frame, (void *)get_SP());
+}
 INTERRUPT void divide_error(int_frame * frame)
 {
         EXC_START;

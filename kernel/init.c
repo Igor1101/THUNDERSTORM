@@ -82,8 +82,6 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kputs("COMPUTER INFO:");
         bootinfo(boot_magic, pcinfo);
         find_usable_RAM();
-        kprintf("clearing kernel stacks: ");
-        clear_kernel_stacks();
         set_exceptions();
         early_init_interrupts();
         /* init kernel heap allocation */
@@ -93,8 +91,9 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                 kputs("Kalloc initialize failure, some kernel features \
                                 cannot be used");
         }
+
         if (init_video() == true) {
-                tui_init(OFFSET_FROM_TOP);
+                tui_init(OFFSET_FROM_TOP); // <----earliest init
                 kputs("videomode successfully started");
                 print_video_info();
                 /* verifying bounds of display */
@@ -114,6 +113,8 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         /* initializing interrupts */
         print_usable_RAM();
         detect_cpu();
+        kprintf("clearing kernel stacks: ");
+        clear_kernel_stacks();
         init_interrupts();
         /*
         asm volatile (" exc: \n"

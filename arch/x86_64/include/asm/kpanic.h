@@ -8,7 +8,7 @@
 #include <kstdio.h>
 #include <x86_64/idt.h>
 
-struct __regs_int_gcc {
+extern struct __regs_int_gcc {
         int_frame fr;
         uint64_t rax;
         uint64_t rdx;
@@ -22,6 +22,7 @@ struct __regs_int_gcc {
         /*interrupt current stack pointer */
         uint64_t rsp_cur;
 } int_regs;
+
 typedef struct __regs_int_gcc __int_regs;
 
 void kpanic(char *reason);

@@ -30,6 +30,8 @@
  * RAX  |                   +8
  * <---------------CURRENT RSP
  */
+__int_regs int_regs;
+
 UNLIKELY NORET void kpanic(char *reason)
 {
         select_bgcolor(Red);

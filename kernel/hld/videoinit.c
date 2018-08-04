@@ -40,6 +40,9 @@ bool init_video(void)
         /* init copy address 
          * if kcalloc is unsuccessfull (NULL), we`ll use old method */
         sysfb.copy = kcalloc(sysfb.width * sysfb.height * sysfb.bpp / 4);
+        if(sysfb.copy != NULL) {
+                kputs("Videomode 2nd buffer successfully allocated!");
+        }
 #endif
         /* init vars */
         scanline = sysfb.width * sysfb.bpp /32;

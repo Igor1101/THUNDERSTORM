@@ -4,10 +4,11 @@
  */
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <TH/lld.h>
+#include <TH/sysvars.h>
 #include <asm/serial.h>
 #define BEGINNING 0
-volatile
 struct Text_mode_pointer text;
 void tui_init(text_t lines_offset)
 {
@@ -34,9 +35,8 @@ void select_bgcolor(int color)
 void newline(void)
 {
         if (text.row >= text.rows - 1) {
-#ifdef USE_VESA
-                invert_char(text.row, text.col);
-#endif
+                if(sysfb.copy == NULL) 
+                        invert_char(text.row, text.col);
                 make_newline();
                 text.col = BEGINNING;
                 text.cursor_not_clear = true;
@@ -66,7 +66,7 @@ void kputchar(int8_t chr)
                 return;
         case '\r':
                 text.col = BEGINNING;
-                update_cursor(text.row, text.col);
+                update_cursor(text.row, text.col + 1);
                 return;
         case '\b':
                 text.col--;

@@ -136,15 +136,16 @@ LIKELY void invert_char(uint32_t row, uint32_t column)
                 mask = 1 << (font->width - 1);
                 /* display a row */
                 register uint32_t *volatile vaddr;
-                register uint32_t *volatile copy;
+                //register uint32_t *volatile copy;
                 for (x = 0; x < font->width; x++) {
                         vaddr = (uint32_t *) sysfb.virtaddr + line;
-                        copy = (uint32_t *) sysfb.copy + line;
+                        //copy = (uint32_t *) sysfb.copy + line;
                         if (verify_addr(vaddr) == 0) {
                                         *vaddr = ~ ( *vaddr );
+                                        /*
                                         if(sysfb.copy != NULL) {
                                                 *copy = ~ ( *copy);
-                                        }
+                                        }*/
                                 }
                         else {
                                 return; /* out of bounds */

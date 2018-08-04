@@ -34,6 +34,8 @@
 #define MACHINE_CHECK           18
 #define SIMD_CPU_ERROR          19
 
+/* verification */
+INTERRUPT void verify_handler(int_frame * frame);
 /* exceptions */
 INTERRUPT void divide_error(int_frame * frame);
 INTERRUPT void debug(int_frame * frame);

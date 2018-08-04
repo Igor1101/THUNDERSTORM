@@ -2,11 +2,13 @@
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
 #include <asm/traps.h>
+#include <asm/kpanic.h>
 #include <x86_64/idt.h>
 #include <x86_64/tss.h>
 #include <x86_64/cpu_management.h>
 #include <x86_64/apic.h>
 #include <x86_64/pic.h>
+#include <assert.h>
 
 /* *INDENT-OFF* */
 void (*exceptions_array[]) = {
@@ -44,11 +46,30 @@ void (*exceptions_array[]) = {
             undefined  //31
 };
 /* *INDENT-ON* */
+UNLIKELY void verify_ints(void);
 
 UNLIKELY void early_init_interrupts(void)
 {
         lidt(idt_table, EARLY_SIZE_OF_IDT);
+        verify_ints();
         init_tss();
+}
+
+/**
+ * int verify_ints(void)
+ * @return: 0 if interrupts are working
+ * -1 otherwise
+ *  */
+UNLIKELY void verify_ints(void)
+{
+        idt_set_trap(0, (uint64_t)verify_handler, 0);
+        asm(
+                        "movq $0x0123456789, %rax\n"
+                        "movq $0x0123456789, %rdx\n"
+                        "int $0x0"
+                        );
+        ASSERT(int_regs.rax == 0x0123456789);
+        ASSERT(int_regs.rdx == 0x0123456789);
 }
 
 UNLIKELY void set_exceptions(void)

@@ -82,7 +82,6 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kputs("COMPUTER INFO:");
         bootinfo(boot_magic, pcinfo);
         find_usable_RAM();
-        set_exceptions();
         early_init_interrupts();
         /* init kernel heap allocation */
         if(kalloc_init() == EXIT_SUCCESS) {

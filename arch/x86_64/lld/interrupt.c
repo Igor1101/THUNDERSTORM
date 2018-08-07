@@ -8,6 +8,7 @@
 #include <x86_64/cpu_management.h>
 #include <x86_64/apic.h>
 #include <x86_64/pic.h>
+#include <asm/int_handler.h>
 #include <assert.h>
 
 /* *INDENT-OFF* */
@@ -50,9 +51,12 @@ UNLIKELY void verify_ints(void);
 
 UNLIKELY void early_init_interrupts(void)
 {
+        set_exceptions();
         lidt(idt_table, EARLY_SIZE_OF_IDT);
         verify_ints();
         init_tss();
+        idt_clear_vectors();
+        set_exceptions();
 }
 
 /**
@@ -74,8 +78,6 @@ UNLIKELY void verify_ints(void)
 
 UNLIKELY void set_exceptions(void)
 {
-        idt_clear_vectors();
-        
         for (uint32_t num = 0; num < NUM_OF_EXCEPTIONS; num++) {
                 idt_set_trap(num, (uint64_t) exceptions_array[num], 1);
         }
@@ -94,8 +96,13 @@ UNLIKELY void init_interrupts(void)
         /* APIC \ PIC initializations */
         if(apic_present()) {
                 kputs("APIC is present");
+#ifndef USE_APIC
                 pic_disable();
+#endif
         } else {
-                kputs("APIC is not present");
+                kputs("Warning: APIC is not present");
         }
+#ifndef USE_APIC
+        pic_remap(NUM_OF_EXCEPTIONS - 1, NUM_OF_EXCEPTIONS - 1 + 8);
+#endif
 }

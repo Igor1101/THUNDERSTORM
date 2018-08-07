@@ -5,12 +5,12 @@
  */
 #include <kstdio.h>
 
-FORCE_INLINE void set_interrupts(void)
+FORCE_INLINE void local_irq_enable(void)
 {                               /* set external interrupts */
         asm volatile (" sti ");
 }
 
-FORCE_INLINE void clear_interrupts(void)
+FORCE_INLINE void local_irq_disable(void)
 {                               /* clear external interrupts */
         asm volatile (" cli ");
 }

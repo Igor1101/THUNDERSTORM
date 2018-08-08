@@ -93,16 +93,14 @@ UNLIKELY void set_exceptions(void)
 
 UNLIKELY void init_interrupts(void)
 {        
+        pic_remap(IRQ0_OFFSET, IRQ1_OFFSET);
         /* APIC \ PIC initializations */
         if(apic_present()) {
                 kputs("APIC is present");
-#ifndef USE_APIC
+#ifdef USE_APIC
                 pic_disable();
 #endif
         } else {
                 kputs("Warning: APIC is not present");
         }
-#ifndef USE_APIC
-        pic_remap(NUM_OF_EXCEPTIONS - 1, NUM_OF_EXCEPTIONS - 1 + 8);
-#endif
 }

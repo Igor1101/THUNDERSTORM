@@ -1,6 +1,28 @@
 #include <stdint.h>
 #include <x86_64/cpu_management.h>
 #include <x86_64/pic.h>
+
+/* LEGACY INTS:
+ * 8259A 	Description
+ * IRQ0	Timer
+ * IRQ1		Keyboard
+ * IRQ2		Cascade for 8259A Slave controller
+ * IRQ3		Serial port 2
+ * IRQ4		Serial port 1
+ * IRQ5		AT systems: Parallel Port 2. PS/2 systems: reserved
+ * IRQ6		Diskette drive
+ * IRQ7		Parallel Port 1
+ * IRQ8		CMOS Real time clock
+ * IRQ9	        CGA vertical retrace
+ * IRQ10	Reserved
+ * IRQ11	Reserved
+ * IRQ12	AT systems: reserved. PS/2: auxiliary device
+ * IRQ13	FPU
+ * IRQ14	Hard disk controller
+ * IRQ15	Reserved
+ * */
+
+
 /**
  * void pic_remap(int int_offset1, int int_offset2)
  * reinitialize the PIC controllers, giving them specified vector offsets

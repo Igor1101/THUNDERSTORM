@@ -1,29 +1,11 @@
 /* THIS FILE IS MARKED AS PUBLIC DOMAIN */
-/* LEGACY INTS:
- * 8259A 	Description
- * IRQ0	Timer
- * IRQ1		Keyboard
- * IRQ2		Cascade for 8259A Slave controller
- * IRQ3		Serial port 2
- * IRQ4		Serial port 1
- * IRQ5		AT systems: Parallel Port 2. PS/2 systems: reserved
- * IRQ6		Diskette drive
- * IRQ7		Parallel Port 1
- * IRQ8		CMOS Real time clock
- * IRQ9	        CGA vertical retrace
- * IRQ10	Reserved
- * IRQ11	Reserved
- * IRQ12	AT systems: reserved. PS/2: auxiliary device
- * IRQ13	FPU
- * IRQ14	Hard disk controller
- * IRQ15	Reserved
- * */
 #ifndef PIC_H
 #define PIC_H
 
 #include <stdint.h>
 #include <gcc_opt.h>
 #include <x86_64/cpu_management.h>
+#include <x86_64/idt.h>
 
 #define PIC1		0x20
 #define PIC2		0xA0
@@ -45,8 +27,11 @@
 #define ICW4_BUF_SLAVE	0x08		/* Buffered mode/slave */
 #define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
 #define ICW4_SFNM	0x10		/* Special fully nested (not) */
- 
 
+/* INTS mapping */
+#define IRQ0_OFFSET (NUM_OF_EXCEPTIONS - 1)
+#define IRQ1_OFFSET (NUM_OF_EXCEPTIONS - 1 + 8)
+ 
 /**
  * void pic_disable(void)
  * Mask master/slave Interrupt mask register,

@@ -8,7 +8,7 @@
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
 #include <TH/linker_info.h>
-#include <memmapping.h>
+#include <asm/memory_mapping.h>
 
 
 void find_usable_RAM(void)

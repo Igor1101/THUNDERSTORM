@@ -6,8 +6,7 @@
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 #include <TH/die.h>
-#include <x86_64/VGA.h>
-#include <x86_64/memory_mapping.h>
+#include <asm/memory_mapping.h>
 
 void init_paging(void);
 uintptr_t *map_video(volatile void *addr)
@@ -39,7 +38,7 @@ uintptr_t *map_video(volatile void *addr)
         (*(map_addr + 7)) = videoaddr;  // : 8
 
         return (uintptr_t *)
-            ((uintptr_t) (2 << 20) * (PG_SIZE / 8 - 8));
+            ((uintptr_t) (2 << 20) * (PG_SIZE / sizeof(uintptr_t) - 8));
 }
 
 /**
@@ -49,5 +48,5 @@ uintptr_t *map_video(volatile void *addr)
 void* last_addr(void)
 {
         return (void*)
-                ( *( (uint64_t*)&p2_table  + PG_SIZE / 8 - 9 * sizeof (uint64_t) ) );
+                ( *( (uint64_t*)&p2_table  + PG_SIZE / sizeof(uintptr_t) - 9 * sizeof (uint64_t) ) );
 }

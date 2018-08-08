@@ -9,7 +9,7 @@
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 #include <TH/font.h>
-#include <memmapping.h>
+#include <asm/memory_mapping.h>
 
 uint32_t scanline;
 uint32_t bytesperline;

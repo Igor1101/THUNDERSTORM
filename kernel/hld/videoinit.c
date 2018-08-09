@@ -36,13 +36,26 @@ bool init_video(void)
         sysfb.video_initialized = true;
         /* low level map this address
          * to somewhere in kernel memory */
-        sysfb.virtaddr = map_video((volatile void *)sysfb.addr);
+        kprintf("Mmaping memory\t");
+        sysfb.virtaddr = kmmap((void *)sysfb.addr, 
+                        sysfb.width * sysfb.height * sysfb.bpp / 4);
+        if(sysfb.virtaddr == NULL ) {
+                kputs("[FALSE]");
+                sysfb.video_initialized = false;
+                return false;
+        } else {
+                kputs("[TRUE]");
+        }
         /* init copy address 
          * if kcalloc is unsuccessfull (NULL), we`ll use old method */
         sysfb.copy = kcalloc(sysfb.width * sysfb.height * sysfb.bpp / 4);
+        kprintf("Video allocating buffer\t");
         if(sysfb.copy != NULL) {
-                kputs("Videomode 2nd buffer successfully allocated!");
+                kputs("[OK]");
+        } else {
+                kputs("[FALSE]");
         }
+
 #endif
         /* init vars */
         scanline = sysfb.width * sysfb.bpp /32;

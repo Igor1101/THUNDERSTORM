@@ -64,9 +64,9 @@ LIKELY void kputchar_to(
                 /* display a row */
                 register uint32_t *volatile vaddr;
                 register uint32_t *volatile copy;
-                for (x = 0; x < font->width; x++) {
+                for (x = 0; x < font->width + 1; x++) {
                         vaddr = (uint32_t *) sysfb.virtaddr + line;
-                        copy = (uint32_t*) sysfb.copy  + line;
+                        copy = (uint32_t*) sysfb.copy + line;
                         if (verify_addr(vaddr) == 0) {
                                 if (attr == TRANSPARENT) {
                                         *vaddr |=
@@ -268,15 +268,16 @@ LIKELY void make_newline(void)
         if(sysfb.copy == NULL) {
                 src = 
                         sysfb.virtaddr + 
-                        (font -> width * font -> height * sysfb.pitch / 8)
-                        + offset;
+                        (font->height * sysfb.pitch ) +
+                        offset;
+
                 dest = sysfb.virtaddr + offset;
         }
         else {
                 src = 
                         sysfb.copy + 
-                        (font -> width * font -> height * sysfb.pitch / 8)
-                        + offset;
+                        (font->height * sysfb.pitch ) +
+                        offset;
                 dest = sysfb.copy + offset;
         }
         memmove(dest, src,

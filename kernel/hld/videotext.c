@@ -263,7 +263,7 @@ LIKELY void make_newline(void)
                 return;
         uintptr_t offset = 
                 text.lines_offset * 
-                font -> width * font -> height * sysfb.pitch / 8;
+                font -> height * sysfb.pitch ;
         void *src, *dest;
         if(sysfb.copy == NULL) {
                 src = 

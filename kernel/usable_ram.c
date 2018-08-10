@@ -5,15 +5,17 @@
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
+#include <asm/memory_mapping.h>
 
 struct USABLE_RAM_MAP usable_ram_map[MAX_RAM_ENTRIES];
 uint32_t usable_ram_entries = 0;
 
 int add_RAM(void* start, void *end)
 {
+        REAL_PG_ALIGN((uintptr_t)start);
         if(usable_ram_entries > MAX_RAM_ENTRIES)
                 return EXIT_FAILURE;
-        if(start >= end)
+        if(start + REAL_PG_SIZE >= end)
                 return EXIT_FAILURE;
         if(start == NULL || end == NULL)
                 return EXIT_FAILURE;

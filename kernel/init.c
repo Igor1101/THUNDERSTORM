@@ -115,15 +115,7 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kprintf("clearing kernel stacks: ");
         clear_kernel_stacks();
         init_interrupts();
-        kputs("font symbols:");
-        uint8_t i=0;
-        do {
-                kprintf(" %d:", i);
-                kputchar(i);
-                kputchar(' ');
-        }
-        while(++i != 0);
-        /*
+                /*
         asm volatile (" exc: \n"
                       " mov $1, %rax\n"
                       " mov $2, %rdx\n"

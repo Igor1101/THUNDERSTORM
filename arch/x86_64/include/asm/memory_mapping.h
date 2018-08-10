@@ -11,6 +11,7 @@
 #define REAL_PG_SIZE _2MBYTE
 #define _MEM_AVAILABLE (0b10000011)
 #define _2MBYTE_ALIGN(X) while( ( (X) % _2MBYTE ) != 0) X++
+#define REAL_PG_ALIGN _2MBYTE_ALIGN
 
 /* kernel static memory end */
 #define KERNEL_MEM_END (PG_SIZE_QW / 2 - 1)

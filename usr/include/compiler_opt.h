@@ -4,6 +4,7 @@
 #ifndef GCC_OPT_H
 #define GCC_OPT_H
 
+#include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,7 +20,21 @@ extern "C" {
 #define NOOPTIMIZE __attribute__ ( ( optimize("O0") ) )
 #define __init __attribute__ ( ( section(".init_text") ) )
 #define HIDDEN __attribute__ ( ( visibility("hidden") ) )
-
+/* For suitability with linux attributes */
+#define __cold UNLIKELY
+#define __hot LIKELY
+#define __visible VISIBLE
+#define __user         __attribute__((noderef, address_space(1)))
+#define __aligned(X)  ALIGN(X)
+        typedef uint64_t u64;
+        typedef int64_t i64;
+        typedef uint32_t u32;
+        typedef int32_t i32;
+        typedef uint16_t u16;
+        typedef int16_t i16;
+        typedef uint8_t u8;
+        typedef int8_t i8;
+        typedef u64 loff_t;
 #ifdef __cplusplus
 }
 #endif

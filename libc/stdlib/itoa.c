@@ -9,7 +9,7 @@
 #include <kstdlib.h>
 #include <kstring.h>
 #include <stddef.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 static const char *s_itoa_chars = "0123456789abcdef";
 
 LIKELY void itoa(char *buf, intptr_t base, intptr_t val)

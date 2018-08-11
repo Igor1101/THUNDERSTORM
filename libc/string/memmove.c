@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 /**
  * Public domain
  * memmove - Copy one area of memory to another

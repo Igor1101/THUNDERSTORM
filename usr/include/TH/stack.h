@@ -8,7 +8,7 @@ extern "C" {
 /*
  * TH static memory stacks
  */
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <stdint.h>
 #include <kstring.h>
 

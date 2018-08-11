@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 #include <stddef.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 
 char *strncpy(char *dest, const char *src, size_t n);
 /* copy (ptr * 16) -aligned data (faster than memcpy ) */

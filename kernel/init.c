@@ -39,6 +39,7 @@ __________________________________________________________________________/_____
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
 #include <TH/stack.h>
+#include <TH/printk.h>
 #include <TH/die.h>
 #include <asm/int_handler.h>
 #include <asm/cpu_management.h>
@@ -125,6 +126,6 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $10, %r10\n"
                       " mov $11, %r11\n"
                       " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
-        cpu_halt();
+        local_irq_enable();
         while (1) ;
 }

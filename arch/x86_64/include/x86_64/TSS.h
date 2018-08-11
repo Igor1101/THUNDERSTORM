@@ -1,7 +1,7 @@
 #ifndef TSS_H
 #define TSS_H
 
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <stdint.h>
 #include <x86_64/cpu_management.h>
 

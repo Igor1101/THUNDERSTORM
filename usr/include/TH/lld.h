@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <stdint.h>
 #include <stdbool.h>
 

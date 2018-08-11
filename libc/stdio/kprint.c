@@ -10,7 +10,7 @@
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <TH/lld.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #define kputc kputchar
 
 LIKELY void dputs(const char *s)

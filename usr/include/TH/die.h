@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 NORET void die(char *reason);   /*  assembly function */
 NORET void die_stdio(char *reason);
 /* write message, using kprintf*/

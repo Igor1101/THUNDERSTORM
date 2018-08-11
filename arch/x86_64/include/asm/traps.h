@@ -6,7 +6,7 @@
 #ifndef _ASM_X86_TRAPS_H
 #define _ASM_X86_TRAPS_H
 
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <x86_64/IDT.h>
 #define CONFIG_X86_64
 #define dotraplinkage //looks like do_* functions are useless here

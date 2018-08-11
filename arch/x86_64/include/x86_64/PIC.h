@@ -3,7 +3,7 @@
 #define PIC_H
 
 #include <stdint.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <x86_64/cpu_management.h>
 #include <x86_64/IDT.h>
 

@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 /*
  * Copyed from: osdev.org
  * --------------------------------------------------------------------------

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <kstdio.h>
 
 FORCE_INLINE void aFailed(char* file, int line)

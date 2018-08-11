@@ -3,7 +3,7 @@
  */
 #include <stddef.h>
 #include <stdint.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 
 /*
  * This is too slow for video memory 

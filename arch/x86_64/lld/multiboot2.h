@@ -1,7 +1,7 @@
 #ifndef MULTIBOOT2_H
 #define MULTIBOOT2_H
 
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <stdint.h>
 
 #define LOADER_NAME 2

@@ -11,7 +11,7 @@ Sets the first @var{count} bytes of @var{s} to the constant byte
 
 #include <kstdlib.h>
 #include <kstdio.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <misc/show.h>
 
 LIKELY void *memset(void *dest, register int val, register size_t len)

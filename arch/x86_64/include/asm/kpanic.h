@@ -4,7 +4,7 @@
 #ifndef KPANIC_H
 #define KPANIC_H
 
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <kstdio.h>
 #include <x86_64/IDT.h>
 

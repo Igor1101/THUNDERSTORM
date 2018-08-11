@@ -5,7 +5,7 @@
  * fetches information from multiboot header
  */
 
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <kstring.h>

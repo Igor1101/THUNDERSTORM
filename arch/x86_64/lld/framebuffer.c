@@ -9,7 +9,7 @@
 #include <TH/font.h>
 #include <stdbool.h>
 #include <kstring.h>
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 
 LIKELY void kputpixel(uint32_t x, uint32_t y, uint32_t color)
 {

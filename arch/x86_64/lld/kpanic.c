@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
-#include <gcc_opt.h>
+#include <compiler_opt.h>
 #include <kstdio.h>
 #include <misc/convert.h>
 #include <TH/lld.h>

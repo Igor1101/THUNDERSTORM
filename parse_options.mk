@@ -19,3 +19,5 @@ else
 	KERNEL_OPTIONS += -D $(KERNEL_BUILD_MODE)
 endif
 
+# Add ARCH
+KERNEL_OPTIONS += -D __$(strip $(ARCH))__

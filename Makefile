@@ -1,10 +1,10 @@
 #Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
 
-include compile_opt_kernel.mk
-include parse_options.mk
 BIOS ?=biosfile
 QEMU_MEM ?= 100M
 ARCH ?= x86_64
+include compile_opt_kernel.mk
+include parse_options.mk
 INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include
 KERNEL = boot/THkernel
 TH_ABS_PATH = $(PWD)
@@ -15,7 +15,7 @@ AR = ar
 OBJCOPY = objcopy
 AS_FLAGS =
 CC_FLAGS = -O3 -g -fno-stack-protector\
- 	-ffreestanding -Wall  -Werror -Wextra -static -nostdlib 
+ 	-ffreestanding -Wall  -Wextra -static -nostdlib 
 KERNEL_CC_FLAGS = -mgeneral-regs-only -nostdinc -mno-red-zone $(CC_FLAGS) $(KERNEL_OPTIONS) $(INCLUDE_DIRS)
 LD_FLAGS = -nostdlib -static 
 BOOT_PORTS_PATH = arch/$(ARCH)/boot

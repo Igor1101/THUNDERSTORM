@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include <TH/stack.h>
 #include <asm/traps.h>
-#include <x86_64/idt.h>
-#include <x86_64/tss.h>
+#include <x86_64/IDT.h>
+#include <x86_64/TSS.h>
 
 #define PG_SIZE 4096
 #define x64_LOW(X) ( (uint64_t) (X) & 0xFFFF )

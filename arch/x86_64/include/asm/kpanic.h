@@ -6,7 +6,7 @@
 
 #include <gcc_opt.h>
 #include <kstdio.h>
-#include <x86_64/idt.h>
+#include <x86_64/IDT.h>
 
 extern struct __regs_int_gcc {
         int_frame fr;

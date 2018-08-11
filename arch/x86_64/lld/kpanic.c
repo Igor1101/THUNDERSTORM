@@ -7,7 +7,7 @@
 #include <TH/lld.h>
 #include <asm/kpanic.h>
 #include <asm/cpu_management.h>
-#include <x86_64/idt.h>
+#include <x86_64/IDT.h>
 
 /* *INDENT-OFF* */
 /*

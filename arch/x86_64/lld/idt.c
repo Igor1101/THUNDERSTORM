@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <gcc_opt.h>
 #include <TH/lld.h>
-#include <x86_64/idt.h>
+#include <x86_64/IDT.h>
 #include <asm/cpu_management.h>
 #define x64_LOW(X) ( (uint64_t) (X) & 0xFFFF )
 #define x64_MIDDLE(X) ( (uint64_t) (X) >> 16 & 0xFFFF )

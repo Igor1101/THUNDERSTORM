@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <gcc_opt.h>
 #include <x86_64/cpu_management.h>
-#include <x86_64/idt.h>
+#include <x86_64/IDT.h>
 
 #define PIC1		0x20
 #define PIC2		0xA0

@@ -3,11 +3,11 @@
  */
 #include <asm/traps.h>
 #include <asm/kpanic.h>
-#include <x86_64/idt.h>
-#include <x86_64/tss.h>
+#include <x86_64/IDT.h>
+#include <x86_64/TSS.h>
 #include <x86_64/cpu_management.h>
-#include <x86_64/apic.h>
-#include <x86_64/pic.h>
+#include <x86_64/APIC.h>
+#include <x86_64/PIC.h>
 #include <asm/int_handler.h>
 #include <assert.h>
 

@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <x86_64/cpu_management.h>
-#include <x86_64/pic.h>
+#include <x86_64/PIC.h>
 
 /* LEGACY INTS:
  * 8259A 	Description

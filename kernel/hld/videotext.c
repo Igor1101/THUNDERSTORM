@@ -280,7 +280,7 @@ LIKELY void make_newline(void)
                         offset;
                 dest = sysfb.copy + offset;
         }
-        memmove(dest, src,
+        kmemcpy_ptr(dest, src,
                     sysfb.width * sysfb.height * sysfb.bpp / 8 
                     - 1 * (font -> height * sysfb.pitch / 8) );
         fb_display_update();

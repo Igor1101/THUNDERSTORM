@@ -40,6 +40,7 @@ __________________________________________________________________________/_____
 #include <TH/sysvars.h>
 #include <TH/stack.h>
 #include <TH/printk.h>
+#include <TH/kern_levels.h>
 #include <TH/die.h>
 #include <asm/int_handler.h>
 #include <asm/cpu_management.h>
@@ -67,7 +68,8 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         select_fgcolor(Red);
         kputs
             ("Note, that VGA mode is Legacy, used only for debbuging and text");
-        select_fgcolor(Default);
+        select_fgcolor(DefaultFG);
+        select_bgcolor(DefaultBG);
 #endif/* USE_VGA */
         static char verifier = 100;
         if (verifier != 100) {
@@ -77,7 +79,8 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 #ifdef DEBUG
         select_fgcolor(Red);
         kputs("This is a DEBUG version of kernel");
-        select_fgcolor(Default);
+        select_fgcolor(DefaultFG);
+        select_bgcolor(DefaultBG);
 #endif                          /* DEBUG */
 
         kputs("COMPUTER INFO:");
@@ -94,6 +97,8 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 
         if (init_video() == true) {
                 tui_init(OFFSET_FROM_TOP); // <----earliest init
+                select_fgcolor(DefaultFG);
+                select_bgcolor(DefaultBG);
                 kputs("videomode successfully started");
                 print_video_info();
                 /* verifying bounds of display */
@@ -102,18 +107,14 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                 kputchar_to('\0', 0, text.columns - 1, Red, Red, NOTRANSPARENT);
                 kputchar_to('\0', text.rows - 1, 0, Red, Red, NOTRANSPARENT);
 
-                select_fgcolor(Cyan);
-                select_bgcolor(Blue);
                 kputs(SMALL_SYS_EMBLEM);
-                select_bgcolor(Black);
-                select_fgcolor(Default);
         }
-        kprintf("\n\n\nTHUNDERSTORM %s Embedded system\n\
+        printk("\n\n\nTHUNDERSTORM %s Embedded system\n\
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
         /* initializing interrupts */
         print_usable_RAM();
         detect_cpu();
-        kprintf("clearing kernel stacks: ");
+        printk("clearing kernel stacks: ");
         clear_kernel_stacks();
         init_interrupts();
                 /*
@@ -127,5 +128,6 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $11, %r11\n"
                       " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
         local_irq_enable();
+        printk(KERN_NOTICE "HALTING");
         while (1) ;
 }

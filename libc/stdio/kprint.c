@@ -13,6 +13,14 @@
 #include <TH/lld.h>
 #include <compiler_opt.h>
 
+LIKELY int write(const void *buf, size_t count)
+{
+        register unsigned char *ptr = (unsigned char *)buf;
+        while (count-- > 0)
+                kputchar(*ptr++);
+        return ((void*)ptr - (void*)buf);
+}
+
 LIKELY void kputs(const char *s)
 {
         while (*s) {

@@ -47,23 +47,24 @@ extern "C" {
 #ifdef USE_VESA
         enum Color {
                 Black = 0,
-                Blue = 0x041B36,
-                Green = 0x1A3604,
-                Cyan = 0x4B81C0,
+                Blue = 0x6495ED,/* CornflowerBlue */
+                Green = 0x008000,
+                Cyan = 0x00FFFF,
                 Red = 0xFF0000,
                 Magenta = 0xFF00FF,
                 Brown = 0xA52A2A,
-                LightGray = 0x8F959B,
-                DarkGray = 0x52575C,
-                LightBlue = 0x88B9F2,
-                LightGreen = 0x88F2AF,
-                LightCyan = 0xC9FFE5,
-                LightRed = 0xFF001A,
+                LightGray = 0xD3D3D3,
+                DarkGray = 0xA9A9A9,
+                LightBlue = 0xADD8E6,
+                LightGreen = 0x90EE90,
+                LightCyan = 0xE0FFFF,
+                LightRed = 0xFF0000,
                 Pink = 0xFFC0CB,
                 Yellow = 0xFFFF00,
                 White = 0xFFFFFF,
-                Default = 0x2A7225,
-                DefaultBG = Black
+                DefaultFG = 0x9E839D,
+                DefaultBG = 0x2E052D,
+                LogFG = Green
         };
 
         void invert_char(uint32_t row, uint32_t column);

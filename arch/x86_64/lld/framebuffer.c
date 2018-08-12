@@ -13,13 +13,23 @@
 
 LIKELY void kputpixel(uint32_t x, uint32_t y, uint32_t color)
 {
+        uint8_t* max_addr;
+        register uint8_t *vaddr;
         if (sysfb.video_initialized == false)
                 return;
-        register uint8_t *vaddr = (uint8_t *) sysfb.virtaddr
-            + y * sysfb.pitch + x * sysfb.bpp / 8;
-        /* dont let it out of bounds */
-        if (vaddr >= (uint8_t *) sysfb.virtaddr +
-            sysfb.width * sysfb.height * sysfb.bpp / 8)
+        if(sysfb.copy == NULL) {
+                max_addr = (uint8_t *) sysfb.virtaddr +
+                sysfb.width * sysfb.height * sysfb.bpp / 8;
+                vaddr = (uint8_t *) sysfb.virtaddr
+                + y * sysfb.pitch + x * sysfb.bpp / 8;
+        } else {
+                max_addr = (uint8_t *) sysfb.copy +
+                sysfb.width * sysfb.height * sysfb.bpp / 8;
+                vaddr = (uint8_t *) sysfb.copy
+                + y * sysfb.pitch + x * sysfb.bpp / 8;
+        }
+        /* don`t let it out of bounds */
+        if (vaddr >= max_addr)
                 return;
         *vaddr = color & 255;   /* BLUE */
         *(vaddr + 1) = (color >> 8) & 255;      /* GREEN */

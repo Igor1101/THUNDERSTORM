@@ -69,7 +69,6 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         kputs
             ("Note, that VGA mode is Legacy, used only for debbuging and text");
         select_fgcolor(DefaultFG);
-        select_bgcolor(DefaultBG);
 #endif/* USE_VGA */
         static char verifier = 100;
         if (verifier != 100) {

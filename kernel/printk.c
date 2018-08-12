@@ -246,13 +246,14 @@ static size_t log_output(int facility, int level,
                         select_bgcolor(DefaultBG);
                         break;
         }
-        write(text, text_len);
+        int writelength = write(text, text_len);
 
 	/* If it doesn't end in a newline, try to buffer the current line */
 	if (!(lflags & LOG_NEWLINE)) {
                 kputchar('\n');
 	}
-
+        select_fgcolor(DefaultFG);
+        select_bgcolor(DefaultBG);
 }
 
 

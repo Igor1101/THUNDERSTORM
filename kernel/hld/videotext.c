@@ -22,6 +22,15 @@ LIKELY int verify_addr(uint32_t * addr)
         return 0;
 }
 
+LIKELY void fb_clear_screen(void)
+{
+        for(uint32_t y = 0; y < sysfb.height; y++) {
+                for(uint32_t x = 0; x < sysfb.width; x++) {
+                        kputpixel(x, y , DefaultBG);
+                }
+        }
+        fb_display_update();
+}
 /* This function has been copied from 
  * wiki.OSdev.org
  */
@@ -283,6 +292,10 @@ LIKELY void make_newline(void)
         kmemcpy_ptr(dest, src,
                     sysfb.width * sysfb.height * sysfb.bpp / 8 
                     - 1 * (font -> height * sysfb.pitch / 8) );
+        for(text_t col=0; col<=text.columns; col++) {
+                kputchar_to(0, text.rows - 1, col, 
+                                DefaultBG, DefaultBG, NOTRANSPARENT);
+        }
         fb_display_update();
 }
 

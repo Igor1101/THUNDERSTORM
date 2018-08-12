@@ -118,6 +118,7 @@ extern "C" {
         bool init_video(void);
         int font_info(void);
 #ifndef NO_VIDEOMODE
+        void fb_clear_screen(void);
         void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
         uint32_t determine_columns(void);
         uint32_t determine_rows(void);
@@ -169,6 +170,8 @@ LIKELY void copy_char(
         }
 
         FORCE_INLINE void make_newline(void){};
+
+        FORCE_INLINE void fb_clear_screen(void){};
 
         FORCE_INLINE void update_cursor(int row, int col)
         {

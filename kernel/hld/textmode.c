@@ -21,6 +21,8 @@ void tui_init(text_t lines_offset)
         text.columns = determine_columns();
         text.rows = determine_rows();
         text.is_initialized = true;
+        /* clearing screen */
+        fb_clear_screen();
 }
 
 void select_fgcolor(int color)

@@ -43,6 +43,6 @@ int font_info(void)
         kprintf("numglyph %d\n", font->numglyph);
         kprintf("height %d\n", font->height);
         kprintf("width %d\n", font->width);
-        select_fgcolor(Default);
+        select_fgcolor(DefaultFG);
         return ret;
 }

@@ -15,7 +15,8 @@ void tui_init(text_t lines_offset)
         text.lines_offset = lines_offset;
         text.row = BEGINNING + text.lines_offset;
         text.col = BEGINNING;
-        text.fgcolor = Default;
+        text.fgcolor = DefaultFG;
+        text.bgcolor = DefaultBG;
         enable_cursor(BEGINNING, text.rows);
         text.columns = determine_columns();
         text.rows = determine_rows();
@@ -93,13 +94,4 @@ void kputchar(int8_t chr)
         } else {
                 text.col++;
         }
-}
-
-void kputs(char *str)
-{
-        while (*str != 0) {
-                kputchar(*str);
-                str++;
-        }
-        kputchar('\n');
 }

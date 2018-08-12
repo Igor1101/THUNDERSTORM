@@ -10,7 +10,7 @@
 #define EXC_START \
   select_fgcolor(Red);\
   kprintf("TH EXCEPTION:");\
-  select_fgcolor(Default); \
+  select_fgcolor(DefaultFG); \
                                 //clear_interrupts();
 #define EXC_EXIT \
                                 //set_interrupts();

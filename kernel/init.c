@@ -65,9 +65,8 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 #endif                          /* USE_SERIAL */
 #ifdef USE_VGA
         tui_init(OFFSET_FROM_TOP);
-        select_fgcolor(Red);
-        kputs
-            ("Note, that VGA mode is Legacy, used only for debbuging and text");
+        pr_warning
+            (DEPRECATED "Note, that VGA mode is Legacy, used only for debbuging and text");
         select_fgcolor(DefaultFG);
 #endif/* USE_VGA */
         static char verifier = 100;
@@ -76,29 +75,24 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                                   * smth wrong with bss */
         }
 #ifdef DEBUG
-        select_fgcolor(Red);
-        kputs("This is a DEBUG version of kernel");
-        select_fgcolor(DefaultFG);
-        select_bgcolor(DefaultBG);
+        pr_notice("This is a DEBUG version of kernel");
 #endif                          /* DEBUG */
 
-        kputs("COMPUTER INFO:");
+        pr_devel(KERN_CONT "COMPUTER INFO:");
         bootinfo(boot_magic, pcinfo);
         find_usable_RAM();
         early_init_interrupts();
         /* init kernel heap allocation */
         if(kalloc_init() == EXIT_SUCCESS) {
-                kputs("Kalloc successfully initialized");
+                pr_notice("Kalloc successfully initialized");
         } else {
-                kputs("Kalloc initialize failure, some kernel features \
+                pr_err("Kalloc initialize failure, some kernel features \
                                 cannot be used");
         }
 
         if (init_video() == true) {
                 tui_init(OFFSET_FROM_TOP); // <----earliest init
-                select_fgcolor(DefaultFG);
-                select_bgcolor(DefaultBG);
-                kputs("videomode successfully started");
+                pr_notice("videomode successfully started");
                 print_video_info();
                 /* verifying bounds of display */
                 kputchar_to('\0', text.rows - 1, text.columns - 1,
@@ -106,9 +100,9 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                 kputchar_to('\0', 0, text.columns - 1, Red, Red, NOTRANSPARENT);
                 kputchar_to('\0', text.rows - 1, 0, Red, Red, NOTRANSPARENT);
 
-                kputs(SMALL_SYS_EMBLEM);
+                printk(SMALL_SYS_EMBLEM);
         }
-        printk("\n\n\nTHUNDERSTORM %s Embedded system\n\
+        pr_notice("\n\n\nTHUNDERSTORM %s Embedded system\n\
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
         /* initializing interrupts */
         print_usable_RAM();
@@ -127,6 +121,5 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $11, %r11\n"
                       " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
         local_irq_enable();
-        printk(KERN_NOTICE "HALTING");
         while (1) ;
 }

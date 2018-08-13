@@ -63,8 +63,8 @@ extern "C" {
                 Yellow = 0xFFFF00,
                 White = 0xFFFFFF,
                 DefaultFG = 0x9E839D,
-                DefaultBG = 0x2E052D,
-                LogFG = Green
+                DefaultBG = 0x130815,
+                DefaultLogFG = Green
         };
 
         void invert_char(uint32_t row, uint32_t column);

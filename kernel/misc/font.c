@@ -29,20 +29,20 @@ int font_info(void)
 {
         volatile int ret = 0;
         select_fgcolor(Cyan);
-        kputs("fonts info:");
+        printk("fonts info:");
         font = (PSF_font *) & _font_start;
         if (PSF_FONT_MAGIC == font->magic) {
-                kputs("font is PSF");
+                printk("font is PSF");
         } else {
-                kputs("Warning: font is not supported by kernel");
+                printk("Warning: font is not supported by kernel");
                 ret = -1;
         }
-        kprintf("version %d\n", font->version);
-        kprintf("headersize %d\n", font->headersize);
-        kprintf("flags %d\n", font->flags);
-        kprintf("numglyph %d\n", font->numglyph);
-        kprintf("height %d\n", font->height);
-        kprintf("width %d\n", font->width);
+        printk("version %d\n", font->version);
+        printk("headersize %d\n", font->headersize);
+        printk("flags %d\n", font->flags);
+        printk("numglyph %d\n", font->numglyph);
+        printk("height %d\n", font->height);
+        printk("width %d\n", font->width);
         select_fgcolor(DefaultFG);
         return ret;
 }

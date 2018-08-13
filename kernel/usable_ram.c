@@ -27,9 +27,9 @@ int add_RAM(void* start, void *end)
 
 void print_usable_RAM(void)
 {
-        kputs("Usable RAM found:");
+        printk("Usable RAM found:");
         for(uint32_t i = 0; i < usable_ram_entries; i++) {
-                kprintf("entry %d: from 0x%x to 0x%x\n", i, 
+                printk("entry %d: from 0x%x to 0x%x\n", i, 
                                 usable_ram_map[i].base_addr,
                                 usable_ram_map[i].end_addr
                        );

@@ -210,19 +210,10 @@ static size_t log_output(int facility, int level,
 		return 0;
         switch(level) {
                 case LOGLEVEL_DEFAULT:
-                        select_fgcolor(LogFG);
-                        select_bgcolor(DefaultBG);
-                        break;
                 case LOGLEVEL_DEBUG:
-                        select_fgcolor(DefaultFG);
-                        select_bgcolor(DefaultBG);
-                        break;
                 case LOGLEVEL_INFO:
-                        select_fgcolor(LogFG);
-                        select_bgcolor(DefaultBG);
-                        break;
                 case LOGLEVEL_NOTICE:
-                        select_fgcolor(Yellow);
+                        select_fgcolor(DefaultLogFG);
                         select_bgcolor(DefaultBG);
                         break;
                 case LOGLEVEL_WARNING:
@@ -248,8 +239,7 @@ static size_t log_output(int facility, int level,
         }
         int writelength = write(text, text_len);
 
-	/* If it doesn't end in a newline, try to buffer the current line */
-	if (!(lflags & LOG_NEWLINE)) {
+	if ((lflags & LOG_NEWLINE) || (lflags & LOG_CONT) == 0 ) {
                 kputchar('\n');
 	}
         select_fgcolor(DefaultFG);

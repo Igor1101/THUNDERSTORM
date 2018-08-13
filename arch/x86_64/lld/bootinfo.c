@@ -30,13 +30,13 @@ __init void bootinfo(uintptr_t bootmagic, void *pcinfo)
 {
         switch (bootmagic) {
         case MULTIBOOT1_MAGIC:
-                kputs("MULTIBOOT1 recognized, but still not supported");
+                printk("MULTIBOOT1 recognized, but still not supported");
                 die("MULTIBOOT1 recognized, but still not supported");
         case MULTIBOOT2_MAGIC:
                 multiboot2(pcinfo);
                 break;
         default:
-                kputs("Bootloader is not supported, giving up");
+                printk("Bootloader is not supported, giving up");
                 die("Bootloader is not supported");
         }
 }
@@ -51,7 +51,7 @@ __init static void multiboot2(void *pcinfo /* ebx */ )
         while (header_size % sizeof(uint32_t) != 0)
                 header_size--;
         register volatile void *bp;
-        kprintf("total size of boot struct=0x%x\n", header_size);
+        printk("total size of boot struct=0x%x\n", header_size);
         /* reserved */
         pcinfo += sizeof(uint32_t);
         register uint32_t modules_times = 0;

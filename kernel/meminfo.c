@@ -8,6 +8,7 @@
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
 #include <TH/linker_info.h>
+#include <TH/printk.h>
 #include <asm/memory_mapping.h>
 
 
@@ -29,12 +30,12 @@ void find_usable_RAM(void)
                 default:
                         type = "RESERVED";
                 }
-                kprintf("entry %d: addr 0x%x, length %dM, type %s\n",
+                pr_debug("entry %d: addr 0x%x, length %dM, type %s\n",
                         i, ram_map[i].base_addr,
                         ram_map[i].length / (1 << 20), type);
                 if ((void *) & kernel_phys_base >= ram_map[i].base_addr &&
                     (void *) & kernel_phys_base < ram_map[i + 1].base_addr) {
-                        kprintf
+                        printk
                             ("<-- kernel:\n text: 0x%x,\n data: 0x%x,\
                              \n bss: 0x%x,\n init_text: 0x%x, \
                              \n init_bss: 0x%x, \n kernel_end: 0x%x\n",
@@ -49,7 +50,7 @@ void find_usable_RAM(void)
                         uintptr_t biggest = modules[0].phys_addr_end;
                         uintptr_t smallest = modules[0].phys_addr;
                         for (uint32_t i = 0; i < module_entries; i++) {
-                                kprintf
+                                pr_debug
                                         (
                                          "\tmodule %s, 0x%x, 0x%x\n", 
                                         modules[i].ext_name,
@@ -105,11 +106,11 @@ void find_usable_RAM(void)
 
                 if ( sysfb.addr >= ram_map[i].base_addr &&
                     sysfb.addr < ram_map[i + 1].base_addr) {
-                        kprintf("<-- fb ( 0x%x )\n", sysfb.virtaddr);
+                        printk("<-- fb ( 0x%x )\n", sysfb.addr);
                 }
                 if ( last_addr() >= ram_map[i].base_addr &&
                      last_addr() < ram_map[i + 1].base_addr) {
-                        kprintf("<-- last kernel addr 0x%x\n", last_addr());
+                        printk("<-- last kernel addr 0x%x\n", last_addr());
                 }
 
         }

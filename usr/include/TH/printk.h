@@ -4,8 +4,8 @@
 #define __KERNEL_PRINTK__
 
 // TODO : MOVE THESE TO "compile_opt_kernel.mk":
-#define CONFIG_MESSAGE_LOGLEVEL_DEFAULT 4
-#define CONFIG_CONSOLE_LOGLEVEL_DEFAULT 4
+#define CONFIG_MESSAGE_LOGLEVEL_DEFAULT -1
+#define CONFIG_CONSOLE_LOGLEVEL_DEFAULT -1
 #define CONFIG_PRINTK
 
 #include <compiler_opt.h>

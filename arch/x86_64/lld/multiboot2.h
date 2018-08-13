@@ -25,7 +25,7 @@ FORCE_INLINE int vbe_mode(volatile void *ebx)
         if (*(int *)(ebx + sizeof(uint32_t)) != 784 /* fixed size */ ) {
                 return EXIT_FAILURE;
         }
-        kprintf("vbe_mode: 0x%x", *(uint16_t *) (ebx + 2 * sizeof(uint32_t)));
+        printk("vbe_mode: 0x%x", *(uint16_t *) (ebx + 2 * sizeof(uint32_t)));
         return EXIT_SUCCESS;
 }
 
@@ -36,7 +36,7 @@ FORCE_INLINE int loader_name(volatile void *ebx)
             *(int32_t *) (ebx + sizeof(uint32_t)) <= 0) {
                 return EXIT_FAILURE;
         }
-        kprintf("loader is %s\n", (char *)(ebx + 2 * sizeof(uint32_t)));
+        printk("loader is %s\n", (char *)(ebx + 2 * sizeof(uint32_t)));
         return EXIT_SUCCESS;
 }
 
@@ -49,7 +49,7 @@ FORCE_INLINE int boot_cmd(volatile void *ebx)
         }
         strncpy(kcmdline, (char *)(ebx + 2 * sizeof(uint32_t)),
                 sizeof(kcmdline));
-        kprintf("kcmdline:  %s\n", kcmdline);
+        printk("kcmdline:  %s\n", kcmdline);
         return EXIT_SUCCESS;
 }
 
@@ -59,11 +59,11 @@ FORCE_INLINE int boot_device(volatile void *ebx)
         if (*(uint32_t *) (ebx + sizeof(uint32_t)) != 20 /* fixed size */ ) {
                 return EXIT_FAILURE;
         }
-        kprintf("BOOTDEV IS  0x%x\n",
+        printk("BOOTDEV IS  0x%x\n",
                 *(uint32_t *) (ebx + 2 * sizeof(uint32_t)));
-        kprintf("PARTITION:  0x%x\n",
+        printk("PARTITION:  0x%x\n",
                 *(uint32_t *) (ebx + 3 * sizeof(uint32_t)));
-        kprintf("SUBPARTITION:  0x%x\n",
+        printk("SUBPARTITION:  0x%x\n",
                 *(uint32_t *) (ebx + 4 * sizeof(uint32_t)));
         return EXIT_SUCCESS;
 }
@@ -79,7 +79,7 @@ FORCE_INLINE int memory(volatile void *ebx)
         /* in kilobytes size of it*/
         RAM.lowest = (*(uint32_t *) (ebx + 2 * sizeof(uint32_t)));
         RAM.highest = *(volatile uint32_t *)(ebx + 3 * sizeof (uint32_t));
-        kprintf("RAM lowest: %d K, highest: %d K\n",
+        printk("RAM lowest: %d K, highest: %d K\n",
                 ((volatile uintptr_t)RAM.lowest),
                 ((volatile uintptr_t)RAM.highest));
         return EXIT_SUCCESS;
@@ -95,7 +95,7 @@ FORCE_INLINE int modules_proc(volatile void *ebx, uint32_t num)
         modules[num].ext_name = (char *)(ebx + 4 * sizeof(uint32_t));
         modules[num].phys_addr_end = *(uint32_t *) (ebx + 3 * sizeof(uint32_t));
         modules[num].phys_addr = *(uint32_t *) (ebx + 2 * sizeof(uint32_t));
-        kprintf("module:  %s, addr 0x%x to 0x%x\n", 
+        printk("module:  %s, addr 0x%x to 0x%x\n", 
                         modules[num].ext_name,
                         modules[num].phys_addr,
                         modules[num].phys_addr_end
@@ -129,7 +129,7 @@ FORCE_INLINE int memmap(volatile void *ebx)
                 mappointer += entry_size;
         }
         ram_entries = rami;
-        kprintf("memmap:  ram_entries: %d entry version: %d\n",
+        printk("memmap:  ram_entries: %d entry version: %d\n",
                 ram_entries, entry_version);
         for (uint32_t i = 0; i < ram_entries; i++) {
                 char *type;
@@ -146,7 +146,7 @@ FORCE_INLINE int memmap(volatile void *ebx)
                 default:
                         type = "RESERVED";
                 }
-                kprintf("entry %d: addr 0x%x, length %dM, type %s \n",
+                printk("entry %d: addr 0x%x, length %dM, type %s \n",
                         i, ram_map[i].base_addr,
                         ram_map[i].length / 1024 / 1024, type);
         }
@@ -169,7 +169,7 @@ FORCE_INLINE int framebuffer_info(volatile void *ebx)
                                   + sizeof(uint64_t));
         sysfb.type = *(uint8_t *) (ebx + 5 * sizeof(uint32_t)
                                    + sizeof(uint64_t) + sizeof(uint8_t));
-        kprintf("\nframebuffer : \n\taddr 0x%x \t\n\tpitch\
+        printk("\nframebuffer : \n\taddr 0x%x \t\n\tpitch\
  0x%x \n\twidth 0x%x \n\theight 0x%x \n\tbpp 0x%x \n\ttype 0x%x\n",
                 sysfb.addr, sysfb.pitch, sysfb.width,
                 sysfb.height,

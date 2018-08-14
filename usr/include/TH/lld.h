@@ -13,7 +13,7 @@ extern "C" {
 #include <stdbool.h>
 
 
-#if defined USE_VGA || defined NO_VIDEOMODE
+#if defined USE_VGA 
         enum Color {
                 Black = 0,
                 Blue = 1,
@@ -31,20 +31,13 @@ extern "C" {
                 Pink = 13,
                 Yellow = 14,
                 White = 15,
-                Default = 2,
-                DefaultBG = Black
-        };
-#endif                          /*USE_VGA */
-
-        enum char_attributes {
-                /*
-                 * for kputchar_to func
-                 */
-                TRANSPARENT,
-                NOTRANSPARENT
+                DefaultFG = Green,
+                DefaultBG = Black,
+                DefaultLogFG = Green
         };
 
-#ifdef USE_VESA
+        static FORCE_INLINE void fb_clear_screen(void){};
+#else /* use standard color pallete */
         enum Color {
                 Black = 0,
                 Blue = 0x6495ED,/* CornflowerBlue */
@@ -67,6 +60,18 @@ extern "C" {
                 DefaultLogFG = Green
         };
 
+
+#endif                          /*USE_VGA */
+
+        enum char_attributes {
+                /*
+                 * for kputchar_to func
+                 */
+                TRANSPARENT,
+                NOTRANSPARENT
+        };
+
+#ifdef USE_VESA
         void invert_char(uint32_t row, uint32_t column);
 #endif                          /*USE_VESA */
 
@@ -150,6 +155,7 @@ LIKELY void copy_char(
         void kpause(void);      /* for debug */
 
 #ifdef NO_VIDEOMODE
+
         /* videomode funcs stubs */
         FORCE_INLINE void kputchar_to(
                                 /* unicode character */
@@ -171,7 +177,6 @@ LIKELY void copy_char(
 
         FORCE_INLINE void make_newline(void){};
 
-        FORCE_INLINE void fb_clear_screen(void){};
 
         FORCE_INLINE void update_cursor(int row, int col)
         {

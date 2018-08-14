@@ -10,7 +10,7 @@
 #define x64_MIDDLE(X) ( (uint64_t) (X) >> 16 & 0xFFFF )
 #define x64_HIGH(X) ( (uint64_t) (X) >> 32 )
 /* *INDENT-OFF* */
-ALIGN(8) struct IDTdesc idt_table[NUM_OF_DESC];
+ALIGNED(8) struct IDTdesc idt_table[NUM_OF_DESC];
 
 UNLIKELY void
 idt_set_vector(uint8_t num, uint64_t addr,

@@ -9,7 +9,6 @@ extern "C" {
 #endif
 
 #define PSF_FONT_MAGIC 0x864ab572
-#define USHRT_MAX 512
 
         typedef struct {
                 uint32_t magic; /* magic bytes to identify PSF */
@@ -21,7 +20,6 @@ extern "C" {
                 uint32_t height;        /* height in pixels */
                 uint32_t width; /* width in pixels */
         } PSF_font;
-        uint16_t font_arr[USHRT_MAX];
         uint16_t *unicode;
 
         extern char _font_start;        /* < ------------ font in rodata */

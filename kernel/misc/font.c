@@ -8,6 +8,7 @@
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 #include <TH/font.h>
+#include <TH/kernel.h>
 
 /* 
  * import psf(PC screen font) , 

@@ -9,6 +9,7 @@
 #include <TH/lld.h>
 #include <TH/sysvars.h>
 #include <TH/font.h>
+#include <TH/kernel.h>
 #include <asm/memory_mapping.h>
 
 uint32_t scanline;
@@ -36,24 +37,24 @@ bool init_video(void)
         sysfb.video_initialized = true;
         /* low level map this address
          * to somewhere in kernel memory */
-        printk("Mmaping memory\t");
+        pr_cont("\t\tMmaping memory");
         sysfb.virtaddr = kmmap((void *)sysfb.addr, 
                         sysfb.width * sysfb.height * sysfb.bpp / 4);
         if(sysfb.virtaddr == NULL ) {
-                kputs("[FALSE]");
+                pr_err("\r[FAULT]");
                 sysfb.video_initialized = false;
                 return false;
         } else {
-                kputs("[TRUE]");
+                pr_notice("\r[OK]");
         }
         /* init copy address 
          * if kcalloc is unsuccessfull (NULL), we`ll use old method */
         sysfb.copy = kcalloc(sysfb.width * sysfb.height * sysfb.bpp / 4);
-        printk("Video allocating buffer\t");
+        pr_cont("\t\tVideo allocating buffer");
         if(sysfb.copy != NULL) {
-                kputs("[OK]");
+                pr_notice("\r[OK]");
         } else {
-                kputs("[FALSE]");
+                pr_err("\r[FAULT]");
         }
 
 #endif

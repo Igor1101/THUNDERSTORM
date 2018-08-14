@@ -26,8 +26,8 @@
  */
 
 /* You need to include a file with fairly(ish) compliant printf prototype, Decimal and String support like %s and %d and this is truely all you need! */
-#include <kstdio.h>
-#define printf kprintf
+#include <linux/kernel.h>
+#define printf pr_cont
 //#include <stdio.h> /* for printf(); */
 
 /* Required Declarations */

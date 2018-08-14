@@ -10,8 +10,8 @@ Sets the first @var{count} bytes of @var{s} to the constant byte
 */
 
 #include <kstdlib.h>
-#include <kstdio.h>
 #include <compiler_opt.h>
+#include <TH/kernel.h>
 #include <misc/show.h>
 
 LIKELY void *memset(void *dest, register int val, register size_t len)
@@ -25,7 +25,7 @@ LIKELY void *memset(void *dest, register int val, register size_t len)
 /* the same as memset, also showing progress */
 LIKELY void *kmemset_show(void *dest, register int val, register size_t len)
 {
-        kprintf("addr 0x%x", dest);
+        pr_notice("addr 0x%x", dest);
         init_progress();
         register unsigned char *ptr = (unsigned char *)dest;
         while (len-- > 0) {
@@ -34,6 +34,6 @@ LIKELY void *kmemset_show(void *dest, register int val, register size_t len)
                 *ptr++ = val;
         }
         stop_progress();
-        kprintf("to 0x%x\n", ptr);
+        pr_notice("to 0x%x\n", ptr);
         return dest;
 }

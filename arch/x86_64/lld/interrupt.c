@@ -96,11 +96,11 @@ UNLIKELY void init_interrupts(void)
         pic_remap(IRQ0_OFFSET, IRQ1_OFFSET);
         /* APIC \ PIC initializations */
         if(apic_present()) {
-                kputs("APIC is present");
+                pr_notice("APIC is present");
 #ifdef USE_APIC
                 pic_disable();
 #endif
         } else {
-                kputs("Warning: APIC is not present");
+                pr_warn("Warning: APIC is not present");
         }
 }

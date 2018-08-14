@@ -15,7 +15,7 @@
 struct tss_format tss_table;
 
 
-ALIGN(PG_SIZE) char exception_stk[SIZEOF_EXC_STACK];
+ALIGNED(PG_SIZE) char exception_stk[SIZEOF_EXC_STACK];
 
 void set_tss_desc(void)
 {

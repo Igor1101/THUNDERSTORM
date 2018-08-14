@@ -8,7 +8,7 @@
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
 #include <TH/linker_info.h>
-#include <TH/printk.h>
+#include <TH/kernel.h>
 #include <asm/memory_mapping.h>
 
 

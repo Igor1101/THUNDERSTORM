@@ -6,11 +6,10 @@
 
 #include <kstdio.h>
 #include <TH/lld.h>
+#include <TH/kernel.h>
 #include <asm/cpu_management.h>
 #define EXC_START \
-  select_fgcolor(Red);\
-  kprintf("TH EXCEPTION:");\
-  select_fgcolor(DefaultFG); \
+  pr_warn("TH EXCEPTION:");
                                 //clear_interrupts();
 #define EXC_EXIT \
                                 //set_interrupts();

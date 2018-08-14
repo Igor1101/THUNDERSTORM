@@ -3,6 +3,7 @@
 
 #include <compiler_opt.h>
 #include <stdint.h>
+#include <TH/kernel.h>
 
 #define LOADER_NAME 2
 #define MEMORY 4 /**

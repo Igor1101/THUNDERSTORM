@@ -10,6 +10,8 @@
 
 #include <compiler_opt.h>
 #include <stdarg.h>
+#include <stddef.h>
+#include <stdbool.h>
 #include <TH/kern_levels.h>
 
 #define asmlinkage 

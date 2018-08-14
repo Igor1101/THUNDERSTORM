@@ -177,6 +177,7 @@ LIKELY void copy_char(
 
         FORCE_INLINE void make_newline(void){};
 
+        static FORCE_INLINE void fb_clear_screen(void){};
 
         FORCE_INLINE void update_cursor(int row, int col)
         {

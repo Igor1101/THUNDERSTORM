@@ -39,7 +39,7 @@ __________________________________________________________________________/_____
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>
 #include <TH/stack.h>
-#include <TH/printk.h>
+#include <linux/kernel.h>
 #include <TH/kern_levels.h>
 #include <TH/die.h>
 #include <asm/int_handler.h>
@@ -52,7 +52,7 @@ struct RAM_INFO RAM;
 struct Framebuffer sysfb;
 struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
-VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
+NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 {
 #ifdef USE_SERIAL
         serial_disable_ints(SERIAL_MAIN);
@@ -121,5 +121,5 @@ VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $11, %r11\n"
                       " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
         local_irq_enable();
-        while (1) ;
+        while(1);
 }

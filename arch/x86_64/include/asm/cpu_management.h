@@ -3,7 +3,8 @@
 /*
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
-#include <kstdio.h>
+
+#include <TH/kernel.h>
 
 FORCE_INLINE void local_irq_enable(void)
 {                               /* set external interrupts */
@@ -17,7 +18,7 @@ FORCE_INLINE void local_irq_disable(void)
 
 NORET FORCE_INLINE void cpu_halt(void)
 {
-        kputs("HALTING");
+        pr_notice("HALTING");
         while (1)
                 asm volatile ("hlt");
 }

@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <kstring.h>
 #include <kstdio.h>
+#include <TH/kernel.h>
 #include <x86_64/cpu_management.h>
 #define NUM_OF_EXCEPTIONS 32
 #define NUM_OF_DESC 256
@@ -50,7 +51,7 @@ extern void idt_set_vector(uint8_t num, uint64_t addr,
 
 FORCE_INLINE void idt_clear_vectors(void)
 {
-        kprintf("clearing vectors:");
+        pr_notice("clearing vectors:");
         kmemset_show(idt_table, 0, sizeof(idt_table));
         kputchar('\n');
 }

@@ -7,10 +7,11 @@ extern "C" {
 
 #include <compiler_opt.h>
 #include <kstdio.h>
+#include <TH/printk.h>
 
 FORCE_INLINE void aFailed(char* file, int line)
 {
-        kprintf("assertion failed: \n file: %s, line: %d", file, line);
+        pr_err("assertion failed: \n file: %s, line: %d", file, line);
 }
 #ifdef DEBUG
 #define ASSERT(expr) \

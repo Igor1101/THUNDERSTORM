@@ -34,15 +34,13 @@ __int_regs int_regs;
 
 UNLIKELY NORET void kpanic(char *reason)
 {
-        select_bgcolor(Red);
-        kprintf("\nKERNEL PANIC:");
-        select_bgcolor(DefaultBG);
-        kprintf("reason: %s\n", reason);
-        kprintf("RIP=0x%x,\nCS=0x%x,\nSS=0x%x,\nRFLAGS=0x%x,\nRSP=0x%x\n",
+        pr_err("\nKERNEL PANIC:");
+        pr_err("reason: %s\n", reason);
+        pr_err("RIP=0x%x,\nCS=0x%x,\nSS=0x%x,\nRFLAGS=0x%x,\nRSP=0x%x\n",
                 int_regs.fr.rip,
                 int_regs.fr.cs,
                 int_regs.fr.ss, int_regs.fr.rflags, int_regs.fr.rsp);
-        kprintf("GENERAL PURPOSE REGS: \
+        pr_err("GENERAL PURPOSE REGS: \
 \nRAX=0x%x,\
 \nRDX=0x%x,\
 \nRCX=0x%x,\

@@ -269,6 +269,10 @@ int do_intel(void) {
 		}
 	}
 	printf("Stepping: %d Reserved: %d\n", stepping, reserved);
+        if(family < 6) {
+                pr_crit("This cpu is too old to run THUNDERSTORM");
+                return -1;
+        }
 	return 0;
 }
 
@@ -365,5 +369,9 @@ int do_amd(void) {
 		}
 	}
 	printf("Stepping: %d Reserved: %d\n", stepping, reserved);
+        if(family < 6) {
+                pr_crit("This cpu is too old to run THUNDERSTORM");
+                return -1;
+        }
 	return 0;
 }

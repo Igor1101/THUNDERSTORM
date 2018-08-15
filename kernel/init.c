@@ -46,6 +46,7 @@ __________________________________________________________________________/_____
 #include <asm/cpu_management.h>
 #include <asm/bootinfo.h>
 #include <asm/serial.h>
+#include <asm/kpanic.h>
 
 /* declared vars */
 struct RAM_INFO RAM;
@@ -106,7 +107,10 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
  COPYRIGHT Igor Muravyov (c) %s \n", TH_RELEASE, TH_YEARS);
         /* initializing interrupts */
         print_usable_RAM();
-        detect_cpu();
+        if( detect_cpu() ) {
+                /* err cpu not supported */
+                kpanic("this cpu family is not supported");
+        }
         printk("clearing kernel stacks: ");
         clear_kernel_stacks();
         init_interrupts();

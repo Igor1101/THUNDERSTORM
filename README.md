@@ -44,6 +44,7 @@ but it is much better in qemu to run it with UEFI BIOS, since
 it is better supported.
 
 #### TODO up to 2019 (in case someone want`s to contribute):
+NOTE: to see full list of TODOs please run `grep -r -n TODO\ :` in target folder
 - [ ] port multitasking from [THUNDERSTORM-OLD](http://github.com/Igor1101/THUNDERSTORM-OLD)
 - [ ] ACPI support and power management
 - [ ] PIC management

@@ -2,6 +2,7 @@
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <stdbool.h>
+#include <TH/kernel.h>
 #include <TH/lld.h>
 #include <TH/sysinfo.h>
 #include <TH/sysvars.h>

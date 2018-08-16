@@ -22,8 +22,10 @@
 #include <compiler_opt.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <kstream.h>
 #include <kstdio.h>
 #include <TH/printk.h>
+#include <TH/kernel.h>
 #include <TH/kern_levels.h>
 #include <TH/lld.h>
 
@@ -205,6 +207,8 @@ static size_t log_output(int facility, int level,
                 size_t text_len)
 {
         (void)facility;
+        (void)dict;
+        (void)dictlen;
 	/* Skip empty continuation lines that couldn't be added - they just flush */
 	if (!text_len && (lflags & LOG_CONT))
 		return 0;
@@ -237,13 +241,14 @@ static size_t log_output(int facility, int level,
                         select_bgcolor(DefaultBG);
                         break;
         }
-        int writelength = write(text, text_len);
+        int writelength = write(WRITE, text, text_len);
 
 	if ((lflags & LOG_NEWLINE) || (lflags & LOG_CONT) == 0 ) {
                 kputchar('\n');
 	}
         select_fgcolor(DefaultFG);
         select_bgcolor(DefaultBG);
+        return writelength;
 }
 
 

@@ -533,6 +533,14 @@ static inline void print_hex_dump_debug(const char *prefix_str, int prefix_type,
 					int rowsize, int groupsize,
 					const void *buf, size_t len, bool ascii)
 {
+        (void)prefix_str;
+        (void)prefix_type;
+        (void)rowsize;
+        (void)groupsize;
+        (void)buf;
+        (void)buf;
+        (void)len;
+        (void)ascii;
 }
 #endif
 

@@ -35,6 +35,14 @@ extern "C" {
         typedef uint8_t u8;
         typedef int8_t i8;
         typedef u64 loff_t;
+
+#ifdef __linux__
+         #undef __linux__
+#endif /* linux */
+#ifndef __THUNDERSTORM__
+#define __THUNDERSTORM__
+#endif /*THUNDERSTORM */
+
 #ifdef __cplusplus
 }
 #endif

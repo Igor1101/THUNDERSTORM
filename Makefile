@@ -5,7 +5,9 @@ QEMU_MEM ?= 100M
 ARCH ?= x86_64
 include compile_opt_kernel.mk
 include parse_options.mk
-INCLUDE_DIRS = -I usr/include -I arch/$(ARCH)/include -I kernel/acpi/include
+INCLUDE_DIRS = -I usr/include\
+	       -I arch/$(ARCH)/include\
+	       -I kernel/acpi/source/include
 KERNEL = boot/THkernel
 TH_ABS_PATH = $(PWD)
 CC ?= gcc

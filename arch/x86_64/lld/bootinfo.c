@@ -1,8 +1,5 @@
 /* 
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
- * It`s hard to understand what`s written on this file,
- * but trust me it successfully 
- * fetches information from multiboot header
  */
 
 #include <compiler_opt.h>
@@ -113,7 +110,21 @@ __init static void multiboot2(void *pcinfo /* ebx */ )
                                         }
                                 }
                                 break;
-
+                        case ACPI_1:
+                                if(is_done[ACPI_1] != true) {
+                                        if(acpi_1_process(bp) == EXIT_SUCCESS)
+                                                is_done[ACPI_1] = true;
+                                }
+                                break;
+                        case ACPI_2:
+                                if(is_done[ACPI_2] != true) {
+                                        if(acpi_2_process(bp) == EXIT_SUCCESS) {
+                                                is_done[ACPI_2] = true;
+                                                /* we doesn`t need legacy ACPI */
+                                                is_done[ACPI_1] = true;
+                                        }
+                                }
+                                break;
                 }
         }
         module_entries = modules_times;

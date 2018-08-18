@@ -57,6 +57,7 @@
 /* generic data direction definitions */
 #define READ			0
 #define WRITE			1
+#define BITS_PER_LONG 8 * sizeof(long)
 
 
 #endif /* _LINUX_KERNEL_H */

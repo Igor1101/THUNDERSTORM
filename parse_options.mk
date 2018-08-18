@@ -21,6 +21,7 @@ endif
 
 # Add ARCH
 KERNEL_OPTIONS += -D __$(strip $(ARCH))__ \
+		  -D __KERNEL__ \
 		  -D __THUNDERSTORM__ \
 		  -U __linux__ \
 		  -U __LINUX

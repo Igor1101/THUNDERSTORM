@@ -14,7 +14,9 @@
 #define MODULES 3
 #define VESAMODE 7
 #define FRAMEBUFFER 8
-#define MEMMAP 6                /* memory map */
+#define MEMMAP 6  /* memory map */
+#define ACPI_1 14 /* RSDPv1 */
+#define ACPI_2 15 /* RSDPv2 */
 
 
 __init static void multiboot2(void *pcinfo /* ebx */ );
@@ -179,6 +181,20 @@ FORCE_INLINE int framebuffer_info(volatile void *ebx)
         /* only direct RGB is supported */
         if(sysfb.type == 1)
                 sysfb.is_initialized = true;
+        return EXIT_SUCCESS;
+}
+
+
+/* TODO : connect these functions with ACPI */
+FORCE_INLINE int acpi_2_process(volatile void *ebx)
+{
+        (void)ebx;
+        return EXIT_SUCCESS;
+}
+
+FORCE_INLINE int acpi_1_process(volatile void *ebx)
+{
+        (void)ebx;
         return EXIT_SUCCESS;
 }
 

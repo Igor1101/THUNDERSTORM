@@ -71,7 +71,7 @@ void kprintf(const char *fmt, ...)
         va_end(args);
 }
 
-LIKELY int vsnprintf (char * s, size_t n, 
+LIKELY int kvsnprintf (char * s, size_t n, 
                 const char * fmt, va_list args )
 {
         /* it does not seem to get overflowed */

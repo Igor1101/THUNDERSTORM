@@ -272,7 +272,7 @@ int vprintk_emit(int facility, int level,
 	 * prefix which might be passed-in as a parameter.
 	 */
 
-	text_len = vsnprintf(text, sizeof(textbuf), fmt, args);
+	text_len = kvsnprintf(text, sizeof(textbuf), fmt, args);
 
 	/* mark and strip a trailing newline */
 	if (text_len && text[text_len-1] == '\n') {

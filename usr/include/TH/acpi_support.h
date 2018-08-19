@@ -14,6 +14,12 @@
 #define EXPORT_SYMBOL
 #endif
 
+/* 
+ * ROOT POINTERS (initialized in bootinfo())
+ * */
+extern void* RSDP_1;
+extern void* RSDP_2;
+
 void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf (
 const char *Format,

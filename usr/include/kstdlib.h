@@ -28,6 +28,9 @@ extern "C" {
  */
         int kalloc_init(void);
         void *kcalloc(size_t size);
+        void kfree(void *addr);
+        /*acpi function */
+        uint32_t strtoul(const char *String, char **Terminator, uint32_t Base);
 
 #ifdef __cplusplus
 }

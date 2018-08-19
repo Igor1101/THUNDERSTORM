@@ -53,3 +53,8 @@ void *kcalloc(size_t size)
         RAM_pointers_used++;
         return ret;
 }
+
+/* TODO : reimplement alloc so this function could be easily implemented */
+LIKELY void kfree(void *addr) {
+        (void)addr;
+}

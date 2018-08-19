@@ -27,6 +27,9 @@ char *strcat(char * restrict dest, const char * restrict src);
 char *strncat(char * restrict dest, const char * restrict src, size_t n);
 char *strcpy(char * restrict dest, const char * restrict src);
 int memcmp(const void * s1, const void * s2,size_t n);
+char *strchr(const char *s, int c);
+char *strstr(const char *s1, const char *s2);
+
 #ifdef __cplusplus
 }
 #endif

@@ -105,7 +105,7 @@ ACPI_STATUS AcpiOsPhysicalTableOverride (
         (void)ExistingTable;
         (void)NewAddress;
         (void)NewTableLength;
-        return NULL;
+        return 0;
 }
 
 ACPI_STATUS AcpiOsSignalSemaphore (
@@ -115,7 +115,7 @@ ACPI_STATUS AcpiOsSignalSemaphore (
 {
         (void)Handle;
         (void)Units;
-        return NULL;
+        return 0;
 }
 
 ACPI_STATUS AcpiOsTableOverride (
@@ -125,7 +125,7 @@ ACPI_STATUS AcpiOsTableOverride (
 {
         (void)ExistingTable;
         (void)NewTable;
-        return NULL;
+        return 0;
 }
 
 ACPI_STATUS AcpiOsPredefinedOverride (
@@ -135,7 +135,7 @@ ACPI_STATUS AcpiOsPredefinedOverride (
 {
         (void)PredefinedObject;
         (void)NewValue;
-        return NULL;
+        return 0;
 }
 
 ACPI_STATUS AcpiOsWritePort (
@@ -147,7 +147,7 @@ ACPI_STATUS AcpiOsWritePort (
 #ifdef __x86_64__
         outb(Address, (Value & ( (-1)>>( 32 - Width ) ) ) );
 #endif
-        return NULL;
+        return 0;
 }
 
 ACPI_STATUS AcpiOsReadPort (
@@ -162,7 +162,7 @@ ACPI_STATUS AcpiOsReadPort (
 #ifdef __x86_64__
         in = inb(Address);
 #endif
-        return NULL;
+        return 0;
 }
 
 void AcpiOsStall (UINT32 Microseconds){(void)Microseconds;}
@@ -176,7 +176,7 @@ ACPI_STATUS AcpiOsEnterSleep (
         (void)SleepState;
         (void)RegaValue;
         (void)RegbValue;
-        return NULL;
+        return 0;
 }
 
 ACPI_STATUS AcpiOsWriteMemory (

@@ -47,6 +47,8 @@ __________________________________________________________________________/_____
 #include <asm/bootinfo.h>
 #include <asm/serial.h>
 #include <asm/kpanic.h>
+/* additional ifaces: */
+#include <acpi.h>
 
 /* declared vars */
 struct RAM_INFO RAM;
@@ -125,5 +127,8 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $11, %r11\n"
                       " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
         local_irq_enable();
+#ifdef ACPI_ALLOWED
+        ACPI_STATUS acpi_status = AcpiInitializeTables(NULL, 1, 0);
+#endif
         while(1);
 }

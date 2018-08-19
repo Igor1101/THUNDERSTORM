@@ -19,6 +19,9 @@
 #define ACPI_2 15 /* RSDPv2 */
 
 
+extern void* RSDP_1;
+extern void* RSDP_2;
+
 __init static void multiboot2(void *pcinfo /* ebx */ );
 
 /* We `ll not use this BIOS - dependent info */
@@ -187,14 +190,23 @@ FORCE_INLINE int framebuffer_info(volatile void *ebx)
 
 /* TODO : connect these functions with ACPI */
 FORCE_INLINE int acpi_2_process(volatile void *ebx)
-{
-        (void)ebx;
+{        /* verify if it really is provided info */
+        if(*(int32_t *) (ebx + sizeof(uint32_t)) <= 0) {
+                return EXIT_FAILURE;
+        }
+
+        RSDP_2 = (void*)(ebx + 2*sizeof(uint32_t) );
+        pr_debug("ACPI new ROOT pointer 0x%x", RSDP_2);
         return EXIT_SUCCESS;
 }
 
 FORCE_INLINE int acpi_1_process(volatile void *ebx)
 {
-        (void)ebx;
+        if(*(int32_t *) (ebx + sizeof(uint32_t)) <= 0) {
+                return EXIT_FAILURE;
+        }
+        RSDP_1 = (void*)((uint32_t*)(ebx + 2*sizeof(uint32_t) ) ) ;
+        pr_debug("ACPI old ROOT pointer 0x%x", RSDP_1);
         return EXIT_SUCCESS;
 }
 

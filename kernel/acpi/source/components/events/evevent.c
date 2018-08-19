@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: evevent - Fixed Event handling and dispatch
  *
  *****************************************************************************/
 
@@ -149,184 +149,301 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acevents.h"
+
+#define _COMPONENT          ACPI_EVENTS
+        ACPI_MODULE_NAME    ("evevent")
+
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
+
+/* Local prototypes */
+
+static ACPI_STATUS
+AcpiEvFixedEventInitialize (
+    void);
+
+static UINT32
+AcpiEvFixedEventDispatch (
+    UINT32                  Event);
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvInitializeEvents
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Initialize global data structures for ACPI events (Fixed, GPE)
+ *
+ ******************************************************************************/
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
-
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+ACPI_STATUS
+AcpiEvInitializeEvents (
+    void)
+{
+    ACPI_STATUS             Status;
 
 
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+    ACPI_FUNCTION_TRACE (EvInitializeEvents);
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+    /* If Hardware Reduced flag is set, there are no fixed events */
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
+    if (AcpiGbl_ReducedHardware)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
 
-/* Define/disable kernel-specific declarators */
+    /*
+     * Initialize the Fixed and General Purpose Events. This is done prior to
+     * enabling SCIs to prevent interrupts from occurring before the handlers
+     * are installed.
+     */
+    Status = AcpiEvFixedEventInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Unable to initialize fixed events"));
+        return_ACPI_STATUS (Status);
+    }
 
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
+    Status = AcpiEvGpeInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Unable to initialize general purpose events"));
+        return_ACPI_STATUS (Status);
+    }
 
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
+    return_ACPI_STATUS (Status);
+}
 
 
-#endif /* __THUNDERSTORM_H__ */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvInstallXruptHandlers
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install interrupt handlers for the SCI and Global Lock
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvInstallXruptHandlers (
+    void)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (EvInstallXruptHandlers);
+
+
+    /* If Hardware Reduced flag is set, there is no ACPI h/w */
+
+    if (AcpiGbl_ReducedHardware)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Install the SCI handler */
+
+    Status = AcpiEvInstallSciHandler ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Unable to install System Control Interrupt handler"));
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Install the handler for the Global Lock */
+
+    Status = AcpiEvInitGlobalLockHandler ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Unable to initialize Global Lock handler"));
+        return_ACPI_STATUS (Status);
+    }
+
+    AcpiGbl_EventsInitialized = TRUE;
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvFixedEventInitialize
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install the fixed event handlers and disable all fixed events.
+ *
+ ******************************************************************************/
+
+static ACPI_STATUS
+AcpiEvFixedEventInitialize (
+    void)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status;
+
+
+    /*
+     * Initialize the structure that keeps track of fixed event handlers and
+     * enable the fixed events.
+     */
+    for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
+    {
+        AcpiGbl_FixedEventHandlers[i].Handler = NULL;
+        AcpiGbl_FixedEventHandlers[i].Context = NULL;
+
+        /* Disable the fixed event */
+
+        if (AcpiGbl_FixedEventInfo[i].EnableRegisterId != 0xFF)
+        {
+            Status = AcpiWriteBitRegister (
+                AcpiGbl_FixedEventInfo[i].EnableRegisterId,
+                ACPI_DISABLE_EVENT);
+            if (ACPI_FAILURE (Status))
+            {
+                return (Status);
+            }
+        }
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvFixedEventDetect
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
+ *
+ * DESCRIPTION: Checks the PM status register for active fixed events
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiEvFixedEventDetect (
+    void)
+{
+    UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
+    UINT32                  FixedStatus;
+    UINT32                  FixedEnable;
+    UINT32                  i;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_NAME (EvFixedEventDetect);
+
+
+    /*
+     * Read the fixed feature status and enable registers, as all the cases
+     * depend on their values. Ignore errors here.
+     */
+    Status = AcpiHwRegisterRead (ACPI_REGISTER_PM1_STATUS, &FixedStatus);
+    Status |= AcpiHwRegisterRead (ACPI_REGISTER_PM1_ENABLE, &FixedEnable);
+    if (ACPI_FAILURE (Status))
+    {
+        return (IntStatus);
+    }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_INTERRUPTS,
+        "Fixed Event Block: Enable %08X Status %08X\n",
+        FixedEnable, FixedStatus));
+
+    /*
+     * Check for all possible Fixed Events and dispatch those that are active
+     */
+    for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
+    {
+        /* Both the status and enable bits must be on for this event */
+
+        if ((FixedStatus & AcpiGbl_FixedEventInfo[i].StatusBitMask) &&
+            (FixedEnable & AcpiGbl_FixedEventInfo[i].EnableBitMask))
+        {
+            /*
+             * Found an active (signalled) event. Invoke global event
+             * handler if present.
+             */
+            AcpiFixedEventCount[i]++;
+            if (AcpiGbl_GlobalEventHandler)
+            {
+                AcpiGbl_GlobalEventHandler (ACPI_EVENT_TYPE_FIXED, NULL,
+                     i, AcpiGbl_GlobalEventHandlerContext);
+            }
+
+            IntStatus |= AcpiEvFixedEventDispatch (i);
+        }
+    }
+
+    return (IntStatus);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvFixedEventDispatch
+ *
+ * PARAMETERS:  Event               - Event type
+ *
+ * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
+ *
+ * DESCRIPTION: Clears the status bit for the requested event, calls the
+ *              handler that previously registered for the event.
+ *              NOTE: If there is no handler for the event, the event is
+ *              disabled to prevent further interrupts.
+ *
+ ******************************************************************************/
+
+static UINT32
+AcpiEvFixedEventDispatch (
+    UINT32                  Event)
+{
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* Clear the status bit */
+
+    (void) AcpiWriteBitRegister (
+        AcpiGbl_FixedEventInfo[Event].StatusRegisterId,
+        ACPI_CLEAR_STATUS);
+
+    /*
+     * Make sure that a handler exists. If not, report an error
+     * and disable the event to prevent further interrupts.
+     */
+    if (!AcpiGbl_FixedEventHandlers[Event].Handler)
+    {
+        (void) AcpiWriteBitRegister (
+            AcpiGbl_FixedEventInfo[Event].EnableRegisterId,
+            ACPI_DISABLE_EVENT);
+
+        ACPI_ERROR ((AE_INFO,
+            "No installed handler for fixed event - %s (%u), disabling",
+            AcpiUtGetEventName (Event), Event));
+
+        return (ACPI_INTERRUPT_NOT_HANDLED);
+    }
+
+    /* Invoke the Fixed Event handler */
+
+    return ((AcpiGbl_FixedEventHandlers[Event].Handler)(
+        AcpiGbl_FixedEventHandlers[Event].Context));
+}
+
+#endif /* !ACPI_REDUCED_HARDWARE */

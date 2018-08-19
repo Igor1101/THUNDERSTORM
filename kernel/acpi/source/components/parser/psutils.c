@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: psutils - Parser miscellaneous utilities (Parser only)
  *
  *****************************************************************************/
 
@@ -149,184 +149,254 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acparser.h"
+#include "amlcode.h"
+#include "acconvert.h"
+
+#define _COMPONENT          ACPI_PARSER
+        ACPI_MODULE_NAME    ("psutils")
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsCreateScopeOp
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      A new Scope object, null on failure
+ *
+ * DESCRIPTION: Create a Scope and associated namepath op with the root name
+ *
+ ******************************************************************************/
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
-
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+ACPI_PARSE_OBJECT *
+AcpiPsCreateScopeOp (
+    UINT8                   *Aml)
+{
+    ACPI_PARSE_OBJECT       *ScopeOp;
 
 
-/* Generating stubs for configurable ACPICA functions */
+    ScopeOp = AcpiPsAllocOp (AML_SCOPE_OP, Aml);
+    if (!ScopeOp)
+    {
+        return (NULL);
+    }
 
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
+    ScopeOp->Named.Name = ACPI_ROOT_NAME;
+    return (ScopeOp);
+}
 
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
 
-/* Host-dependent types and defines for in-kernel ACPICA */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsInitOp
+ *
+ * PARAMETERS:  Op              - A newly allocated Op object
+ *              Opcode          - Opcode to store in the Op
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Initialize a parse (Op) object
+ *
+ ******************************************************************************/
 
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
+void
+AcpiPsInitOp (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT16                  Opcode)
+{
+    ACPI_FUNCTION_ENTRY ();
 
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
 
-/* Use native linux version of AcpiOsAllocateZeroed */
+    Op->Common.DescriptorType = ACPI_DESC_TYPE_PARSER;
+    Op->Common.AmlOpcode = Opcode;
 
-#define USE_NATIVE_ALLOCATE_ZEROED
+    ACPI_DISASM_ONLY_MEMBERS (AcpiUtSafeStrncpy (Op->Common.AmlOpName,
+        (AcpiPsGetOpcodeInfo (Opcode))->Name,
+        sizeof (Op->Common.AmlOpName)));
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsAllocOp
+ *
+ * PARAMETERS:  Opcode          - Opcode that will be stored in the new Op
+ *              Aml             - Address of the opcode
+ *
+ * RETURN:      Pointer to the new Op, null on failure
+ *
+ * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
+ *              opcode. A cache of opcodes is available for the pure
+ *              GENERIC_OP, since this is by far the most commonly used.
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT*
+AcpiPsAllocOp (
+    UINT16                  Opcode,
+    UINT8                   *Aml)
+{
+    ACPI_PARSE_OBJECT       *Op;
+    const ACPI_OPCODE_INFO  *OpInfo;
+    UINT8                   Flags = ACPI_PARSEOP_GENERIC;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    OpInfo = AcpiPsGetOpcodeInfo (Opcode);
+
+    /* Determine type of ParseOp required */
+
+    if (OpInfo->Flags & AML_DEFER)
+    {
+        Flags = ACPI_PARSEOP_DEFERRED;
+    }
+    else if (OpInfo->Flags & AML_NAMED)
+    {
+        Flags = ACPI_PARSEOP_NAMED_OBJECT;
+    }
+    else if (Opcode == AML_INT_BYTELIST_OP)
+    {
+        Flags = ACPI_PARSEOP_BYTELIST;
+    }
+
+    /* Allocate the minimum required size object */
+
+    if (Flags == ACPI_PARSEOP_GENERIC)
+    {
+        /* The generic op (default) is by far the most common (16 to 1) */
+
+        Op = AcpiOsAcquireObject (AcpiGbl_PsNodeCache);
+    }
+    else
+    {
+        /* Extended parseop */
+
+        Op = AcpiOsAcquireObject (AcpiGbl_PsNodeExtCache);
+    }
+
+    /* Initialize the Op */
+
+    if (Op)
+    {
+        AcpiPsInitOp (Op, Opcode);
+        Op->Common.Aml = Aml;
+        Op->Common.Flags = Flags;
+        ASL_CV_CLEAR_OP_COMMENTS(Op);
+
+        if (Opcode == AML_SCOPE_OP)
+        {
+            AcpiGbl_CurrentScope = Op;
+        }
+
+        if (AcpiGbl_CaptureComments)
+        {
+            ASL_CV_TRANSFER_COMMENTS (Op);
+        }
+    }
+
+    return (Op);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsFreeOp
+ *
+ * PARAMETERS:  Op              - Op to be freed
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Free an Op object. Either put it on the GENERIC_OP cache list
+ *              or actually free it.
+ *
+ ******************************************************************************/
+
+void
+AcpiPsFreeOp (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_FUNCTION_NAME (PsFreeOp);
+
+
+    ASL_CV_CLEAR_OP_COMMENTS(Op);
+    if (Op->Common.AmlOpcode == AML_INT_RETURN_VALUE_OP)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_ALLOCATIONS,
+            "Free retval op: %p\n", Op));
+    }
+
+    if (Op->Common.Flags & ACPI_PARSEOP_GENERIC)
+    {
+        (void) AcpiOsReleaseObject (AcpiGbl_PsNodeCache, Op);
+    }
+    else
+    {
+        (void) AcpiOsReleaseObject (AcpiGbl_PsNodeExtCache, Op);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    Utility functions
+ *
+ * DESCRIPTION: Low level character and object functions
+ *
+ ******************************************************************************/
+
 
 /*
- * Overrides for in-kernel ACPICA
+ * Is "c" a namestring lead character?
  */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
+BOOLEAN
+AcpiPsIsLeadingChar (
+    UINT32                  c)
+{
+    return ((BOOLEAN) (c == '_' || (c >= 'A' && c <= 'Z')));
+}
+
 
 /*
- * OSL interfaces used by debugger/disassembler
+ * Get op's name (4-byte name segment) or 0 if unnamed
  */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
+UINT32
+AcpiPsGetName (
+    ACPI_PARSE_OBJECT       *Op)
+{
+
+    /* The "generic" object has no name associated with it */
+
+    if (Op->Common.Flags & ACPI_PARSEOP_GENERIC)
+    {
+        return (0);
+    }
+
+    /* Only the "Extended" parse objects have a name */
+
+    return (Op->Named.Name);
+}
+
 
 /*
- * OSL interfaces used by utilities
+ * Set op's name
  */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
+void
+AcpiPsSetName (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  name)
+{
 
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
+    /* The "generic" object has no name associated with it */
 
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
+    if (Op->Common.Flags & ACPI_PARSEOP_GENERIC)
+    {
+        return;
+    }
 
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
-
-
-//#define ACPI_USE_STANDARD_HEADERS
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
-
-
-#endif /* __THUNDERSTORM_H__ */
+    Op->Named.Name = name;
+}

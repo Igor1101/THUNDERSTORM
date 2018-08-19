@@ -1,8 +1,8 @@
-/******************************************************************************
+/*******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: utownerid - Support for Table/Method Owner IDs
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -149,184 +149,205 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acnamesp.h"
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
-
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utownerid")
 
 
-//#define ACPI_USE_SYSTEM_INTTYPES
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtAllocateOwnerId
+ *
+ * PARAMETERS:  OwnerId         - Where the new owner ID is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Allocate a table or method owner ID. The owner ID is used to
+ *              track objects created by the table or method, to be deleted
+ *              when the method exits or the table is unloaded.
+ *
+ ******************************************************************************/
 
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+ACPI_STATUS
+AcpiUtAllocateOwnerId (
+    ACPI_OWNER_ID           *OwnerId)
+{
+    UINT32                  i;
+    UINT32                  j;
+    UINT32                  k;
+    ACPI_STATUS             Status;
 
 
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+    ACPI_FUNCTION_TRACE (UtAllocateOwnerId);
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+    /* Guard against multiple allocations of ID to the same location */
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
+    if (*OwnerId)
+    {
+        ACPI_ERROR ((AE_INFO,
+            "Owner ID [0x%2.2X] already exists", *OwnerId));
+        return_ACPI_STATUS (AE_ALREADY_EXISTS);
+    }
 
-/* Define/disable kernel-specific declarators */
+    /* Mutex for the global ID mask */
 
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
+    Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-/* Host-dependent types and defines for user-space ACPICA */
+    /*
+     * Find a free owner ID, cycle through all possible IDs on repeated
+     * allocations. (ACPI_NUM_OWNERID_MASKS + 1) because first index
+     * may have to be scanned twice.
+     */
+    for (i = 0, j = AcpiGbl_LastOwnerIdIndex;
+         i < (ACPI_NUM_OWNERID_MASKS + 1);
+         i++, j++)
+    {
+        if (j >= ACPI_NUM_OWNERID_MASKS)
+        {
+            j = 0;  /* Wraparound to start of mask array */
+        }
 
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
+        for (k = AcpiGbl_NextOwnerIdOffset; k < 32; k++)
+        {
+            if (AcpiGbl_OwnerIdMask[j] == ACPI_UINT32_MAX)
+            {
+                /* There are no free IDs in this mask */
 
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
+                break;
+            }
 
-#ifndef __cdecl
-#define __cdecl
-#endif
+            /*
+             * Note: the UINT32 cast ensures that 1 is stored as a unsigned
+             * integer. Omitting the cast may result in 1 being stored as an
+             * int. Some compilers or runtime error detection may flag this as
+             * an error.
+             */
+            if (!(AcpiGbl_OwnerIdMask[j] & ((UINT32) 1 << k)))
+            {
+                /*
+                 * Found a free ID. The actual ID is the bit index plus one,
+                 * making zero an invalid Owner ID. Save this as the last ID
+                 * allocated and update the global ID mask.
+                 */
+                AcpiGbl_OwnerIdMask[j] |= ((UINT32) 1 << k);
+
+                AcpiGbl_LastOwnerIdIndex = (UINT8) j;
+                AcpiGbl_NextOwnerIdOffset = (UINT8) (k + 1);
+
+                /*
+                 * Construct encoded ID from the index and bit position
+                 *
+                 * Note: Last [j].k (bit 255) is never used and is marked
+                 * permanently allocated (prevents +1 overflow)
+                 */
+                *OwnerId = (ACPI_OWNER_ID) ((k + 1) + ACPI_MUL_32 (j));
+
+                ACPI_DEBUG_PRINT ((ACPI_DB_VALUES,
+                    "Allocated OwnerId: %2.2X\n", (unsigned int) *OwnerId));
+                goto Exit;
+            }
+        }
+
+        AcpiGbl_NextOwnerIdOffset = 0;
+    }
+
+    /*
+     * All OwnerIds have been allocated. This typically should
+     * not happen since the IDs are reused after deallocation. The IDs are
+     * allocated upon table load (one per table) and method execution, and
+     * they are released when a table is unloaded or a method completes
+     * execution.
+     *
+     * If this error happens, there may be very deep nesting of invoked
+     * control methods, or there may be a bug where the IDs are not released.
+     */
+    Status = AE_OWNER_ID_LIMIT;
+    ACPI_ERROR ((AE_INFO,
+        "Could not allocate new OwnerId (255 max), AE_OWNER_ID_LIMIT"));
+
+Exit:
+    (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
+    return_ACPI_STATUS (Status);
+}
 
 
-#endif /* __THUNDERSTORM_H__ */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtReleaseOwnerId
+ *
+ * PARAMETERS:  OwnerIdPtr          - Pointer to a previously allocated OwnerID
+ *
+ * RETURN:      None. No error is returned because we are either exiting a
+ *              control method or unloading a table. Either way, we would
+ *              ignore any error anyway.
+ *
+ * DESCRIPTION: Release a table or method owner ID. Valid IDs are 1 - 255
+ *
+ ******************************************************************************/
+
+void
+AcpiUtReleaseOwnerId (
+    ACPI_OWNER_ID           *OwnerIdPtr)
+{
+    ACPI_OWNER_ID           OwnerId = *OwnerIdPtr;
+    ACPI_STATUS             Status;
+    UINT32                  Index;
+    UINT32                  Bit;
+
+
+    ACPI_FUNCTION_TRACE_U32 (UtReleaseOwnerId, OwnerId);
+
+
+    /* Always clear the input OwnerId (zero is an invalid ID) */
+
+    *OwnerIdPtr = 0;
+
+    /* Zero is not a valid OwnerID */
+
+    if (OwnerId == 0)
+    {
+        ACPI_ERROR ((AE_INFO, "Invalid OwnerId: 0x%2.2X", OwnerId));
+        return_VOID;
+    }
+
+    /* Mutex for the global ID mask */
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    if (ACPI_FAILURE (Status))
+    {
+        return_VOID;
+    }
+
+    /* Normalize the ID to zero */
+
+    OwnerId--;
+
+    /* Decode ID to index/offset pair */
+
+    Index = ACPI_DIV_32 (OwnerId);
+    Bit = (UINT32) 1 << ACPI_MOD_32 (OwnerId);
+
+    /* Free the owner ID only if it is valid */
+
+    if (AcpiGbl_OwnerIdMask[Index] & Bit)
+    {
+        AcpiGbl_OwnerIdMask[Index] ^= Bit;
+    }
+    else
+    {
+        ACPI_ERROR ((AE_INFO,
+            "Release of non-allocated OwnerId: 0x%2.2X", OwnerId + 1));
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
+    return_VOID;
+}

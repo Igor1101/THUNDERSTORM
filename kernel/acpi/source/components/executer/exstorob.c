@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: exstorob - AML object store support, store to object
  *
  *****************************************************************************/
 
@@ -149,184 +149,200 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acinterp.h"
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+#define _COMPONENT          ACPI_EXECUTER
+        ACPI_MODULE_NAME    ("exstorob")
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExStoreBufferToBuffer
+ *
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Copy a buffer object to another buffer object.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExStoreBufferToBuffer (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *TargetDesc)
+{
+    UINT32                  Length;
+    UINT8                   *Buffer;
+
+
+    ACPI_FUNCTION_TRACE_PTR (ExStoreBufferToBuffer, SourceDesc);
+
+
+    /* If Source and Target are the same, just return */
+
+    if (SourceDesc == TargetDesc)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* We know that SourceDesc is a buffer by now */
+
+    Buffer = ACPI_CAST_PTR (UINT8, SourceDesc->Buffer.Pointer);
+    Length = SourceDesc->Buffer.Length;
+
+    /*
+     * If target is a buffer of length zero or is a static buffer,
+     * allocate a new buffer of the proper length
+     */
+    if ((TargetDesc->Buffer.Length == 0) ||
+        (TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER))
+    {
+        TargetDesc->Buffer.Pointer = ACPI_ALLOCATE (Length);
+        if (!TargetDesc->Buffer.Pointer)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        TargetDesc->Buffer.Length = Length;
+    }
+
+    /* Copy source buffer to target buffer */
+
+    if (Length <= TargetDesc->Buffer.Length)
+    {
+        /* Clear existing buffer and copy in the new one */
+
+        memset (TargetDesc->Buffer.Pointer, 0, TargetDesc->Buffer.Length);
+        memcpy (TargetDesc->Buffer.Pointer, Buffer, Length);
+
+#ifdef ACPI_OBSOLETE_BEHAVIOR
+        /*
+         * NOTE: ACPI versions up to 3.0 specified that the buffer must be
+         * truncated if the string is smaller than the buffer. However, "other"
+         * implementations of ACPI never did this and thus became the defacto
+         * standard. ACPI 3.0A changes this behavior such that the buffer
+         * is no longer truncated.
+         */
+
+        /*
+         * OBSOLETE BEHAVIOR:
+         * If the original source was a string, we must truncate the buffer,
+         * according to the ACPI spec. Integer-to-Buffer and Buffer-to-Buffer
+         * copy must not truncate the original buffer.
+         */
+        if (OriginalSrcType == ACPI_TYPE_STRING)
+        {
+            /* Set the new length of the target */
+
+            TargetDesc->Buffer.Length = Length;
+        }
 #endif
-*/
+    }
+    else
+    {
+        /* Truncate the source, copy only what will fit */
 
-/* Common (in-kernel/user-space) ACPICA configuration */
+        memcpy (TargetDesc->Buffer.Pointer, Buffer,
+            TargetDesc->Buffer.Length);
 
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Truncating source buffer from %X to %X\n",
+            Length, TargetDesc->Buffer.Length));
+    }
 
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+    /* Copy flags */
 
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+    TargetDesc->Buffer.Flags = SourceDesc->Buffer.Flags;
+    TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
+    return_ACPI_STATUS (AE_OK);
+}
 
 
-/* Generating stubs for configurable ACPICA functions */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExStoreStringToString
+ *
+ * PARAMETERS:  SourceDesc          - Source object to copy
+ *              TargetDesc          - Destination object of the copy
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Copy a String object to another String object
+ *
+ ******************************************************************************/
 
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+ACPI_STATUS
+AcpiExStoreStringToString (
+    ACPI_OPERAND_OBJECT     *SourceDesc,
+    ACPI_OPERAND_OBJECT     *TargetDesc)
+{
+    UINT32                  Length;
+    UINT8                   *Buffer;
 
 
-//#define ACPI_USE_STANDARD_HEADERS
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
+    ACPI_FUNCTION_TRACE_PTR (ExStoreStringToString, SourceDesc);
 
 
-#endif /* __THUNDERSTORM_H__ */
+    /* If Source and Target are the same, just return */
+
+    if (SourceDesc == TargetDesc)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* We know that SourceDesc is a string by now */
+
+    Buffer = ACPI_CAST_PTR (UINT8, SourceDesc->String.Pointer);
+    Length = SourceDesc->String.Length;
+
+    /*
+     * Replace existing string value if it will fit and the string
+     * pointer is not a static pointer (part of an ACPI table)
+     */
+    if ((Length < TargetDesc->String.Length) &&
+       (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
+    {
+        /*
+         * String will fit in existing non-static buffer.
+         * Clear old string and copy in the new one
+         */
+        memset (TargetDesc->String.Pointer, 0,
+            (ACPI_SIZE) TargetDesc->String.Length + 1);
+        memcpy (TargetDesc->String.Pointer, Buffer, Length);
+    }
+    else
+    {
+        /*
+         * Free the current buffer, then allocate a new buffer
+         * large enough to hold the value
+         */
+        if (TargetDesc->String.Pointer &&
+           (!(TargetDesc->Common.Flags & AOPOBJ_STATIC_POINTER)))
+        {
+            /* Only free if not a pointer into the DSDT */
+
+            ACPI_FREE (TargetDesc->String.Pointer);
+        }
+
+        TargetDesc->String.Pointer =
+            ACPI_ALLOCATE_ZEROED ((ACPI_SIZE) Length + 1);
+
+        if (!TargetDesc->String.Pointer)
+        {
+            return_ACPI_STATUS (AE_NO_MEMORY);
+        }
+
+        TargetDesc->Common.Flags &= ~AOPOBJ_STATIC_POINTER;
+        memcpy (TargetDesc->String.Pointer, Buffer, Length);
+    }
+
+    /* Set the new target length */
+
+    TargetDesc->String.Length = Length;
+    return_ACPI_STATUS (AE_OK);
+}

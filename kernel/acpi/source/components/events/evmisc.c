@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: evmisc - Miscellaneous event manager support functions
  *
  *****************************************************************************/
 
@@ -149,184 +149,292 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acevents.h"
+#include "acnamesp.h"
+
+#define _COMPONENT          ACPI_EVENTS
+        ACPI_MODULE_NAME    ("evmisc")
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+/* Local prototypes */
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+static void ACPI_SYSTEM_XFACE
+AcpiEvNotifyDispatch (
+    void                    *Context);
 
 
-//#define ACPI_USE_SYSTEM_INTTYPES
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvIsNotifyObject
+ *
+ * PARAMETERS:  Node            - Node to check
+ *
+ * RETURN:      TRUE if notifies allowed on this object
+ *
+ * DESCRIPTION: Check type of node for a object that supports notifies.
+ *
+ *              TBD: This could be replaced by a flag bit in the node.
+ *
+ ******************************************************************************/
 
-//#define ACPI_USE_GPE_POLLING
+BOOLEAN
+AcpiEvIsNotifyObject (
+    ACPI_NAMESPACE_NODE     *Node)
+{
 
-/* Kernel specific ACPICA configuration */
+    switch (Node->Type)
+    {
+    case ACPI_TYPE_DEVICE:
+    case ACPI_TYPE_PROCESSOR:
+    case ACPI_TYPE_THERMAL:
+        /*
+         * These are the ONLY objects that can receive ACPI notifications
+         */
+        return (TRUE);
 
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
+    default:
 
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
-
-
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+        return (FALSE);
+    }
+}
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvQueueNotifyRequest
+ *
+ * PARAMETERS:  Node            - NS node for the notified object
+ *              NotifyValue     - Value from the Notify() request
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Dispatch a device notification event to a previously
+ *              installed handler.
+ *
+ ******************************************************************************/
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
+ACPI_STATUS
+AcpiEvQueueNotifyRequest (
+    ACPI_NAMESPACE_NODE     *Node,
+    UINT32                  NotifyValue)
+{
+    ACPI_OPERAND_OBJECT     *ObjDesc;
+    ACPI_OPERAND_OBJECT     *HandlerListHead = NULL;
+    ACPI_GENERIC_STATE      *Info;
+    UINT8                   HandlerListId = 0;
+    ACPI_STATUS             Status = AE_OK;
 
 
-#endif /* __THUNDERSTORM_H__ */
+    ACPI_FUNCTION_NAME (EvQueueNotifyRequest);
+
+
+    /* Are Notifies allowed on this object? */
+
+    if (!AcpiEvIsNotifyObject (Node))
+    {
+        return (AE_TYPE);
+    }
+
+    /* Get the correct notify list type (System or Device) */
+
+    if (NotifyValue <= ACPI_MAX_SYS_NOTIFY)
+    {
+        HandlerListId = ACPI_SYSTEM_HANDLER_LIST;
+    }
+    else
+    {
+        HandlerListId = ACPI_DEVICE_HANDLER_LIST;
+    }
+
+    /* Get the notify object attached to the namespace Node */
+
+    ObjDesc = AcpiNsGetAttachedObject (Node);
+    if (ObjDesc)
+    {
+        /* We have an attached object, Get the correct handler list */
+
+        HandlerListHead = ObjDesc->CommonNotify.NotifyList[HandlerListId];
+    }
+
+    /*
+     * If there is no notify handler (Global or Local)
+     * for this object, just ignore the notify
+     */
+    if (!AcpiGbl_GlobalNotify[HandlerListId].Handler && !HandlerListHead)
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "No notify handler for Notify, ignoring (%4.4s, %X) node %p\n",
+            AcpiUtGetNodeName (Node), NotifyValue, Node));
+
+        return (AE_OK);
+    }
+
+    /* Setup notify info and schedule the notify dispatcher */
+
+    Info = AcpiUtCreateGenericState ();
+    if (!Info)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    Info->Common.DescriptorType = ACPI_DESC_TYPE_STATE_NOTIFY;
+
+    Info->Notify.Node = Node;
+    Info->Notify.Value = (UINT16) NotifyValue;
+    Info->Notify.HandlerListId = HandlerListId;
+    Info->Notify.HandlerListHead = HandlerListHead;
+    Info->Notify.Global = &AcpiGbl_GlobalNotify[HandlerListId];
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+        "Dispatching Notify on [%4.4s] (%s) Value 0x%2.2X (%s) Node %p\n",
+        AcpiUtGetNodeName (Node), AcpiUtGetTypeName (Node->Type),
+        NotifyValue, AcpiUtGetNotifyName (NotifyValue, ACPI_TYPE_ANY), Node));
+
+    Status = AcpiOsExecute (OSL_NOTIFY_HANDLER,
+        AcpiEvNotifyDispatch, Info);
+    if (ACPI_FAILURE (Status))
+    {
+        AcpiUtDeleteGenericState (Info);
+    }
+
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvNotifyDispatch
+ *
+ * PARAMETERS:  Context         - To be passed to the notify handler
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Dispatch a device notification event to a previously
+ *              installed handler.
+ *
+ ******************************************************************************/
+
+static void ACPI_SYSTEM_XFACE
+AcpiEvNotifyDispatch (
+    void                    *Context)
+{
+    ACPI_GENERIC_STATE      *Info = (ACPI_GENERIC_STATE *) Context;
+    ACPI_OPERAND_OBJECT     *HandlerObj;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* Invoke a global notify handler if installed */
+
+    if (Info->Notify.Global->Handler)
+    {
+        Info->Notify.Global->Handler (Info->Notify.Node,
+            Info->Notify.Value,
+            Info->Notify.Global->Context);
+    }
+
+    /* Now invoke the local notify handler(s) if any are installed */
+
+    HandlerObj = Info->Notify.HandlerListHead;
+    while (HandlerObj)
+    {
+        HandlerObj->Notify.Handler (Info->Notify.Node,
+            Info->Notify.Value,
+            HandlerObj->Notify.Context);
+
+        HandlerObj = HandlerObj->Notify.Next[Info->Notify.HandlerListId];
+    }
+
+    /* All done with the info object */
+
+    AcpiUtDeleteGenericState (Info);
+}
+
+
+#if (!ACPI_REDUCED_HARDWARE)
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEvTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Disable events and free memory allocated for table storage.
+ *
+ ******************************************************************************/
+
+void
+AcpiEvTerminate (
+    void)
+{
+    UINT32                  i;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (EvTerminate);
+
+
+    if (AcpiGbl_EventsInitialized)
+    {
+        /*
+         * Disable all event-related functionality. In all cases, on error,
+         * print a message but obviously we don't abort.
+         */
+
+        /* Disable all fixed events */
+
+        for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
+        {
+            Status = AcpiDisableEvent (i, 0);
+            if (ACPI_FAILURE (Status))
+            {
+                ACPI_ERROR ((AE_INFO,
+                    "Could not disable fixed event %u", (UINT32) i));
+            }
+        }
+
+        /* Disable all GPEs in all GPE blocks */
+
+        Status = AcpiEvWalkGpeList (AcpiHwDisableGpeBlock, NULL);
+
+        Status = AcpiEvRemoveGlobalLockHandler ();
+        if (ACPI_FAILURE(Status))
+        {
+            ACPI_ERROR ((AE_INFO,
+                "Could not remove Global Lock handler"));
+        }
+
+        AcpiGbl_EventsInitialized = FALSE;
+    }
+
+    /* Remove SCI handlers */
+
+    Status = AcpiEvRemoveAllSciHandlers ();
+    if (ACPI_FAILURE(Status))
+    {
+        ACPI_ERROR ((AE_INFO,
+            "Could not remove SCI handler"));
+    }
+
+    /* Deallocate all handler objects installed within GPE info structs */
+
+    Status = AcpiEvWalkGpeList (AcpiEvDeleteGpeHandlers, NULL);
+
+    /* Return to original mode if necessary */
+
+    if (AcpiGbl_OriginalMode == ACPI_SYS_MODE_LEGACY)
+    {
+        Status = AcpiDisable ();
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_WARNING ((AE_INFO, "AcpiDisable failed"));
+        }
+    }
+    return_VOID;
+}
+
+#endif /* !ACPI_REDUCED_HARDWARE */

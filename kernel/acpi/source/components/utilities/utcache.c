@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: utcache - local cache allocation routines
  *
  *****************************************************************************/
 
@@ -149,184 +149,314 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utcache")
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+#ifdef ACPI_USE_LOCAL_CACHE
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsCreateCache
+ *
+ * PARAMETERS:  CacheName       - Ascii name for the cache
+ *              ObjectSize      - Size of each cached object
+ *              MaxDepth        - Maximum depth of the cache (in objects)
+ *              ReturnCache     - Where the new cache object is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Create a cache object
+ *
+ ******************************************************************************/
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
+ACPI_STATUS
+AcpiOsCreateCache (
+    char                    *CacheName,
+    UINT16                  ObjectSize,
+    UINT16                  MaxDepth,
+    ACPI_MEMORY_LIST        **ReturnCache)
+{
+    ACPI_MEMORY_LIST        *Cache;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (!CacheName || !ReturnCache || !ObjectSize)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    /* Create the cache object */
+
+    Cache = AcpiOsAllocate (sizeof (ACPI_MEMORY_LIST));
+    if (!Cache)
+    {
+        return (AE_NO_MEMORY);
+    }
+
+    /* Populate the cache object and return it */
+
+    memset (Cache, 0, sizeof (ACPI_MEMORY_LIST));
+    Cache->ListName = CacheName;
+    Cache->ObjectSize = ObjectSize;
+    Cache->MaxDepth = MaxDepth;
+
+    *ReturnCache = Cache;
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsPurgeCache
+ *
+ * PARAMETERS:  Cache           - Handle to cache object
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Free all objects within the requested cache.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiOsPurgeCache (
+    ACPI_MEMORY_LIST        *Cache)
+{
+    void                    *Next;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (!Cache)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Walk the list of objects in this cache */
+
+    while (Cache->ListHead)
+    {
+        /* Delete and unlink one cached state object */
+
+        Next = ACPI_GET_DESCRIPTOR_PTR (Cache->ListHead);
+        ACPI_FREE (Cache->ListHead);
+
+        Cache->ListHead = Next;
+        Cache->CurrentDepth--;
+    }
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsDeleteCache
+ *
+ * PARAMETERS:  Cache           - Handle to cache object
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Free all objects within the requested cache and delete the
+ *              cache object.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiOsDeleteCache (
+    ACPI_MEMORY_LIST        *Cache)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+   /* Purge all objects in the cache */
+
+    Status = AcpiOsPurgeCache (Cache);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Now we can delete the cache object */
+
+    AcpiOsFree (Cache);
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsReleaseObject
+ *
+ * PARAMETERS:  Cache       - Handle to cache object
+ *              Object      - The object to be released
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Release an object to the specified cache. If cache is full,
+ *              the object is deleted.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiOsReleaseObject (
+    ACPI_MEMORY_LIST        *Cache,
+    void                    *Object)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (!Cache || !Object)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    /* If cache is full, just free this object */
+
+    if (Cache->CurrentDepth >= Cache->MaxDepth)
+    {
+        ACPI_FREE (Object);
+        ACPI_MEM_TRACKING (Cache->TotalFreed++);
+    }
+
+    /* Otherwise put this object back into the cache */
+
+    else
+    {
+        Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+        if (ACPI_FAILURE (Status))
+        {
+            return (Status);
+        }
+
+        /* Mark the object as cached */
+
+        memset (Object, 0xCA, Cache->ObjectSize);
+        ACPI_SET_DESCRIPTOR_TYPE (Object, ACPI_DESC_TYPE_CACHED);
+
+        /* Put the object at the head of the cache list */
+
+        ACPI_SET_DESCRIPTOR_PTR (Object, Cache->ListHead);
+        Cache->ListHead = Object;
+        Cache->CurrentDepth++;
+
+        (void) AcpiUtReleaseMutex (ACPI_MTX_CACHES);
+    }
+
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiOsAcquireObject
+ *
+ * PARAMETERS:  Cache           - Handle to cache object
+ *
+ * RETURN:      the acquired object. NULL on error
+ *
+ * DESCRIPTION: Get an object from the specified cache. If cache is empty,
+ *              the object is allocated.
+ *
+ ******************************************************************************/
+
+void *
+AcpiOsAcquireObject (
+    ACPI_MEMORY_LIST        *Cache)
+{
+    ACPI_STATUS             Status;
+    void                    *Object;
+
+
+    ACPI_FUNCTION_TRACE (OsAcquireObject);
+
+
+    if (!Cache)
+    {
+        return_PTR (NULL);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_CACHES);
+    if (ACPI_FAILURE (Status))
+    {
+        return_PTR (NULL);
+    }
+
+    ACPI_MEM_TRACKING (Cache->Requests++);
+
+    /* Check the cache first */
+
+    if (Cache->ListHead)
+    {
+        /* There is an object available, use it */
+
+        Object = Cache->ListHead;
+        Cache->ListHead = ACPI_GET_DESCRIPTOR_PTR (Object);
+
+        Cache->CurrentDepth--;
+
+        ACPI_MEM_TRACKING (Cache->Hits++);
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_EXEC,
+            "%s: Object %p from %s cache\n",
+            ACPI_GET_FUNCTION_NAME, Object, Cache->ListName));
+
+        Status = AcpiUtReleaseMutex (ACPI_MTX_CACHES);
+        if (ACPI_FAILURE (Status))
+        {
+            return_PTR (NULL);
+        }
+
+        /* Clear (zero) the previously used Object */
+
+        memset (Object, 0, Cache->ObjectSize);
+    }
+    else
+    {
+        /* The cache is empty, create a new object */
+
+        ACPI_MEM_TRACKING (Cache->TotalAllocated++);
+
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+        if ((Cache->TotalAllocated - Cache->TotalFreed) > Cache->MaxOccupied)
+        {
+            Cache->MaxOccupied = Cache->TotalAllocated - Cache->TotalFreed;
+        }
 #endif
-*/
 
-/* Common (in-kernel/user-space) ACPICA configuration */
+        /* Avoid deadlock with ACPI_ALLOCATE_ZEROED */
 
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
+        Status = AcpiUtReleaseMutex (ACPI_MTX_CACHES);
+        if (ACPI_FAILURE (Status))
+        {
+            return_PTR (NULL);
+        }
 
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+        Object = ACPI_ALLOCATE_ZEROED (Cache->ObjectSize);
+        if (!Object)
+        {
+            return_PTR (NULL);
+        }
+    }
 
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
-
-
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
-
-
-//#define ACPI_USE_STANDARD_HEADERS
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
-
-
-#endif /* __THUNDERSTORM_H__ */
+    return_PTR (Object);
+}
+#endif /* ACPI_USE_LOCAL_CACHE */

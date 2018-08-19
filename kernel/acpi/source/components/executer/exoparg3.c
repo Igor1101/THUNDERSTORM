@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: exoparg3 - AML execution - opcodes with 3 arguments
  *
  *****************************************************************************/
 
@@ -83,6 +83,7 @@
  * HERE. ANY SOFTWARE ORIGINATING FROM INTEL OR DERIVED FROM INTEL SOFTWARE
  * IS PROVIDED "AS IS," AND INTEL WILL NOT PROVIDE ANY SUPPORT, ASSISTANCE,
  * INSTALLATION, TRAINING OR OTHER SERVICES. INTEL WILL NOT PROVIDE ANY
+
  * UPDATES, ENHANCEMENTS OR EXTENSIONS. INTEL SPECIFICALLY DISCLAIMS ANY
  * IMPLIED WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT AND FITNESS FOR A
  * PARTICULAR PURPOSE.
@@ -149,184 +150,272 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acinterp.h"
+#include "acparser.h"
+#include "amlcode.h"
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
-
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+#define _COMPONENT          ACPI_EXECUTER
+        ACPI_MODULE_NAME    ("exoparg3")
 
 
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+/*!
+ * Naming convention for AML interpreter execution routines.
+ *
+ * The routines that begin execution of AML opcodes are named with a common
+ * convention based upon the number of arguments, the number of target operands,
+ * and whether or not a value is returned:
+ *
+ *      AcpiExOpcode_xA_yT_zR
+ *
+ * Where:
+ *
+ * xA - ARGUMENTS:    The number of arguments (input operands) that are
+ *                    required for this opcode type (1 through 6 args).
+ * yT - TARGETS:      The number of targets (output operands) that are required
+ *                    for this opcode type (0, 1, or 2 targets).
+ * zR - RETURN VALUE: Indicates whether this opcode type returns a value
+ *                    as the function return (0 or 1).
+ *
+ * The AcpiExOpcode* functions are called via the Dispatcher component with
+ * fully resolved operands.
+!*/
 
 
-/* Generating stubs for configurable ACPICA functions */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExOpcode_3A_0T_0R
+ *
+ * PARAMETERS:  WalkState           - Current walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute Triadic operator (3 operands)
+ *
+ ******************************************************************************/
 
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+ACPI_STATUS
+AcpiExOpcode_3A_0T_0R (
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_SIGNAL_FATAL_INFO  *Fatal;
+    ACPI_STATUS             Status = AE_OK;
 
 
-//#define ACPI_USE_STANDARD_HEADERS
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_3A_0T_0R,
+        AcpiPsGetOpcodeName (WalkState->Opcode));
 
 
-#endif /* __THUNDERSTORM_H__ */
+    switch (WalkState->Opcode)
+    {
+    case AML_FATAL_OP:          /* Fatal (FatalType  FatalCode  FatalArg) */
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "FatalOp: Type %X Code %X Arg %X "
+            "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+            (UINT32) Operand[0]->Integer.Value,
+            (UINT32) Operand[1]->Integer.Value,
+            (UINT32) Operand[2]->Integer.Value));
+
+        Fatal = ACPI_ALLOCATE (sizeof (ACPI_SIGNAL_FATAL_INFO));
+        if (Fatal)
+        {
+            Fatal->Type = (UINT32) Operand[0]->Integer.Value;
+            Fatal->Code = (UINT32) Operand[1]->Integer.Value;
+            Fatal->Argument = (UINT32) Operand[2]->Integer.Value;
+        }
+
+        /* Always signal the OS! */
+
+        Status = AcpiOsSignal (ACPI_SIGNAL_FATAL, Fatal);
+
+        /* Might return while OS is shutting down, just continue */
+
+        ACPI_FREE (Fatal);
+        goto Cleanup;
+
+    case AML_EXTERNAL_OP:
+        /*
+         * If the interpreter sees this opcode, just ignore it. The External
+         * op is intended for use by disassemblers in order to properly
+         * disassemble control method invocations. The opcode or group of
+         * opcodes should be surrounded by an "if (0)" clause to ensure that
+         * AML interpreters never see the opcode. Thus, something is
+         * wrong if an external opcode ever gets here.
+         */
+        ACPI_ERROR ((AE_INFO, "Executed External Op"));
+        Status = AE_OK;
+        goto Cleanup;
+
+    default:
+
+        ACPI_ERROR ((AE_INFO, "Unknown AML opcode 0x%X",
+            WalkState->Opcode));
+
+        Status = AE_AML_BAD_OPCODE;
+        goto Cleanup;
+    }
+
+
+Cleanup:
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExOpcode_3A_1T_1R
+ *
+ * PARAMETERS:  WalkState           - Current walk state
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute Triadic operator (3 operands)
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExOpcode_3A_1T_1R (
+    ACPI_WALK_STATE         *WalkState)
+{
+    ACPI_OPERAND_OBJECT     **Operand = &WalkState->Operands[0];
+    ACPI_OPERAND_OBJECT     *ReturnDesc = NULL;
+    char                    *Buffer = NULL;
+    ACPI_STATUS             Status = AE_OK;
+    UINT64                  Index;
+    ACPI_SIZE               Length;
+
+
+    ACPI_FUNCTION_TRACE_STR (ExOpcode_3A_1T_1R,
+        AcpiPsGetOpcodeName (WalkState->Opcode));
+
+
+    switch (WalkState->Opcode)
+    {
+    case AML_MID_OP:    /* Mid (Source[0], Index[1], Length[2], Result[3]) */
+        /*
+         * Create the return object. The Source operand is guaranteed to be
+         * either a String or a Buffer, so just use its type.
+         */
+        ReturnDesc = AcpiUtCreateInternalObject (
+            (Operand[0])->Common.Type);
+        if (!ReturnDesc)
+        {
+            Status = AE_NO_MEMORY;
+            goto Cleanup;
+        }
+
+        /* Get the Integer values from the objects */
+
+        Index = Operand[1]->Integer.Value;
+        Length = (ACPI_SIZE) Operand[2]->Integer.Value;
+
+        /*
+         * If the index is beyond the length of the String/Buffer, or if the
+         * requested length is zero, return a zero-length String/Buffer
+         */
+        if (Index >= Operand[0]->String.Length)
+        {
+            Length = 0;
+        }
+
+        /* Truncate request if larger than the actual String/Buffer */
+
+        else if ((Index + Length) > Operand[0]->String.Length)
+        {
+            Length =
+                (ACPI_SIZE) Operand[0]->String.Length - (ACPI_SIZE) Index;
+        }
+
+        /* Strings always have a sub-pointer, not so for buffers */
+
+        switch ((Operand[0])->Common.Type)
+        {
+        case ACPI_TYPE_STRING:
+
+            /* Always allocate a new buffer for the String */
+
+            Buffer = ACPI_ALLOCATE_ZEROED ((ACPI_SIZE) Length + 1);
+            if (!Buffer)
+            {
+                Status = AE_NO_MEMORY;
+                goto Cleanup;
+            }
+            break;
+
+        case ACPI_TYPE_BUFFER:
+
+            /* If the requested length is zero, don't allocate a buffer */
+
+            if (Length > 0)
+            {
+                /* Allocate a new buffer for the Buffer */
+
+                Buffer = ACPI_ALLOCATE_ZEROED (Length);
+                if (!Buffer)
+                {
+                    Status = AE_NO_MEMORY;
+                    goto Cleanup;
+                }
+            }
+            break;
+
+        default:                        /* Should not happen */
+
+            Status = AE_AML_OPERAND_TYPE;
+            goto Cleanup;
+        }
+
+        if (Buffer)
+        {
+            /* We have a buffer, copy the portion requested */
+
+            memcpy (Buffer,
+                Operand[0]->String.Pointer + Index, Length);
+        }
+
+        /* Set the length of the new String/Buffer */
+
+        ReturnDesc->String.Pointer = Buffer;
+        ReturnDesc->String.Length = (UINT32) Length;
+
+        /* Mark buffer initialized */
+
+        ReturnDesc->Buffer.Flags |= AOPOBJ_DATA_VALID;
+        break;
+
+    default:
+
+        ACPI_ERROR ((AE_INFO, "Unknown AML opcode 0x%X",
+            WalkState->Opcode));
+
+        Status = AE_AML_BAD_OPCODE;
+        goto Cleanup;
+    }
+
+    /* Store the result in the target */
+
+    Status = AcpiExStore (ReturnDesc, Operand[3], WalkState);
+
+Cleanup:
+
+    /* Delete return object on error */
+
+    if (ACPI_FAILURE (Status) || WalkState->ResultObj)
+    {
+        AcpiUtRemoveReference (ReturnDesc);
+        WalkState->ResultObj = NULL;
+    }
+    else
+    {
+        /* Set the return object and exit */
+
+        WalkState->ResultObj = ReturnDesc;
+    }
+
+    return_ACPI_STATUS (Status);
+}

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: exsystem - Interface to OS services
  *
  *****************************************************************************/
 
@@ -149,184 +149,309 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acinterp.h"
+
+#define _COMPONENT          ACPI_EXECUTER
+        ACPI_MODULE_NAME    ("exsystem")
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExSystemWaitSemaphore
+ *
+ * PARAMETERS:  Semaphore       - Semaphore to wait on
+ *              Timeout         - Max time to wait
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Implements a semaphore wait with a check to see if the
+ *              semaphore is available immediately. If it is not, the
+ *              interpreter is released before waiting.
+ *
+ ******************************************************************************/
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
-
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+ACPI_STATUS
+AcpiExSystemWaitSemaphore (
+    ACPI_SEMAPHORE          Semaphore,
+    UINT16                  Timeout)
+{
+    ACPI_STATUS             Status;
 
 
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+    ACPI_FUNCTION_TRACE (ExSystemWaitSemaphore);
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+    Status = AcpiOsWaitSemaphore (Semaphore, 1, ACPI_DO_NOT_WAIT);
+    if (ACPI_SUCCESS (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
+    if (Status == AE_TIME)
+    {
+        /* We must wait, so unlock the interpreter */
 
-/* Define/disable kernel-specific declarators */
+        AcpiExExitInterpreter ();
+        Status = AcpiOsWaitSemaphore (Semaphore, 1, Timeout);
 
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "*** Thread awake after blocking, %s\n",
+            AcpiFormatException (Status)));
 
-/* Host-dependent types and defines for user-space ACPICA */
+        /* Reacquire the interpreter */
 
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
+        AcpiExEnterInterpreter ();
+    }
 
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
+    return_ACPI_STATUS (Status);
+}
 
 
-#endif /* __THUNDERSTORM_H__ */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExSystemWaitMutex
+ *
+ * PARAMETERS:  Mutex           - Mutex to wait on
+ *              Timeout         - Max time to wait
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Implements a mutex wait with a check to see if the
+ *              mutex is available immediately. If it is not, the
+ *              interpreter is released before waiting.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExSystemWaitMutex (
+    ACPI_MUTEX              Mutex,
+    UINT16                  Timeout)
+{
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (ExSystemWaitMutex);
+
+
+    Status = AcpiOsAcquireMutex (Mutex, ACPI_DO_NOT_WAIT);
+    if (ACPI_SUCCESS (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    if (Status == AE_TIME)
+    {
+        /* We must wait, so unlock the interpreter */
+
+        AcpiExExitInterpreter ();
+        Status = AcpiOsAcquireMutex (Mutex, Timeout);
+
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "*** Thread awake after blocking, %s\n",
+            AcpiFormatException (Status)));
+
+        /* Reacquire the interpreter */
+
+        AcpiExEnterInterpreter ();
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExSystemDoStall
+ *
+ * PARAMETERS:  HowLong         - The amount of time to stall,
+ *                                in microseconds
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Suspend running thread for specified amount of time.
+ *              Note: ACPI specification requires that Stall() does not
+ *              relinquish the processor, and delays longer than 100 usec
+ *              should use Sleep() instead. We allow stalls up to 255 usec
+ *              for compatibility with other interpreters and existing BIOSs.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExSystemDoStall (
+    UINT32                  HowLong)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (HowLong > 255) /* 255 microseconds */
+    {
+        /*
+         * Longer than 255 usec, this is an error
+         *
+         * (ACPI specifies 100 usec as max, but this gives some slack in
+         * order to support existing BIOSs)
+         */
+        ACPI_ERROR ((AE_INFO,
+            "Time parameter is too large (%u)", HowLong));
+        Status = AE_AML_OPERAND_VALUE;
+    }
+    else
+    {
+        AcpiOsStall (HowLong);
+    }
+
+    return (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExSystemDoSleep
+ *
+ * PARAMETERS:  HowLong         - The amount of time to sleep,
+ *                                in milliseconds
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Sleep the running thread for specified amount of time.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExSystemDoSleep (
+    UINT64                  HowLong)
+{
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /* Since this thread will sleep, we must release the interpreter */
+
+    AcpiExExitInterpreter ();
+
+    /*
+     * For compatibility with other ACPI implementations and to prevent
+     * accidental deep sleeps, limit the sleep time to something reasonable.
+     */
+    if (HowLong > ACPI_MAX_SLEEP)
+    {
+        HowLong = ACPI_MAX_SLEEP;
+    }
+
+    AcpiOsSleep (HowLong);
+
+    /* And now we must get the interpreter again */
+
+    AcpiExEnterInterpreter ();
+    return (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExSystemSignalEvent
+ *
+ * PARAMETERS:  ObjDesc         - The object descriptor for this op
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Provides an access point to perform synchronization operations
+ *              within the AML.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExSystemSignalEvent (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE (ExSystemSignalEvent);
+
+
+    if (ObjDesc)
+    {
+        Status = AcpiOsSignalSemaphore (ObjDesc->Event.OsSemaphore, 1);
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExSystemWaitEvent
+ *
+ * PARAMETERS:  TimeDesc        - The 'time to delay' object descriptor
+ *              ObjDesc         - The object descriptor for this op
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Provides an access point to perform synchronization operations
+ *              within the AML. This operation is a request to wait for an
+ *              event.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExSystemWaitEvent (
+    ACPI_OPERAND_OBJECT     *TimeDesc,
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE (ExSystemWaitEvent);
+
+
+    if (ObjDesc)
+    {
+        Status = AcpiExSystemWaitSemaphore (ObjDesc->Event.OsSemaphore,
+            (UINT16) TimeDesc->Integer.Value);
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiExSystemResetEvent
+ *
+ * PARAMETERS:  ObjDesc         - The object descriptor for this op
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Reset an event to a known state.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiExSystemResetEvent (
+    ACPI_OPERAND_OBJECT     *ObjDesc)
+{
+    ACPI_STATUS             Status = AE_OK;
+    ACPI_SEMAPHORE          TempSemaphore;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    /*
+     * We are going to simply delete the existing semaphore and
+     * create a new one!
+     */
+    Status = AcpiOsCreateSemaphore (ACPI_NO_UNIT_LIMIT, 0, &TempSemaphore);
+    if (ACPI_SUCCESS (Status))
+    {
+        (void) AcpiOsDeleteSemaphore (ObjDesc->Event.OsSemaphore);
+        ObjDesc->Event.OsSemaphore = TempSemaphore;
+    }
+
+    return (Status);
+}

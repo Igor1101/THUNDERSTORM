@@ -1,8 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: nsxfobj - Public interfaces to the ACPI subsystem
+ *                         ACPI Object oriented interfaces
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -149,184 +150,239 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#define EXPORT_ACPI_INTERFACES
+
+#include "acpi.h"
+#include "accommon.h"
+#include "acnamesp.h"
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+#define _COMPONENT          ACPI_NAMESPACE
+        ACPI_MODULE_NAME    ("nsxfobj")
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetType
+ *
+ * PARAMETERS:  Handle          - Handle of object whose type is desired
+ *              RetType         - Where the type will be placed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: This routine returns the type associatd with a particular handle
+ *
+ ******************************************************************************/
 
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
-
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+ACPI_STATUS
+AcpiGetType (
+    ACPI_HANDLE             Handle,
+    ACPI_OBJECT_TYPE        *RetType)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_STATUS             Status;
 
 
-/* Generating stubs for configurable ACPICA functions */
+    /* Parameter Validation */
 
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
+    if (!RetType)
+    {
+        return (AE_BAD_PARAMETER);
+    }
 
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
+    /* Special case for the predefined Root Node (return type ANY) */
 
-/* Host-dependent types and defines for in-kernel ACPICA */
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        *RetType = ACPI_TYPE_ANY;
+        return (AE_OK);
+    }
 
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
 
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
+    /* Convert and validate the handle */
 
-/* Use native linux version of AcpiOsAllocateZeroed */
+    Node = AcpiNsValidateHandle (Handle);
+    if (!Node)
+    {
+        (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+        return (AE_BAD_PARAMETER);
+    }
 
-#define USE_NATIVE_ALLOCATE_ZEROED
+    *RetType = Node->Type;
 
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
+    Status = AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return (Status);
+}
 
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+ACPI_EXPORT_SYMBOL (AcpiGetType)
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetParent
+ *
+ * PARAMETERS:  Handle          - Handle of object whose parent is desired
+ *              RetHandle       - Where the parent handle will be placed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Returns a handle to the parent of the object represented by
+ *              Handle.
+ *
+ ******************************************************************************/
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
+ACPI_STATUS
+AcpiGetParent (
+    ACPI_HANDLE             Handle,
+    ACPI_HANDLE             *RetHandle)
+{
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *ParentNode;
+    ACPI_STATUS             Status;
 
 
-#endif /* __THUNDERSTORM_H__ */
+    if (!RetHandle)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    /* Special case for the predefined Root Node (no parent) */
+
+    if (Handle == ACPI_ROOT_OBJECT)
+    {
+        return (AE_NULL_ENTRY);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* Convert and validate the handle */
+
+    Node = AcpiNsValidateHandle (Handle);
+    if (!Node)
+    {
+        Status = AE_BAD_PARAMETER;
+        goto UnlockAndExit;
+    }
+
+    /* Get the parent entry */
+
+    ParentNode = Node->Parent;
+    *RetHandle = ACPI_CAST_PTR (ACPI_HANDLE, ParentNode);
+
+    /* Return exception if parent is null */
+
+    if (!ParentNode)
+    {
+        Status = AE_NULL_ENTRY;
+    }
+
+
+UnlockAndExit:
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiGetParent)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiGetNextObject
+ *
+ * PARAMETERS:  Type            - Type of object to be searched for
+ *              Parent          - Parent object whose children we are getting
+ *              LastChild       - Previous child that was found.
+ *                                The NEXT child will be returned
+ *              RetHandle       - Where handle to the next object is placed
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Return the next peer object within the namespace. If Handle is
+ *              valid, Scope is ignored. Otherwise, the first object within
+ *              Scope is returned.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetNextObject (
+    ACPI_OBJECT_TYPE        Type,
+    ACPI_HANDLE             Parent,
+    ACPI_HANDLE             Child,
+    ACPI_HANDLE             *RetHandle)
+{
+    ACPI_STATUS             Status;
+    ACPI_NAMESPACE_NODE     *Node;
+    ACPI_NAMESPACE_NODE     *ParentNode = NULL;
+    ACPI_NAMESPACE_NODE     *ChildNode = NULL;
+
+
+    /* Parameter validation */
+
+    if (Type > ACPI_TYPE_EXTERNAL_MAX)
+    {
+        return (AE_BAD_PARAMETER);
+    }
+
+    Status = AcpiUtAcquireMutex (ACPI_MTX_NAMESPACE);
+    if (ACPI_FAILURE (Status))
+    {
+        return (Status);
+    }
+
+    /* If null handle, use the parent */
+
+    if (!Child)
+    {
+        /* Start search at the beginning of the specified scope */
+
+        ParentNode = AcpiNsValidateHandle (Parent);
+        if (!ParentNode)
+        {
+            Status = AE_BAD_PARAMETER;
+            goto UnlockAndExit;
+        }
+    }
+    else
+    {
+        /* Non-null handle, ignore the parent */
+        /* Convert and validate the handle */
+
+        ChildNode = AcpiNsValidateHandle (Child);
+        if (!ChildNode)
+        {
+            Status = AE_BAD_PARAMETER;
+            goto UnlockAndExit;
+        }
+    }
+
+    /* Internal function does the real work */
+
+    Node = AcpiNsGetNextNodeTyped (Type, ParentNode, ChildNode);
+    if (!Node)
+    {
+        Status = AE_NOT_FOUND;
+        goto UnlockAndExit;
+    }
+
+    if (RetHandle)
+    {
+        *RetHandle = ACPI_CAST_PTR (ACPI_HANDLE, Node);
+    }
+
+
+UnlockAndExit:
+
+    (void) AcpiUtReleaseMutex (ACPI_MTX_NAMESPACE);
+    return (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiGetNextObject)

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: pstree - Parser op tree manipulation/traversal/search
  *
  *****************************************************************************/
 
@@ -149,184 +149,323 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acparser.h"
+#include "amlcode.h"
+#include "acconvert.h"
 
+#define _COMPONENT          ACPI_PARSER
+        ACPI_MODULE_NAME    ("pstree")
 
-/* ACPICA external files should not include ACPICA headers directly. */
+/* Local prototypes */
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+ACPI_PARSE_OBJECT *
+AcpiPsGetChild (
+    ACPI_PARSE_OBJECT       *op);
 #endif
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetArg
+ *
+ * PARAMETERS:  Op              - Get an argument for this op
+ *              Argn            - Nth argument to get
+ *
+ * RETURN:      The argument (as an Op object). NULL if argument does not exist
+ *
+ * DESCRIPTION: Get the specified op's argument.
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetArg (
+    ACPI_PARSE_OBJECT       *Op,
+    UINT32                  Argn)
+{
+    ACPI_PARSE_OBJECT       *Arg = NULL;
+    const ACPI_OPCODE_INFO  *OpInfo;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+/*
+    if (Op->Common.AmlOpcode == AML_INT_CONNECTION_OP)
+    {
+        return (Op->Common.Value.Arg);
+    }
 */
+    /* Get the info structure for this opcode */
 
-/* Common (in-kernel/user-space) ACPICA configuration */
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
+    {
+        /* Invalid opcode or ASCII character */
 
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
+        return (NULL);
+    }
 
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+    /* Check if this opcode requires argument sub-objects */
+
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
+    {
+        /* Has no linked argument objects */
+
+        return (NULL);
+    }
+
+    /* Get the requested argument object */
+
+    Arg = Op->Common.Value.Arg;
+    while (Arg && Argn)
+    {
+        Argn--;
+        Arg = Arg->Common.Next;
+    }
+
+    return (Arg);
+}
 
 
-//#define ACPI_USE_SYSTEM_INTTYPES
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsAppendArg
+ *
+ * PARAMETERS:  Op              - Append an argument to this Op.
+ *              Arg             - Argument Op to append
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Append an argument to an op's argument list (a NULL arg is OK)
+ *
+ ******************************************************************************/
 
-//#define ACPI_USE_GPE_POLLING
+void
+AcpiPsAppendArg (
+    ACPI_PARSE_OBJECT       *Op,
+    ACPI_PARSE_OBJECT       *Arg)
+{
+    ACPI_PARSE_OBJECT       *PrevArg;
+    const ACPI_OPCODE_INFO  *OpInfo;
 
-/* Kernel specific ACPICA configuration */
 
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
+    ACPI_FUNCTION_TRACE (PsAppendArg);
+
+
+    if (!Op)
+    {
+        return_VOID;
+    }
+
+    /* Get the info structure for this opcode */
+
+    OpInfo = AcpiPsGetOpcodeInfo (Op->Common.AmlOpcode);
+    if (OpInfo->Class == AML_CLASS_UNKNOWN)
+    {
+        /* Invalid opcode */
+
+        ACPI_ERROR ((AE_INFO, "Invalid AML Opcode: 0x%2.2X",
+            Op->Common.AmlOpcode));
+        return_VOID;
+    }
+
+    /* Check if this opcode requires argument sub-objects */
+
+    if (!(OpInfo->Flags & AML_HAS_ARGS))
+    {
+        /* Has no linked argument objects */
+
+        return_VOID;
+    }
+
+    /* Append the argument to the linked argument list */
+
+    if (Op->Common.Value.Arg)
+    {
+        /* Append to existing argument list */
+
+        PrevArg = Op->Common.Value.Arg;
+        while (PrevArg->Common.Next)
+        {
+            PrevArg = PrevArg->Common.Next;
+        }
+        PrevArg->Common.Next = Arg;
+    }
+    else
+    {
+        /* No argument list, this will be the first argument */
+
+        Op->Common.Value.Arg = Arg;
+    }
+
+    /* Set the parent in this arg and any args linked after it */
+
+    while (Arg)
+    {
+        Arg->Common.Parent = Op;
+        Arg = Arg->Common.Next;
+
+        Op->Common.ArgListLength++;
+    }
+
+    return_VOID;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetDepthNext
+ *
+ * PARAMETERS:  Origin          - Root of subtree to search
+ *              Op              - Last (previous) Op that was found
+ *
+ * RETURN:      Next Op found in the search.
+ *
+ * DESCRIPTION: Get next op in tree (walking the tree in depth-first order)
+ *              Return NULL when reaching "origin" or when walking up from root
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetDepthNext (
+    ACPI_PARSE_OBJECT       *Origin,
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *Next = NULL;
+    ACPI_PARSE_OBJECT       *Parent;
+    ACPI_PARSE_OBJECT       *Arg;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (!Op)
+    {
+        return (NULL);
+    }
+
+    /* Look for an argument or child */
+
+    Next = AcpiPsGetArg (Op, 0);
+    if (Next)
+    {
+        ASL_CV_LABEL_FILENODE (Next);
+        return (Next);
+    }
+
+    /* Look for a sibling */
+
+    Next = Op->Common.Next;
+    if (Next)
+    {
+        ASL_CV_LABEL_FILENODE (Next);
+        return (Next);
+    }
+
+    /* Look for a sibling of parent */
+
+    Parent = Op->Common.Parent;
+
+    while (Parent)
+    {
+        Arg = AcpiPsGetArg (Parent, 0);
+        while (Arg && (Arg != Origin) && (Arg != Op))
+        {
+
+            ASL_CV_LABEL_FILENODE (Arg);
+            Arg = Arg->Common.Next;
+        }
+
+        if (Arg == Origin)
+        {
+            /* Reached parent of origin, end search */
+
+            return (NULL);
+        }
+
+        if (Parent->Common.Next)
+        {
+            /* Found sibling of parent */
+
+            ASL_CV_LABEL_FILENODE (Parent->Common.Next);
+            return (Parent->Common.Next);
+        }
+
+        Op = Parent;
+        Parent = Parent->Common.Parent;
+    }
+
+    ASL_CV_LABEL_FILENODE (Next);
+    return (Next);
+}
+
+
+#ifdef ACPI_OBSOLETE_FUNCTIONS
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiPsGetChild
+ *
+ * PARAMETERS:  Op              - Get the child of this Op
+ *
+ * RETURN:      Child Op, Null if none is found.
+ *
+ * DESCRIPTION: Get op's children or NULL if none
+ *
+ ******************************************************************************/
+
+ACPI_PARSE_OBJECT *
+AcpiPsGetChild (
+    ACPI_PARSE_OBJECT       *Op)
+{
+    ACPI_PARSE_OBJECT       *Child = NULL;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    switch (Op->Common.AmlOpcode)
+    {
+    case AML_SCOPE_OP:
+    case AML_ELSE_OP:
+    case AML_DEVICE_OP:
+    case AML_THERMAL_ZONE_OP:
+    case AML_INT_METHODCALL_OP:
+
+        Child = AcpiPsGetArg (Op, 0);
+        break;
+
+    case AML_BUFFER_OP:
+    case AML_PACKAGE_OP:
+    case AML_VARIABLE_PACKAGE_OP:
+    case AML_METHOD_OP:
+    case AML_IF_OP:
+    case AML_WHILE_OP:
+    case AML_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 1);
+        break;
+
+    case AML_POWER_RESOURCE_OP:
+    case AML_INDEX_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 2);
+        break;
+
+    case AML_PROCESSOR_OP:
+    case AML_BANK_FIELD_OP:
+
+        Child = AcpiPsGetArg (Op, 3);
+        break;
+
+    default:
+
+        /* All others have no children */
+
+        break;
+    }
+
+    return (Child);
+}
 #endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
-
-
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
-
-
-//#define ACPI_USE_STANDARD_HEADERS
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
-
-
-#endif /* __THUNDERSTORM_H__ */

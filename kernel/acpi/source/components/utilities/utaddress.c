@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: utaddress - OpRegion address range check
  *
  *****************************************************************************/
 
@@ -149,184 +149,275 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acnamesp.h"
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
-
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utaddress")
 
 
-//#define ACPI_USE_SYSTEM_INTTYPES
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtAddAddressRange
+ *
+ * PARAMETERS:  SpaceId             - Address space ID
+ *              Address             - OpRegion start address
+ *              Length              - OpRegion length
+ *              RegionNode          - OpRegion namespace node
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Add the Operation Region address range to the global list.
+ *              The only supported Space IDs are Memory and I/O. Called when
+ *              the OpRegion address/length operands are fully evaluated.
+ *
+ * MUTEX:       Locks the namespace
+ *
+ * NOTE: Because this interface is only called when an OpRegion argument
+ * list is evaluated, there cannot be any duplicate RegionNodes.
+ * Duplicate Address/Length values are allowed, however, so that multiple
+ * address conflicts can be detected.
+ *
+ ******************************************************************************/
 
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
-
-
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+ACPI_STATUS
+AcpiUtAddAddressRange (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  Length,
+    ACPI_NAMESPACE_NODE     *RegionNode)
+{
+    ACPI_ADDRESS_RANGE      *RangeInfo;
 
 
-//#define ACPI_USE_STANDARD_HEADERS
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
+    ACPI_FUNCTION_TRACE (UtAddAddressRange);
 
 
-#endif /* __THUNDERSTORM_H__ */
+    if ((SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
+        (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /* Allocate/init a new info block, add it to the appropriate list */
+
+    RangeInfo = ACPI_ALLOCATE (sizeof (ACPI_ADDRESS_RANGE));
+    if (!RangeInfo)
+    {
+        return_ACPI_STATUS (AE_NO_MEMORY);
+    }
+
+    RangeInfo->StartAddress = Address;
+    RangeInfo->EndAddress = (Address + Length - 1);
+    RangeInfo->RegionNode = RegionNode;
+
+    RangeInfo->Next = AcpiGbl_AddressRangeList[SpaceId];
+    AcpiGbl_AddressRangeList[SpaceId] = RangeInfo;
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+        "\nAdded [%4.4s] address range: 0x%8.8X%8.8X-0x%8.8X%8.8X\n",
+        AcpiUtGetNodeName (RangeInfo->RegionNode),
+        ACPI_FORMAT_UINT64 (Address),
+        ACPI_FORMAT_UINT64 (RangeInfo->EndAddress)));
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtRemoveAddressRange
+ *
+ * PARAMETERS:  SpaceId             - Address space ID
+ *              RegionNode          - OpRegion namespace node
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Remove the Operation Region from the global list. The only
+ *              supported Space IDs are Memory and I/O. Called when an
+ *              OpRegion is deleted.
+ *
+ * MUTEX:       Assumes the namespace is locked
+ *
+ ******************************************************************************/
+
+void
+AcpiUtRemoveAddressRange (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_NAMESPACE_NODE     *RegionNode)
+{
+    ACPI_ADDRESS_RANGE      *RangeInfo;
+    ACPI_ADDRESS_RANGE      *Prev;
+
+
+    ACPI_FUNCTION_TRACE (UtRemoveAddressRange);
+
+
+    if ((SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
+        (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
+    {
+        return_VOID;
+    }
+
+    /* Get the appropriate list head and check the list */
+
+    RangeInfo = Prev = AcpiGbl_AddressRangeList[SpaceId];
+    while (RangeInfo)
+    {
+        if (RangeInfo->RegionNode == RegionNode)
+        {
+            if (RangeInfo == Prev) /* Found at list head */
+            {
+                AcpiGbl_AddressRangeList[SpaceId] = RangeInfo->Next;
+            }
+            else
+            {
+                Prev->Next = RangeInfo->Next;
+            }
+
+            ACPI_DEBUG_PRINT ((ACPI_DB_NAMES,
+                "\nRemoved [%4.4s] address range: 0x%8.8X%8.8X-0x%8.8X%8.8X\n",
+                AcpiUtGetNodeName (RangeInfo->RegionNode),
+                ACPI_FORMAT_UINT64 (RangeInfo->StartAddress),
+                ACPI_FORMAT_UINT64 (RangeInfo->EndAddress)));
+
+            ACPI_FREE (RangeInfo);
+            return_VOID;
+        }
+
+        Prev = RangeInfo;
+        RangeInfo = RangeInfo->Next;
+    }
+
+    return_VOID;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtCheckAddressRange
+ *
+ * PARAMETERS:  SpaceId             - Address space ID
+ *              Address             - Start address
+ *              Length              - Length of address range
+ *              Warn                - TRUE if warning on overlap desired
+ *
+ * RETURN:      Count of the number of conflicts detected. Zero is always
+ *              returned for Space IDs other than Memory or I/O.
+ *
+ * DESCRIPTION: Check if the input address range overlaps any of the
+ *              ASL operation region address ranges. The only supported
+ *              Space IDs are Memory and I/O.
+ *
+ * MUTEX:       Assumes the namespace is locked.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiUtCheckAddressRange (
+    ACPI_ADR_SPACE_TYPE     SpaceId,
+    ACPI_PHYSICAL_ADDRESS   Address,
+    UINT32                  Length,
+    BOOLEAN                 Warn)
+{
+    ACPI_ADDRESS_RANGE      *RangeInfo;
+    ACPI_PHYSICAL_ADDRESS   EndAddress;
+    char                    *Pathname;
+    UINT32                  OverlapCount = 0;
+
+
+    ACPI_FUNCTION_TRACE (UtCheckAddressRange);
+
+
+    if ((SpaceId != ACPI_ADR_SPACE_SYSTEM_MEMORY) &&
+        (SpaceId != ACPI_ADR_SPACE_SYSTEM_IO))
+    {
+        return_UINT32 (0);
+    }
+
+    RangeInfo = AcpiGbl_AddressRangeList[SpaceId];
+    EndAddress = Address + Length - 1;
+
+    /* Check entire list for all possible conflicts */
+
+    while (RangeInfo)
+    {
+        /*
+         * Check if the requested address/length overlaps this
+         * address range. There are four cases to consider:
+         *
+         * 1) Input address/length is contained completely in the
+         *    address range
+         * 2) Input address/length overlaps range at the range start
+         * 3) Input address/length overlaps range at the range end
+         * 4) Input address/length completely encompasses the range
+         */
+        if ((Address <= RangeInfo->EndAddress) &&
+            (EndAddress >= RangeInfo->StartAddress))
+        {
+            /* Found an address range overlap */
+
+            OverlapCount++;
+            if (Warn)   /* Optional warning message */
+            {
+                Pathname = AcpiNsGetNormalizedPathname (RangeInfo->RegionNode, TRUE);
+
+                ACPI_WARNING ((AE_INFO,
+                    "%s range 0x%8.8X%8.8X-0x%8.8X%8.8X conflicts with OpRegion 0x%8.8X%8.8X-0x%8.8X%8.8X (%s)",
+                    AcpiUtGetRegionName (SpaceId),
+                    ACPI_FORMAT_UINT64 (Address),
+                    ACPI_FORMAT_UINT64 (EndAddress),
+                    ACPI_FORMAT_UINT64 (RangeInfo->StartAddress),
+                    ACPI_FORMAT_UINT64 (RangeInfo->EndAddress),
+                    Pathname));
+                ACPI_FREE (Pathname);
+            }
+        }
+
+        RangeInfo = RangeInfo->Next;
+    }
+
+    return_UINT32 (OverlapCount);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtDeleteAddressLists
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Delete all global address range lists (called during
+ *              subsystem shutdown).
+ *
+ ******************************************************************************/
+
+void
+AcpiUtDeleteAddressLists (
+    void)
+{
+    ACPI_ADDRESS_RANGE      *Next;
+    ACPI_ADDRESS_RANGE      *RangeInfo;
+    int                     i;
+
+
+    /* Delete all elements in all address range lists */
+
+    for (i = 0; i < ACPI_ADDRESS_RANGE_MAX; i++)
+    {
+        Next = AcpiGbl_AddressRangeList[i];
+
+        while (Next)
+        {
+            RangeInfo = Next;
+            Next = RangeInfo->Next;
+            ACPI_FREE (RangeInfo);
+        }
+
+        AcpiGbl_AddressRangeList[i] = NULL;
+    }
+}

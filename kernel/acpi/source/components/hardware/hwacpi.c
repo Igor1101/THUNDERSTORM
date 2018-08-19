@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: hwacpi - ACPI Hardware Initialization/Mode Interface
  *
  *****************************************************************************/
 
@@ -149,184 +149,181 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
-
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+#define _COMPONENT          ACPI_HARDWARE
+        ACPI_MODULE_NAME    ("hwacpi")
 
 
-//#define ACPI_USE_SYSTEM_INTTYPES
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiHwSetMode
+ *
+ * PARAMETERS:  Mode            - SYS_MODE_ACPI or SYS_MODE_LEGACY
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Transitions the system into the requested mode.
+ *
+ ******************************************************************************/
 
-//#define ACPI_USE_GPE_POLLING
+ACPI_STATUS
+AcpiHwSetMode (
+    UINT32                  Mode)
+{
 
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+    ACPI_STATUS             Status;
+    UINT32                  Retry;
 
 
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+    ACPI_FUNCTION_TRACE (HwSetMode);
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+    /* If the Hardware Reduced flag is set, machine is always in acpi mode */
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
+    if (AcpiGbl_ReducedHardware)
+    {
+        return_ACPI_STATUS (AE_OK);
+    }
 
-/* Define/disable kernel-specific declarators */
+    /*
+     * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
+     * system does not support mode transition.
+     */
+    if (!AcpiGbl_FADT.SmiCommand)
+    {
+        ACPI_ERROR ((AE_INFO, "No SMI_CMD in FADT, mode transition failed"));
+        return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
+    }
 
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
+    /*
+     * ACPI 2.0 clarified the meaning of ACPI_ENABLE and ACPI_DISABLE
+     * in FADT: If it is zero, enabling or disabling is not supported.
+     * As old systems may have used zero for mode transition,
+     * we make sure both the numbers are zero to determine these
+     * transitions are not supported.
+     */
+    if (!AcpiGbl_FADT.AcpiEnable && !AcpiGbl_FADT.AcpiDisable)
+    {
+        ACPI_ERROR ((AE_INFO,
+            "No ACPI mode transition supported in this system "
+            "(enable/disable both zero)"));
+        return_ACPI_STATUS (AE_OK);
+    }
 
-/* Host-dependent types and defines for user-space ACPICA */
+    switch (Mode)
+    {
+    case ACPI_SYS_MODE_ACPI:
 
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
+        /* BIOS should have disabled ALL fixed and GP events */
 
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
+        Status = AcpiHwWritePort (AcpiGbl_FADT.SmiCommand,
+            (UINT32) AcpiGbl_FADT.AcpiEnable, 8);
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Attempting to enable ACPI mode\n"));
+        break;
 
-#ifndef __cdecl
-#define __cdecl
-#endif
+    case ACPI_SYS_MODE_LEGACY:
+        /*
+         * BIOS should clear all fixed status bits and restore fixed event
+         * enable bits to default
+         */
+        Status = AcpiHwWritePort (AcpiGbl_FADT.SmiCommand,
+            (UINT32) AcpiGbl_FADT.AcpiDisable, 8);
+        ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+            "Attempting to enable Legacy (non-ACPI) mode\n"));
+        break;
+
+    default:
+
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status,
+            "Could not write ACPI mode change"));
+        return_ACPI_STATUS (Status);
+    }
+
+    /*
+     * Some hardware takes a LONG time to switch modes. Give them 3 sec to
+     * do so, but allow faster systems to proceed more quickly.
+     */
+    Retry = 3000;
+    while (Retry)
+    {
+        if (AcpiHwGetMode () == Mode)
+        {
+            ACPI_DEBUG_PRINT ((ACPI_DB_INFO,
+                "Mode %X successfully enabled\n", Mode));
+            return_ACPI_STATUS (AE_OK);
+        }
+        AcpiOsStall (ACPI_USEC_PER_MSEC);
+        Retry--;
+    }
+
+    ACPI_ERROR ((AE_INFO, "Hardware did not change modes"));
+    return_ACPI_STATUS (AE_NO_HARDWARE_RESPONSE);
+}
 
 
-#endif /* __THUNDERSTORM_H__ */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiHwGetMode
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      SYS_MODE_ACPI or SYS_MODE_LEGACY
+ *
+ * DESCRIPTION: Return current operating state of system. Determined by
+ *              querying the SCI_EN bit.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiHwGetMode (
+    void)
+{
+    ACPI_STATUS             Status;
+    UINT32                  Value;
+
+
+    ACPI_FUNCTION_TRACE (HwGetMode);
+
+
+    /* If the Hardware Reduced flag is set, machine is always in acpi mode */
+
+    if (AcpiGbl_ReducedHardware)
+    {
+        return_UINT32 (ACPI_SYS_MODE_ACPI);
+    }
+
+    /*
+     * ACPI 2.0 clarified that if SMI_CMD in FADT is zero,
+     * system does not support mode transition.
+     */
+    if (!AcpiGbl_FADT.SmiCommand)
+    {
+        return_UINT32 (ACPI_SYS_MODE_ACPI);
+    }
+
+    Status = AcpiReadBitRegister (ACPI_BITREG_SCI_ENABLE, &Value);
+    if (ACPI_FAILURE (Status))
+    {
+        return_UINT32 (ACPI_SYS_MODE_LEGACY);
+    }
+
+    if (Value)
+    {
+        return_UINT32 (ACPI_SYS_MODE_ACPI);
+    }
+    else
+    {
+        return_UINT32 (ACPI_SYS_MODE_LEGACY);
+    }
+}
+
+#endif /* !ACPI_REDUCED_HARDWARE */

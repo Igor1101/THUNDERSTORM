@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: utinit - Common ACPI subsystem initialization
  *
  *****************************************************************************/
 
@@ -149,184 +149,312 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acnamesp.h"
+#include "acevents.h"
+#include "actables.h"
 
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utinit")
 
-/* ACPICA external files should not include ACPICA headers directly. */
+/* Local prototypes */
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
+static void AcpiUtTerminate (
+    void);
 
-/* Common (in-kernel/user-space) ACPICA configuration */
+#if (!ACPI_REDUCED_HARDWARE)
 
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
+static void
+AcpiUtFreeGpeLists (
+    void);
 
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
-
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
-
-
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
-
-
-//#define ACPI_USE_STANDARD_HEADERS
-
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
 #else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
+
+#define AcpiUtFreeGpeLists()
+#endif /* !ACPI_REDUCED_HARDWARE */
+
+
+#if (!ACPI_REDUCED_HARDWARE)
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiUtFreeGpeLists
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Free global GPE lists
+ *
+ ******************************************************************************/
+
+static void
+AcpiUtFreeGpeLists (
+    void)
+{
+    ACPI_GPE_BLOCK_INFO     *GpeBlock;
+    ACPI_GPE_BLOCK_INFO     *NextGpeBlock;
+    ACPI_GPE_XRUPT_INFO     *GpeXruptInfo;
+    ACPI_GPE_XRUPT_INFO     *NextGpeXruptInfo;
+
+
+    /* Free global GPE blocks and related info structures */
+
+    GpeXruptInfo = AcpiGbl_GpeXruptListHead;
+    while (GpeXruptInfo)
+    {
+        GpeBlock = GpeXruptInfo->GpeBlockListHead;
+        while (GpeBlock)
+        {
+            NextGpeBlock = GpeBlock->Next;
+            ACPI_FREE (GpeBlock->EventInfo);
+            ACPI_FREE (GpeBlock->RegisterInfo);
+            ACPI_FREE (GpeBlock);
+
+            GpeBlock = NextGpeBlock;
+        }
+        NextGpeXruptInfo = GpeXruptInfo->Next;
+        ACPI_FREE (GpeXruptInfo);
+        GpeXruptInfo = NextGpeXruptInfo;
+    }
+}
+#endif /* !ACPI_REDUCED_HARDWARE */
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtInitGlobals
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Initialize ACPICA globals. All globals that require specific
+ *              initialization should be initialized here. This allows for
+ *              a warm restart.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiUtInitGlobals (
+    void)
+{
+    ACPI_STATUS             Status;
+    UINT32                  i;
+
+
+    ACPI_FUNCTION_TRACE (UtInitGlobals);
+
+
+    /* Create all memory caches */
+
+    Status = AcpiUtCreateCaches ();
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Address Range lists */
+
+    for (i = 0; i < ACPI_ADDRESS_RANGE_MAX; i++)
+    {
+        AcpiGbl_AddressRangeList[i] = NULL;
+    }
+
+    /* Mutex locked flags */
+
+    for (i = 0; i < ACPI_NUM_MUTEX; i++)
+    {
+        AcpiGbl_MutexInfo[i].Mutex          = NULL;
+        AcpiGbl_MutexInfo[i].ThreadId       = ACPI_MUTEX_NOT_ACQUIRED;
+        AcpiGbl_MutexInfo[i].UseCount       = 0;
+    }
+
+    for (i = 0; i < ACPI_NUM_OWNERID_MASKS; i++)
+    {
+        AcpiGbl_OwnerIdMask[i]              = 0;
+    }
+
+    /* Last OwnerID is never valid */
+
+    AcpiGbl_OwnerIdMask[ACPI_NUM_OWNERID_MASKS - 1] = 0x80000000;
+
+    /* Event counters */
+
+    AcpiMethodCount                     = 0;
+    AcpiSciCount                        = 0;
+    AcpiGpeCount                        = 0;
+
+    for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++)
+    {
+        AcpiFixedEventCount[i]              = 0;
+    }
+
+#if (!ACPI_REDUCED_HARDWARE)
+
+    /* GPE/SCI support */
+
+    AcpiGbl_AllGpesInitialized          = FALSE;
+    AcpiGbl_GpeXruptListHead            = NULL;
+    AcpiGbl_GpeFadtBlocks[0]            = NULL;
+    AcpiGbl_GpeFadtBlocks[1]            = NULL;
+    AcpiCurrentGpeCount                 = 0;
+
+    AcpiGbl_GlobalEventHandler          = NULL;
+    AcpiGbl_SciHandlerList              = NULL;
+
+#endif /* !ACPI_REDUCED_HARDWARE */
+
+    /* Global handlers */
+
+    AcpiGbl_GlobalNotify[0].Handler     = NULL;
+    AcpiGbl_GlobalNotify[1].Handler     = NULL;
+    AcpiGbl_ExceptionHandler            = NULL;
+    AcpiGbl_InitHandler                 = NULL;
+    AcpiGbl_TableHandler                = NULL;
+    AcpiGbl_InterfaceHandler            = NULL;
+
+    /* Global Lock support */
+
+    AcpiGbl_GlobalLockSemaphore         = NULL;
+    AcpiGbl_GlobalLockMutex             = NULL;
+    AcpiGbl_GlobalLockAcquired          = FALSE;
+    AcpiGbl_GlobalLockHandle            = 0;
+    AcpiGbl_GlobalLockPresent           = FALSE;
+
+    /* Miscellaneous variables */
+
+    AcpiGbl_DSDT                        = NULL;
+    AcpiGbl_CmSingleStep                = FALSE;
+    AcpiGbl_Shutdown                    = FALSE;
+    AcpiGbl_NsLookupCount               = 0;
+    AcpiGbl_PsFindCount                 = 0;
+    AcpiGbl_AcpiHardwarePresent         = TRUE;
+    AcpiGbl_LastOwnerIdIndex            = 0;
+    AcpiGbl_NextOwnerIdOffset           = 0;
+    AcpiGbl_DebuggerConfiguration       = DEBUGGER_THREADING;
+    AcpiGbl_OsiMutex                    = NULL;
+
+    /* Hardware oriented */
+
+    AcpiGbl_EventsInitialized           = FALSE;
+    AcpiGbl_SystemAwakeAndRunning       = TRUE;
+
+    /* Namespace */
+
+    AcpiGbl_ModuleCodeList              = NULL;
+    AcpiGbl_RootNode                    = NULL;
+    AcpiGbl_RootNodeStruct.Name.Integer = ACPI_ROOT_NAME;
+    AcpiGbl_RootNodeStruct.DescriptorType = ACPI_DESC_TYPE_NAMED;
+    AcpiGbl_RootNodeStruct.Type         = ACPI_TYPE_DEVICE;
+    AcpiGbl_RootNodeStruct.Parent       = NULL;
+    AcpiGbl_RootNodeStruct.Child        = NULL;
+    AcpiGbl_RootNodeStruct.Peer         = NULL;
+    AcpiGbl_RootNodeStruct.Object       = NULL;
+
+
+#ifdef ACPI_DISASSEMBLER
+    AcpiGbl_ExternalList                = NULL;
+    AcpiGbl_NumExternalMethods          = 0;
+    AcpiGbl_ResolvedExternalMethods     = 0;
 #endif
 
-#ifndef __cdecl
-#define __cdecl
+#ifdef ACPI_DEBUG_OUTPUT
+    AcpiGbl_LowestStackPointer          = ACPI_CAST_PTR (ACPI_SIZE, ACPI_SIZE_MAX);
 #endif
 
+#ifdef ACPI_DBG_TRACK_ALLOCATIONS
+    AcpiGbl_DisplayFinalMemStats        = FALSE;
+    AcpiGbl_DisableMemTracking          = FALSE;
+#endif
 
-#endif /* __THUNDERSTORM_H__ */
+    return_ACPI_STATUS (AE_OK);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiUtTerminate
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      none
+ *
+ * DESCRIPTION: Free global memory
+ *
+ ******************************************************************************/
+
+static void
+AcpiUtTerminate (
+    void)
+{
+    ACPI_FUNCTION_TRACE (UtTerminate);
+
+    AcpiUtFreeGpeLists ();
+    AcpiUtDeleteAddressLists ();
+    return_VOID;
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtSubsystemShutdown
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Shutdown the various components. Do not delete the mutex
+ *              objects here, because the AML debugger may be still running.
+ *
+ ******************************************************************************/
+
+void
+AcpiUtSubsystemShutdown (
+    void)
+{
+    ACPI_FUNCTION_TRACE (UtSubsystemShutdown);
+
+
+    /* Just exit if subsystem is already shutdown */
+
+    if (AcpiGbl_Shutdown)
+    {
+        ACPI_ERROR ((AE_INFO, "ACPI Subsystem is already terminated"));
+        return_VOID;
+    }
+
+    /* Subsystem appears active, go ahead and shut it down */
+
+    AcpiGbl_Shutdown = TRUE;
+    AcpiGbl_StartupFlags = 0;
+    ACPI_DEBUG_PRINT ((ACPI_DB_INFO, "Shutting down ACPI Subsystem\n"));
+
+#ifndef ACPI_ASL_COMPILER
+
+    /* Close the AcpiEvent Handling */
+
+    AcpiEvTerminate ();
+
+    /* Delete any dynamic _OSI interfaces */
+
+    AcpiUtInterfaceTerminate ();
+#endif
+
+    /* Close the Namespace */
+
+    AcpiNsTerminate ();
+
+    /* Delete the ACPI tables */
+
+    AcpiTbTerminate ();
+
+    /* Close the globals */
+
+    AcpiUtTerminate ();
+
+    /* Purge the local caches */
+
+    (void) AcpiUtDeleteCaches ();
+    return_VOID;
+}

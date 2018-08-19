@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: dsinit - Object initialization namespace walk
  *
  *****************************************************************************/
 
@@ -149,184 +149,234 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acdispat.h"
+#include "acnamesp.h"
+#include "actables.h"
+#include "acinterp.h"
+
+#define _COMPONENT          ACPI_DISPATCHER
+        ACPI_MODULE_NAME    ("dsinit")
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+/* Local prototypes */
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+static ACPI_STATUS
+AcpiDsInitOneObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue);
 
 
-//#define ACPI_USE_SYSTEM_INTTYPES
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsInitOneObject
+ *
+ * PARAMETERS:  ObjHandle       - Node for the object
+ *              Level           - Current nesting level
+ *              Context         - Points to a init info struct
+ *              ReturnValue     - Not used
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Callback from AcpiWalkNamespace. Invoked for every object
+ *              within the namespace.
+ *
+ *              Currently, the only objects that require initialization are:
+ *              1) Methods
+ *              2) Operation Regions
+ *
+ ******************************************************************************/
 
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+static ACPI_STATUS
+AcpiDsInitOneObject (
+    ACPI_HANDLE             ObjHandle,
+    UINT32                  Level,
+    void                    *Context,
+    void                    **ReturnValue)
+{
+    ACPI_INIT_WALK_INFO     *Info = (ACPI_INIT_WALK_INFO *) Context;
+    ACPI_NAMESPACE_NODE     *Node = (ACPI_NAMESPACE_NODE *) ObjHandle;
+    ACPI_STATUS             Status;
+    ACPI_OPERAND_OBJECT     *ObjDesc;
 
 
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+    ACPI_FUNCTION_ENTRY ();
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+    /*
+     * We are only interested in NS nodes owned by the table that
+     * was just loaded
+     */
+    if (Node->OwnerId != Info->OwnerId)
+    {
+        return (AE_OK);
+    }
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
+    Info->ObjectCount++;
 
-/* Define/disable kernel-specific declarators */
+    /* And even then, we are only interested in a few object types */
 
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
+    switch (AcpiNsGetType (ObjHandle))
+    {
+    case ACPI_TYPE_REGION:
 
-/* Host-dependent types and defines for user-space ACPICA */
+        Status = AcpiDsInitializeRegion (ObjHandle);
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_EXCEPTION ((AE_INFO, Status,
+                "During Region initialization %p [%4.4s]",
+                ObjHandle, AcpiUtGetNodeName (ObjHandle)));
+        }
 
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
+        Info->OpRegionCount++;
+        break;
 
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
+    case ACPI_TYPE_METHOD:
+        /*
+         * Auto-serialization support. We will examine each method that is
+         * NotSerialized to determine if it creates any Named objects. If
+         * it does, it will be marked serialized to prevent problems if
+         * the method is entered by two or more threads and an attempt is
+         * made to create the same named object twice -- which results in
+         * an AE_ALREADY_EXISTS exception and method abort.
+         */
+        Info->MethodCount++;
+        ObjDesc = AcpiNsGetAttachedObject (Node);
+        if (!ObjDesc)
+        {
+            break;
+        }
 
-#ifndef __cdecl
-#define __cdecl
-#endif
+        /* Ignore if already serialized */
+
+        if (ObjDesc->Method.InfoFlags & ACPI_METHOD_SERIALIZED)
+        {
+            Info->SerialMethodCount++;
+            break;
+        }
+
+        if (AcpiGbl_AutoSerializeMethods)
+        {
+            /* Parse/scan method and serialize it if necessary */
+
+            AcpiDsAutoSerializeMethod (Node, ObjDesc);
+            if (ObjDesc->Method.InfoFlags & ACPI_METHOD_SERIALIZED)
+            {
+                /* Method was just converted to Serialized */
+
+                Info->SerialMethodCount++;
+                Info->SerializedMethodCount++;
+                break;
+            }
+        }
+
+        Info->NonSerialMethodCount++;
+        break;
+
+    case ACPI_TYPE_DEVICE:
+
+        Info->DeviceCount++;
+        break;
+
+    default:
+
+        break;
+    }
+
+    /*
+     * We ignore errors from above, and always return OK, since
+     * we don't want to abort the walk on a single error.
+     */
+    return (AE_OK);
+}
 
 
-#endif /* __THUNDERSTORM_H__ */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiDsInitializeObjects
+ *
+ * PARAMETERS:  TableDesc       - Descriptor for parent ACPI table
+ *              StartNode       - Root of subtree to be initialized.
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk the namespace starting at "StartNode" and perform any
+ *              necessary initialization on the objects found therein
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiDsInitializeObjects (
+    UINT32                  TableIndex,
+    ACPI_NAMESPACE_NODE     *StartNode)
+{
+    ACPI_STATUS             Status;
+    ACPI_INIT_WALK_INFO     Info;
+    ACPI_TABLE_HEADER       *Table;
+    ACPI_OWNER_ID           OwnerId;
+
+
+    ACPI_FUNCTION_TRACE (DsInitializeObjects);
+
+
+    Status = AcpiTbGetOwnerId (TableIndex, &OwnerId);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH,
+        "**** Starting initialization of namespace objects ****\n"));
+
+    /* Set all init info to zero */
+
+    memset (&Info, 0, sizeof (ACPI_INIT_WALK_INFO));
+
+    Info.OwnerId = OwnerId;
+    Info.TableIndex = TableIndex;
+
+    /* Walk entire namespace from the supplied root */
+
+    /*
+     * We don't use AcpiWalkNamespace since we do not want to acquire
+     * the namespace reader lock.
+     */
+    Status = AcpiNsWalkNamespace (ACPI_TYPE_ANY, StartNode, ACPI_UINT32_MAX,
+        ACPI_NS_WALK_NO_UNLOCK, AcpiDsInitOneObject, NULL, &Info, NULL);
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "During WalkNamespace"));
+    }
+
+    Status = AcpiGetTableByIndex (TableIndex, &Table);
+    if (ACPI_FAILURE (Status))
+    {
+        return_ACPI_STATUS (Status);
+    }
+
+    /* DSDT is always the first AML table */
+
+    if (ACPI_COMPARE_NAME (Table->Signature, ACPI_SIG_DSDT))
+    {
+        ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
+            "\nInitializing Namespace objects:\n"));
+    }
+
+    /* Summary of objects initialized */
+
+    ACPI_DEBUG_PRINT_RAW ((ACPI_DB_INIT,
+        "Table [%4.4s: %-8.8s] (id %.2X) - %4u Objects with %3u Devices, "
+        "%3u Regions, %4u Methods (%u/%u/%u Serial/Non/Cvt)\n",
+        Table->Signature, Table->OemTableId, OwnerId, Info.ObjectCount,
+        Info.DeviceCount,Info.OpRegionCount, Info.MethodCount,
+        Info.SerialMethodCount, Info.NonSerialMethodCount,
+        Info.SerializedMethodCount));
+
+    ACPI_DEBUG_PRINT ((ACPI_DB_DISPATCH, "%u Methods, %u Regions\n",
+        Info.MethodCount, Info.OpRegionCount));
+
+    return_ACPI_STATUS (AE_OK);
+}

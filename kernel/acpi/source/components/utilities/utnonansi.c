@@ -1,8 +1,8 @@
-/******************************************************************************
+/*******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: utnonansi - Non-ansi C library functions
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -149,184 +149,212 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
-
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
-
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
-
-
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utnonansi")
 
 /*
- * Overrides for in-kernel ACPICA
+ * Non-ANSI C library functions - strlwr, strupr, stricmp, and "safe"
+ * string functions.
  */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
 
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStrlwr (strlwr)
+ *
+ * PARAMETERS:  SrcString       - The source string to convert
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Convert a string to lowercase
+ *
+ ******************************************************************************/
 
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+void
+AcpiUtStrlwr (
+    char                    *SrcString)
+{
+    char                    *String;
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+    ACPI_FUNCTION_ENTRY ();
 
-#ifdef ACPI_USE_STANDARD_HEADERS
+
+    if (!SrcString)
+    {
+        return;
+    }
+
+    /* Walk entire string, lowercasing the letters */
+
+    for (String = SrcString; *String; String++)
+    {
+        *String = (char) tolower ((int) *String);
+    }
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStrupr (strupr)
+ *
+ * PARAMETERS:  SrcString       - The source string to convert
+ *
+ * RETURN:      None
+ *
+ * DESCRIPTION: Convert a string to uppercase
+ *
+ ******************************************************************************/
+
+void
+AcpiUtStrupr (
+    char                    *SrcString)
+{
+    char                    *String;
+
+
+    ACPI_FUNCTION_ENTRY ();
+
+
+    if (!SrcString)
+    {
+        return;
+    }
+
+    /* Walk entire string, uppercasing the letters */
+
+    for (String = SrcString; *String; String++)
+    {
+        *String = (char) toupper ((int) *String);
+    }
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiUtStricmp (stricmp)
+ *
+ * PARAMETERS:  String1             - first string to compare
+ *              String2             - second string to compare
+ *
+ * RETURN:      int that signifies string relationship. Zero means strings
+ *              are equal.
+ *
+ * DESCRIPTION: Case-insensitive string compare. Implementation of the
+ *              non-ANSI stricmp function.
+ *
+ ******************************************************************************/
+
+int
+AcpiUtStricmp (
+    char                    *String1,
+    char                    *String2)
+{
+    int                     c1;
+    int                     c2;
+
+
+    do
+    {
+        c1 = tolower ((int) *String1);
+        c2 = tolower ((int) *String2);
+
+        String1++;
+        String2++;
+    }
+    while ((c1 == c2) && (c1));
+
+    return (c1 - c2);
+}
+
+
+#if defined (ACPI_DEBUGGER) || defined (ACPI_APPLICATION) || defined (ACPI_DEBUG_OUTPUT)
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiUtSafeStrcpy, AcpiUtSafeStrcat, AcpiUtSafeStrncat
+ *
+ * PARAMETERS:  Adds a "DestSize" parameter to each of the standard string
+ *              functions. This is the size of the Destination buffer.
+ *
+ * RETURN:      TRUE if the operation would overflow the destination buffer.
+ *
+ * DESCRIPTION: Safe versions of standard Clib string functions. Ensure that
+ *              the result of the operation will not overflow the output string
+ *              buffer.
+ *
+ * NOTE:        These functions are typically only helpful for processing
+ *              user input and command lines. For most ACPICA code, the
+ *              required buffer length is precisely calculated before buffer
+ *              allocation, so the use of these functions is unnecessary.
+ *
+ ******************************************************************************/
+
+BOOLEAN
+AcpiUtSafeStrcpy (
+    char                    *Dest,
+    ACPI_SIZE               DestSize,
+    char                    *Source)
+{
+
+    if (strlen (Source) >= DestSize)
+    {
+        return (TRUE);
+    }
+
+    strcpy (Dest, Source);
+    return (FALSE);
+}
+
+BOOLEAN
+AcpiUtSafeStrcat (
+    char                    *Dest,
+    ACPI_SIZE               DestSize,
+    char                    *Source)
+{
+
+    if ((strlen (Dest) + strlen (Source)) >= DestSize)
+    {
+        return (TRUE);
+    }
+
+    strcat (Dest, Source);
+    return (FALSE);
+}
+
+BOOLEAN
+AcpiUtSafeStrncat (
+    char                    *Dest,
+    ACPI_SIZE               DestSize,
+    char                    *Source,
+    ACPI_SIZE               MaxTransferLength)
+{
+    ACPI_SIZE               ActualTransferLength;
+
+
+    ActualTransferLength = ACPI_MIN (MaxTransferLength, strlen (Source));
+
+    if ((strlen (Dest) + ActualTransferLength) >= DestSize)
+    {
+        return (TRUE);
+    }
+
+    strncat (Dest, Source, MaxTransferLength);
+    return (FALSE);
+}
+
+void
+AcpiUtSafeStrncpy (
+    char                    *Dest,
+    char                    *Source,
+    ACPI_SIZE               DestSize)
+{
+    /* Always terminate destination string */
+
+    strncpy (Dest, Source, DestSize);
+    Dest[DestSize - 1] = 0;
+}
+
 #endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
-
-
-#endif /* __THUNDERSTORM_H__ */

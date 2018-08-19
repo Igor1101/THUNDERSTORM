@@ -1,8 +1,9 @@
-/******************************************************************************
+/*******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: evsci - System Control Interrupt configuration and
+ *                      legacy to ACPI mode state transition functions
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /******************************************************************************
  *
@@ -61,6 +62,7 @@
  * license from Licensee to its licensee is limited to the intellectual
  * property embodied in the software Licensee provides to its licensee, and
  * not to intellectual property embodied in modifications its licensee may
+
  * make.
  *
  * 3.3. Redistribution of Executable. Redistribution in executable form of any
@@ -149,184 +151,241 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#include "acpi.h"
+#include "accommon.h"
+#include "acevents.h"
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+#define _COMPONENT          ACPI_EVENTS
+        ACPI_MODULE_NAME    ("evsci")
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
 
-/* Common (in-kernel/user-space) ACPICA configuration */
+/* Local prototypes */
 
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
+static UINT32 ACPI_SYSTEM_XFACE
+AcpiEvSciXruptHandler (
+    void                    *Context);
 
 
-//#define ACPI_USE_SYSTEM_INTTYPES
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvSciDispatch
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status code indicates whether interrupt was handled.
+ *
+ * DESCRIPTION: Dispatch the SCI to all host-installed SCI handlers.
+ *
+ ******************************************************************************/
 
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+UINT32
+AcpiEvSciDispatch (
+    void)
+{
+    ACPI_SCI_HANDLER_INFO   *SciHandler;
+    ACPI_CPU_FLAGS          Flags;
+    UINT32                  IntStatus = ACPI_INTERRUPT_NOT_HANDLED;
 
 
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+    ACPI_FUNCTION_NAME (EvSciDispatch);
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+    /* Are there any host-installed SCI handlers? */
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
+    if (!AcpiGbl_SciHandlerList)
+    {
+        return (IntStatus);
+    }
 
-/* Define/disable kernel-specific declarators */
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
 
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
+    /* Invoke all host-installed SCI handlers */
 
-/* Host-dependent types and defines for user-space ACPICA */
+    SciHandler = AcpiGbl_SciHandlerList;
+    while (SciHandler)
+    {
+        /* Invoke the installed handler (at interrupt level) */
 
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
+        IntStatus |= SciHandler->Address (
+            SciHandler->Context);
 
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
+        SciHandler = SciHandler->Next;
+    }
 
-#ifndef __cdecl
-#define __cdecl
-#endif
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+    return (IntStatus);
+}
 
 
-#endif /* __THUNDERSTORM_H__ */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvSciXruptHandler
+ *
+ * PARAMETERS:  Context   - Calling Context
+ *
+ * RETURN:      Status code indicates whether interrupt was handled.
+ *
+ * DESCRIPTION: Interrupt handler that will figure out what function or
+ *              control method to call to deal with a SCI.
+ *
+ ******************************************************************************/
+
+static UINT32 ACPI_SYSTEM_XFACE
+AcpiEvSciXruptHandler (
+    void                    *Context)
+{
+    ACPI_GPE_XRUPT_INFO     *GpeXruptList = Context;
+    UINT32                  InterruptHandled = ACPI_INTERRUPT_NOT_HANDLED;
+
+
+    ACPI_FUNCTION_TRACE (EvSciXruptHandler);
+
+
+    /*
+     * We are guaranteed by the ACPICA initialization/shutdown code that
+     * if this interrupt handler is installed, ACPI is enabled.
+     */
+
+    /*
+     * Fixed Events:
+     * Check for and dispatch any Fixed Events that have occurred
+     */
+    InterruptHandled |= AcpiEvFixedEventDetect ();
+
+    /*
+     * General Purpose Events:
+     * Check for and dispatch any GPEs that have occurred
+     */
+    InterruptHandled |= AcpiEvGpeDetect (GpeXruptList);
+
+    /* Invoke all host-installed SCI handlers */
+
+    InterruptHandled |= AcpiEvSciDispatch ();
+
+    AcpiSciCount++;
+    return_UINT32 (InterruptHandled);
+}
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEvGpeXruptHandler
+ *
+ * PARAMETERS:  Context   - Calling Context
+ *
+ * RETURN:      Status code indicates whether interrupt was handled.
+ *
+ * DESCRIPTION: Handler for GPE Block Device interrupts
+ *
+ ******************************************************************************/
+
+UINT32 ACPI_SYSTEM_XFACE
+AcpiEvGpeXruptHandler (
+    void                    *Context)
+{
+    ACPI_GPE_XRUPT_INFO     *GpeXruptList = Context;
+    UINT32                  InterruptHandled = ACPI_INTERRUPT_NOT_HANDLED;
+
+
+    ACPI_FUNCTION_TRACE (EvGpeXruptHandler);
+
+
+    /*
+     * We are guaranteed by the ACPICA initialization/shutdown code that
+     * if this interrupt handler is installed, ACPI is enabled.
+     */
+
+    /* GPEs: Check for and dispatch any GPEs that have occurred */
+
+    InterruptHandled |= AcpiEvGpeDetect (GpeXruptList);
+    return_UINT32 (InterruptHandled);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEvInstallSciHandler
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Installs SCI handler.
+ *
+ ******************************************************************************/
+
+UINT32
+AcpiEvInstallSciHandler (
+    void)
+{
+    UINT32                  Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE (EvInstallSciHandler);
+
+
+    Status = AcpiOsInstallInterruptHandler ((UINT32) AcpiGbl_FADT.SciInterrupt,
+        AcpiEvSciXruptHandler, AcpiGbl_GpeXruptListHead);
+    return_ACPI_STATUS (Status);
+}
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiEvRemoveAllSciHandlers
+ *
+ * PARAMETERS:  none
+ *
+ * RETURN:      AE_OK if handler uninstalled, AE_ERROR if handler was not
+ *              installed to begin with
+ *
+ * DESCRIPTION: Remove the SCI interrupt handler. No further SCIs will be
+ *              taken. Remove all host-installed SCI handlers.
+ *
+ * Note:  It doesn't seem important to disable all events or set the event
+ *        enable registers to their original values. The OS should disable
+ *        the SCI interrupt level when the handler is removed, so no more
+ *        events will come in.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiEvRemoveAllSciHandlers (
+    void)
+{
+    ACPI_SCI_HANDLER_INFO   *SciHandler;
+    ACPI_CPU_FLAGS          Flags;
+    ACPI_STATUS             Status;
+
+
+    ACPI_FUNCTION_TRACE (EvRemoveAllSciHandlers);
+
+
+    /* Just let the OS remove the handler and disable the level */
+
+    Status = AcpiOsRemoveInterruptHandler ((UINT32) AcpiGbl_FADT.SciInterrupt,
+        AcpiEvSciXruptHandler);
+
+    if (!AcpiGbl_SciHandlerList)
+    {
+        return (Status);
+    }
+
+    Flags = AcpiOsAcquireLock (AcpiGbl_GpeLock);
+
+    /* Free all host-installed SCI handlers */
+
+    while (AcpiGbl_SciHandlerList)
+    {
+        SciHandler = AcpiGbl_SciHandlerList;
+        AcpiGbl_SciHandlerList = SciHandler->Next;
+        ACPI_FREE (SciHandler);
+    }
+
+    AcpiOsReleaseLock (AcpiGbl_GpeLock, Flags);
+    return_ACPI_STATUS (Status);
+}
+
+#endif /* !ACPI_REDUCED_HARDWARE */

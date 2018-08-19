@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Module Name: utxfinit - External interfaces for ACPICA initialization
  *
  *****************************************************************************/
 
@@ -149,184 +149,288 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#define EXPORT_ACPI_INTERFACES
+
+#include "acpi.h"
+#include "accommon.h"
+#include "acevents.h"
+#include "acnamesp.h"
+#include "acdebug.h"
+#include "actables.h"
+
+#define _COMPONENT          ACPI_UTILITIES
+        ACPI_MODULE_NAME    ("utxfinit")
+
+/* For AcpiExec only */
+void
+AeDoObjectOverrides (
+    void);
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiInitializeSubsystem
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Initializes all global variables. This is the first function
+ *              called, so any early initialization belongs here.
+ *
+ ******************************************************************************/
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
-
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+ACPI_STATUS ACPI_INIT_FUNCTION
+AcpiInitializeSubsystem (
+    void)
+{
+    ACPI_STATUS             Status;
 
 
-/* Generating stubs for configurable ACPICA functions */
-
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
-
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
-
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+    ACPI_FUNCTION_TRACE (AcpiInitializeSubsystem);
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+    AcpiGbl_StartupFlags = ACPI_SUBSYSTEM_INITIALIZE;
+    ACPI_DEBUG_EXEC (AcpiUtInitStackPtrTrace ());
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
+    /* Initialize the OS-Dependent layer */
 
-/* Define/disable kernel-specific declarators */
+    Status = AcpiOsInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "During OSL initialization"));
+        return_ACPI_STATUS (Status);
+    }
 
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
+    /* Initialize all globals used by the subsystem */
 
-/* Host-dependent types and defines for user-space ACPICA */
+    Status = AcpiUtInitGlobals ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "During initialization of globals"));
+        return_ACPI_STATUS (Status);
+    }
 
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
+    /* Create the default mutex objects */
 
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
+    Status = AcpiUtMutexInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "During Global Mutex creation"));
+        return_ACPI_STATUS (Status);
+    }
 
-#ifndef __cdecl
-#define __cdecl
-#endif
+    /*
+     * Initialize the namespace manager and
+     * the root of the namespace tree
+     */
+    Status = AcpiNsRootInitialize ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "During Namespace initialization"));
+        return_ACPI_STATUS (Status);
+    }
+
+    /* Initialize the global OSI interfaces list with the static names */
+
+    Status = AcpiUtInitializeInterfaces ();
+    if (ACPI_FAILURE (Status))
+    {
+        ACPI_EXCEPTION ((AE_INFO, Status, "During OSI interfaces initialization"));
+        return_ACPI_STATUS (Status);
+    }
+
+    return_ACPI_STATUS (AE_OK);
+}
+
+ACPI_EXPORT_SYMBOL_INIT (AcpiInitializeSubsystem)
 
 
-#endif /* __THUNDERSTORM_H__ */
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiEnableSubsystem
+ *
+ * PARAMETERS:  Flags               - Init/enable Options
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Completes the subsystem initialization including hardware.
+ *              Puts system into ACPI mode if it isn't already.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS ACPI_INIT_FUNCTION
+AcpiEnableSubsystem (
+    UINT32                  Flags)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE (AcpiEnableSubsystem);
+
+
+    /*
+     * The early initialization phase is complete. The namespace is loaded,
+     * and we can now support address spaces other than Memory, I/O, and
+     * PCI_Config.
+     */
+    AcpiGbl_EarlyInitialization = FALSE;
+
+#if (!ACPI_REDUCED_HARDWARE)
+
+    /* Enable ACPI mode */
+
+    if (!(Flags & ACPI_NO_ACPI_ENABLE))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC, "[Init] Going into ACPI mode\n"));
+
+        AcpiGbl_OriginalMode = AcpiHwGetMode();
+
+        Status = AcpiEnable ();
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_WARNING ((AE_INFO, "AcpiEnable failed"));
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * Obtain a permanent mapping for the FACS. This is required for the
+     * Global Lock and the Firmware Waking Vector
+     */
+    if (!(Flags & ACPI_NO_FACS_INIT))
+    {
+        Status = AcpiTbInitializeFacs ();
+        if (ACPI_FAILURE (Status))
+        {
+            ACPI_WARNING ((AE_INFO, "Could not map the FACS table"));
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * Initialize ACPI Event handling (Fixed and General Purpose)
+     *
+     * Note1: We must have the hardware and events initialized before we can
+     * execute any control methods safely. Any control method can require
+     * ACPI hardware support, so the hardware must be fully initialized before
+     * any method execution!
+     *
+     * Note2: Fixed events are initialized and enabled here. GPEs are
+     * initialized, but cannot be enabled until after the hardware is
+     * completely initialized (SCI and GlobalLock activated) and the various
+     * initialization control methods are run (_REG, _STA, _INI) on the
+     * entire namespace.
+     */
+    if (!(Flags & ACPI_NO_EVENT_INIT))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "[Init] Initializing ACPI events\n"));
+
+        Status = AcpiEvInitializeEvents ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * Install the SCI handler and Global Lock handler. This completes the
+     * hardware initialization.
+     */
+    if (!(Flags & ACPI_NO_HANDLER_INIT))
+    {
+        ACPI_DEBUG_PRINT ((ACPI_DB_EXEC,
+            "[Init] Installing SCI/GL handlers\n"));
+
+        Status = AcpiEvInstallXruptHandlers ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+#endif /* !ACPI_REDUCED_HARDWARE */
+
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL_INIT (AcpiEnableSubsystem)
+
+
+/*******************************************************************************
+ *
+ * FUNCTION:    AcpiInitializeObjects
+ *
+ * PARAMETERS:  Flags               - Init/enable Options
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Completes namespace initialization by initializing device
+ *              objects and executing AML code for Regions, buffers, etc.
+ *
+ ******************************************************************************/
+
+ACPI_STATUS ACPI_INIT_FUNCTION
+AcpiInitializeObjects (
+    UINT32                  Flags)
+{
+    ACPI_STATUS             Status = AE_OK;
+
+
+    ACPI_FUNCTION_TRACE (AcpiInitializeObjects);
+
+
+    /*
+     * This case handles the legacy option that groups all module-level
+     * code blocks together and defers execution until all of the tables
+     * are loaded. Execute all of these blocks at this time.
+     * Execute any module-level code that was detected during the table
+     * load phase.
+     *
+     * Note: this option is deprecated and will be eliminated in the
+     * future. Use of this option can cause problems with AML code that
+     * depends upon in-order immediate execution of module-level code.
+     */
+    AcpiNsExecModuleCodeList ();
+
+    /*
+     * Initialize the objects that remain uninitialized. This
+     * runs the executable AML that may be part of the
+     * declaration of these objects:
+     * OperationRegions, BufferFields, Buffers, and Packages.
+     */
+    if (!(Flags & ACPI_NO_OBJECT_INIT))
+    {
+        Status = AcpiNsInitializeObjects ();
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * Initialize all device/region objects in the namespace. This runs
+     * the device _STA and _INI methods and region _REG methods.
+     */
+    if (!(Flags & (ACPI_NO_DEVICE_INIT | ACPI_NO_ADDRESS_SPACE_INIT)))
+    {
+        Status = AcpiNsInitializeDevices (Flags);
+        if (ACPI_FAILURE (Status))
+        {
+            return_ACPI_STATUS (Status);
+        }
+    }
+
+    /*
+     * Empty the caches (delete the cached objects) on the assumption that
+     * the table load filled them up more than they will be at runtime --
+     * thus wasting non-paged memory.
+     */
+    Status = AcpiPurgeCachedObjects ();
+
+    AcpiGbl_StartupFlags |= ACPI_INITIALIZED_OK;
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL_INIT (AcpiInitializeObjects)

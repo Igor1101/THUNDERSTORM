@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Name: acTHUNDERSTORM.h - OS specific defines, etc. for THUNDERSTORM
+ * Name: hwtimer.c - ACPI Power Management Timer Interface
  *
  *****************************************************************************/
 
@@ -149,184 +149,200 @@
  *
  *****************************************************************************/
 
- // TODO : remove linux staff from here
-#ifndef __ACTHUNDERSTORM_H__
-#define __ACTHUNDERSTORM_H__
+#define EXPORT_ACPI_INTERFACES
+
+#include "acpi.h"
+#include "accommon.h"
+
+#define _COMPONENT          ACPI_HARDWARE
+        ACPI_MODULE_NAME    ("hwtimer")
 
 
-/* ACPICA external files should not include ACPICA headers directly. */
+#if (!ACPI_REDUCED_HARDWARE) /* Entire module */
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiGetTimerResolution
+ *
+ * PARAMETERS:  Resolution          - Where the resolution is returned
+ *
+ * RETURN:      Status and timer resolution
+ *
+ * DESCRIPTION: Obtains resolution of the ACPI PM Timer (24 or 32 bits).
+ *
+ ******************************************************************************/
 
- /*
-#if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
-#error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
-#endif
-*/
-
-/* Common (in-kernel/user-space) ACPICA configuration */
-
-#define ACPI_USE_SYSTEM_CLIBRARY
-#define ACPI_USE_DO_WHILE_0
-#define ACPI_IGNORE_PACKAGE_RESOLUTION_ERRORS
-
-#define ACPI_CACHE_T                ACPI_MEMORY_LIST
-#define ACPI_USE_LOCAL_CACHE        1
-
-
-//#define ACPI_USE_SYSTEM_INTTYPES
-
-//#define ACPI_USE_GPE_POLLING
-
-/* Kernel specific ACPICA configuration */
-
-#ifdef CONFIG_ACPI_REDUCED_HARDWARE_ONLY
-#define ACPI_REDUCED_HARDWARE 1
-#endif
-
-#ifdef CONFIG_ACPI_DEBUGGER
-#define ACPI_DEBUGGER
-#endif
-
-#ifdef CONFIG_ACPI_DEBUG
-#define ACPI_MUTEX_DEBUG
-#endif
-
-#include <linux/kernel.h>
-#ifdef EXPORT_ACPI_INTERFACES
-#endif
-#ifdef CONFIG_ACPI
-#endif
-
-#define ACPI_INIT_FUNCTION __init
-
-//#ifndef CONFIG_ACPI
-
-/* External globals for __KERNEL__, stubs is needed */
-
-/* Generating stubs for configurable ACPICA macros */
-
-//#define ACPI_NO_MEM_ALLOCATIONS
+ACPI_STATUS
+AcpiGetTimerResolution (
+    UINT32                  *Resolution)
+{
+    ACPI_FUNCTION_TRACE (AcpiGetTimerResolution);
 
 
-/* Generating stubs for configurable ACPICA functions */
+    if (!Resolution)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
 
-//#define ACPI_NO_ERROR_MESSAGES
-#ifdef ACPI_DEBUG_OUTPUT
-#define ACPI_DEBUG_OUTPUT
-#endif
-/* External interface for __KERNEL__, stub is needed */
+    if ((AcpiGbl_FADT.Flags & ACPI_FADT_32BIT_TIMER) == 0)
+    {
+        *Resolution = 24;
+    }
+    else
+    {
+        *Resolution = 32;
+    }
 
- 
- /*
-#define ACPI_EXTERNAL_RETURN_STATUS(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_NOT_CONFIGURED);}
-#define ACPI_EXTERNAL_RETURN_OK(Prototype) \
-    static extern ACPI_INLINE Prototype {return(AE_OK);}
-#define ACPI_EXTERNAL_RETURN_VOID(Prototype) \
-    static extern ACPI_INLINE Prototype {return;}
-#define ACPI_EXTERNAL_RETURN_UINT32(Prototype) \
-    static extern ACPI_INLINE Prototype {return(0);}
-#define ACPI_EXTERNAL_RETURN_PTR(Prototype) \
-    static ACPI_INLINE Prototype {return(NULL);}
-*/
-//#endif /* CONFIG_ACPI */
+    return_ACPI_STATUS (AE_OK);
+}
 
-/* Host-dependent types and defines for in-kernel ACPICA */
-
-//#define ACPI_USE_NATIVE_MATH64
-//#define ACPI_EXPORT_SYMBOL(symbol)  EXPORT_SYMBOL(symbol);
-//#define strtoul                     simple_strtoul
-
-//#define ACPI_CACHE_T                struct kmem_cache
-//#define ACPI_SPINLOCK               spinlock_t *
-#define ACPI_CPU_FLAGS              unsigned long
-
-/* Use native linux version of AcpiOsAllocateZeroed */
-
-#define USE_NATIVE_ALLOCATE_ZEROED
-
-/*
- * Overrides for in-kernel ACPICA
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
-
-/*
- * OSL interfaces used by debugger/disassembler
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsReadable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsWritable
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitializeDebugger
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminateDebugger
-
-/*
- * OSL interfaces used by utilities
- */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsRedirectOutput
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByName
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByIndex
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetTableByAddress
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsOpenDirectory
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetNextFilename
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCloseDirectory
-
-#define ACPI_MSG_ERROR          KERN_ERR "ACPI Error: "
-#define ACPI_MSG_EXCEPTION      KERN_ERR "ACPI Exception: "
-#define ACPI_MSG_WARNING        KERN_WARNING "ACPI Warning: "
-#define ACPI_MSG_INFO           KERN_INFO "ACPI: "
-
-#define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
-#define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
-
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
-#define ACPI_STRUCT_INIT(field, value)  .field = value
+ACPI_EXPORT_SYMBOL (AcpiGetTimerResolution)
 
 
-//#define ACPI_USE_STANDARD_HEADERS
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiGetTimer
+ *
+ * PARAMETERS:  Ticks               - Where the timer value is returned
+ *
+ * RETURN:      Status and current timer value (ticks)
+ *
+ * DESCRIPTION: Obtains current value of ACPI PM Timer (in ticks).
+ *
+ ******************************************************************************/
 
-#ifdef ACPI_USE_STANDARD_HEADERS
-#endif
-
-/* Define/disable kernel-specific declarators */
-
-#ifndef __init
-#define __init
-#endif
-#ifndef __iomem
-#define __iomem
-#endif
-
-/* Host-dependent types and defines for user-space ACPICA */
-
-#define ACPI_FLUSH_CPU_CACHE()
-#define ACPI_CAST_PTHREAD_T(Pthread) ((ACPI_THREAD_ID) (Pthread))
-
-#if defined(__ia64__)    || (defined(__x86_64__) && !defined(__ILP32__)) ||\
-    defined(__aarch64__) || defined(__PPC64__) ||\
-    defined(__s390x__)
-#define ACPI_MACHINE_WIDTH          64
-#define COMPILER_DEPENDENT_INT64    long
-#define COMPILER_DEPENDENT_UINT64   unsigned long
-#else
-#define ACPI_MACHINE_WIDTH          32
-#define COMPILER_DEPENDENT_INT64    long long
-#define COMPILER_DEPENDENT_UINT64   unsigned long long
-#define ACPI_USE_NATIVE_DIVIDE
-#define ACPI_USE_NATIVE_MATH64
-#endif
-
-#ifndef __cdecl
-#define __cdecl
-#endif
+ACPI_STATUS
+AcpiGetTimer (
+    UINT32                  *Ticks)
+{
+    ACPI_STATUS             Status;
+    UINT64                  TimerValue;
 
 
-#endif /* __THUNDERSTORM_H__ */
+    ACPI_FUNCTION_TRACE (AcpiGetTimer);
+
+
+    if (!Ticks)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* ACPI 5.0A: PM Timer is optional */
+
+    if (!AcpiGbl_FADT.XPmTimerBlock.Address)
+    {
+        return_ACPI_STATUS (AE_SUPPORT);
+    }
+
+    Status = AcpiHwRead (&TimerValue, &AcpiGbl_FADT.XPmTimerBlock);
+    if (ACPI_SUCCESS (Status))
+    {
+        /* ACPI PM Timer is defined to be 32 bits (PM_TMR_LEN) */
+
+        *Ticks = (UINT32) TimerValue;
+    }
+
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiGetTimer)
+
+
+/******************************************************************************
+ *
+ * FUNCTION:    AcpiGetTimerDuration
+ *
+ * PARAMETERS:  StartTicks          - Starting timestamp
+ *              EndTicks            - End timestamp
+ *              TimeElapsed         - Where the elapsed time is returned
+ *
+ * RETURN:      Status and TimeElapsed
+ *
+ * DESCRIPTION: Computes the time elapsed (in microseconds) between two
+ *              PM Timer time stamps, taking into account the possibility of
+ *              rollovers, the timer resolution, and timer frequency.
+ *
+ *              The PM Timer's clock ticks at roughly 3.6 times per
+ *              _microsecond_, and its clock continues through Cx state
+ *              transitions (unlike many CPU timestamp counters) -- making it
+ *              a versatile and accurate timer.
+ *
+ *              Note that this function accommodates only a single timer
+ *              rollover. Thus for 24-bit timers, this function should only
+ *              be used for calculating durations less than ~4.6 seconds
+ *              (~20 minutes for 32-bit timers) -- calculations below:
+ *
+ *              2**24 Ticks / 3,600,000 Ticks/Sec = 4.66 sec
+ *              2**32 Ticks / 3,600,000 Ticks/Sec = 1193 sec or 19.88 minutes
+ *
+ ******************************************************************************/
+
+ACPI_STATUS
+AcpiGetTimerDuration (
+    UINT32                  StartTicks,
+    UINT32                  EndTicks,
+    UINT32                  *TimeElapsed)
+{
+    ACPI_STATUS             Status;
+    UINT64                  DeltaTicks;
+    UINT64                  Quotient;
+
+
+    ACPI_FUNCTION_TRACE (AcpiGetTimerDuration);
+
+
+    if (!TimeElapsed)
+    {
+        return_ACPI_STATUS (AE_BAD_PARAMETER);
+    }
+
+    /* ACPI 5.0A: PM Timer is optional */
+
+    if (!AcpiGbl_FADT.XPmTimerBlock.Address)
+    {
+        return_ACPI_STATUS (AE_SUPPORT);
+    }
+
+    if (StartTicks == EndTicks)
+    {
+        *TimeElapsed = 0;
+        return_ACPI_STATUS (AE_OK);
+    }
+
+    /*
+     * Compute Tick Delta:
+     * Handle (max one) timer rollovers on 24-bit versus 32-bit timers.
+     */
+    DeltaTicks = EndTicks;
+    if (StartTicks > EndTicks)
+    {
+        if ((AcpiGbl_FADT.Flags & ACPI_FADT_32BIT_TIMER) == 0)
+        {
+            /* 24-bit Timer */
+
+            DeltaTicks |= (UINT64) 1 << 24;
+        }
+        else
+        {
+            /* 32-bit Timer */
+
+            DeltaTicks |= (UINT64) 1 << 32;
+        }
+    }
+    DeltaTicks -= StartTicks;
+
+    /*
+     * Compute Duration (Requires a 64-bit multiply and divide):
+     *
+     * TimeElapsed (microseconds) =
+     *  (DeltaTicks * ACPI_USEC_PER_SEC) / ACPI_PM_TIMER_FREQUENCY;
+     */
+    Status = AcpiUtShortDivide (DeltaTicks * ACPI_USEC_PER_SEC,
+                ACPI_PM_TIMER_FREQUENCY, &Quotient, NULL);
+
+    *TimeElapsed = (UINT32) Quotient;
+    return_ACPI_STATUS (Status);
+}
+
+ACPI_EXPORT_SYMBOL (AcpiGetTimerDuration)
+
+#endif /* !ACPI_REDUCED_HARDWARE */

@@ -94,9 +94,13 @@ libc: initialize
 iso: kernel
 	@if [ -e  $(CDROMIMAGE) ]; then rm $(CDROMIMAGE) ; fi
 	@if [ -e  /tmp/.THUNDERSTORM ]; then rm -r /tmp/.THUNDERSTORM ; fi
-	mkdir /tmp/.THUNDERSTORM
-	cp -r ./boot /tmp/.THUNDERSTORM
-	grub-mkrescue  \
+	if [ -f /usr/bin/grub2-mkrescue ] ; \
+		then MKISOIMAGE=/usr/bin/grub2-mkrescue;\
+		else MKISOIMAGE=/usr/bin/grub-mkrescue;\
+	fi;\
+	mkdir /tmp/.THUNDERSTORM;\
+	cp -r ./boot /tmp/.THUNDERSTORM;\
+	$$MKISOIMAGE  \
 		-o $(CDROMIMAGE) /tmp/.THUNDERSTORM 2> /dev/null
 	rm -r /tmp/.THUNDERSTORM
 run_qemu: $(CDROMIMAGE)

@@ -8,6 +8,7 @@
 #include <TH/printk.h>
 #include <compiler_opt.h>
 #include <TH/ifaces_allowed.h>
+#include <uapi/linux/kernel.h>
 
 #define USHRT_MAX	((u16)(~0U))
 #define SHRT_MAX	((s16)(USHRT_MAX>>1))

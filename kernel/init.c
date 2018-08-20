@@ -126,9 +126,10 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $10, %r10\n"
                       " mov $11, %r11\n"
                       " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
-        local_irq_enable();
+        //local_irq_enable();
 #ifdef ACPI_ALLOWED
         ACPI_STATUS acpi_status = AcpiInitializeTables(NULL, 1, 0);
+        printk(acpi_strerror(acpi_status));
 #endif
         while(1);
 }

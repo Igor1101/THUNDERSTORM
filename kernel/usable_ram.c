@@ -13,7 +13,7 @@ uint32_t usable_ram_entries = 0;
 
 int add_RAM(void* start, void *end)
 {
-        REAL_PG_ALIGN((uintptr_t)start);
+        start = (void*)REAL_PG_ALIGN((uintptr_t)start);
         if(usable_ram_entries > MAX_RAM_ENTRIES)
                 return EXIT_FAILURE;
         if(start + REAL_PG_SIZE >= end)

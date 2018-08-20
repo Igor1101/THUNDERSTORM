@@ -3,9 +3,10 @@
 #include <kstring.h>
 #include <stdarg.h>
 #include <TH/sysvars.h>
+#include <TH/kernel.h>
 
 #define PG_SIZE 4096
-#define ALIGN_PG(X)     while( ( (X) % PG_SIZE ) != 0) X++
+#define ALIGN_PG(X)     ALIGN(X, PG_SIZE)
 struct RAM_POINTERS
 {
         void *beginning;
@@ -43,7 +44,7 @@ void *kcalloc(size_t size)
         void* ret = current_mem_p;
         RAM_pointers[RAM_pointers_used].beginning = current_mem_p;
         current_mem_p += size;
-        ALIGN_PG((uintptr_t)current_mem_p);
+        current_mem_p = (char*)ALIGN_PG((uintptr_t)current_mem_p);
         RAM_pointers[RAM_pointers_used].end = current_mem_p;
         kmemset_show(
                         RAM_pointers[RAM_pointers_used].beginning,

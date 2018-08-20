@@ -20,6 +20,8 @@
 extern void* RSDP_1;
 extern void* RSDP_2;
 
+char* acpi_strerror(ACPI_STATUS st);
+
 void ACPI_INTERNAL_VAR_XFACE
 AcpiOsPrintf (
 const char *Format,

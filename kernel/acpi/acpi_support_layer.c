@@ -10,6 +10,20 @@
 #include <x86_64/cpu_management.h>
 #endif
 
+char* acpi_strerror(ACPI_STATUS st)
+{
+        switch(st) {
+                case AE_OK: 
+                        return "op successfull";
+                case AE_NOT_FOUND:
+                        return "NOT FOUND";
+                case AE_NO_MEMORY:
+                        return "Insufficient dynamic memory to complete the operation";
+                default:
+                        return "UNKNOWN ERROR";
+        }
+}
+
 ACPI_PHYSICAL_ADDRESS AcpiOsGetRootPointer()
 {
 	ACPI_PHYSICAL_ADDRESS  Ret;

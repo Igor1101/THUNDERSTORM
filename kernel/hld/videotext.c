@@ -112,11 +112,13 @@ LIKELY void kputchar_to(
 
 LIKELY void fb_display_update(void)
 {
+        uintptr_t offset = text.lines_offset * 
+                font -> height * sysfb.pitch ;
         if(sysfb.copy == NULL)
                 return;
         kmemcpy_ptr(
-                        sysfb.virtaddr, 
-                        sysfb.copy, 
+                        sysfb.virtaddr + offset, 
+                        sysfb.copy + offset, 
                     sysfb.width * sysfb.height * sysfb.bpp / 8 
                     );
 }

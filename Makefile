@@ -89,7 +89,7 @@ libc: initialize
 		fi;\
 	done; 
 	# LIBC COMPRESSING
-	$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*
+	@$(AR) $(ARFLAGS) $(THLIBC) $(LIBC_BUILD_PATH)/*
 
 iso: kernel
 	@if [ -e  $(CDROMIMAGE) ]; then rm $(CDROMIMAGE) ; fi

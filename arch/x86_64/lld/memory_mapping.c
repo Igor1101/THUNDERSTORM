@@ -27,12 +27,18 @@ static uint32_t mmap_current = KERNEL_MEM_END + 1;
  */
 LIKELY void *kmmap(void *addr, size_t length)
 {
+        if(addr < last_addr()) {
+                /* we are mapping kernel memory to kernel memory, 
+                 * aren`t we?
+                 */
+                return addr;
+        }
         if(mmap_current >= MMAP_END) {
                 return NULL;
         }
         void* virt_addr = (void*)(uintptr_t)(_2MBYTE * mmap_current);
         uint32_t mmap_old = mmap_current;
-        _2MBYTE_ALIGN(length);
+        length = _2MBYTE_ALIGN(length);
         size_t _2mbyte_length = length / _2MBYTE;
         do {
                 p2_table[mmap_current++] = (uintptr_t)addr|_MEM_AVAILABLE;

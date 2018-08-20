@@ -5,12 +5,13 @@
 #define MEMMAP
 
 #include <stdint.h>
+#include <TH/kernel.h>
 #define PG_SIZE 4096
 #define PG_SIZE_QW (PG_SIZE / sizeof(uintptr_t) )
 #define _2MBYTE (2<<20)
 #define REAL_PG_SIZE _2MBYTE
 #define _MEM_AVAILABLE (0b10000011)
-#define _2MBYTE_ALIGN(X) while( ( (X) % _2MBYTE ) != 0) X++
+#define _2MBYTE_ALIGN(X) ALIGN(X, _2MBYTE)
 #define REAL_PG_ALIGN _2MBYTE_ALIGN
 
 /* kernel static memory end */

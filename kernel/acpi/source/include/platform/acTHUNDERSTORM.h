@@ -247,14 +247,9 @@
 /*
  * Overrides for in-kernel ACPICA
  */
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsInitialize
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsTerminate
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAcquireObject
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsGetThreadId
-#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsCreateLock
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsMapMemory
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsUnmapMemory
 

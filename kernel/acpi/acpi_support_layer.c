@@ -64,6 +64,7 @@ ACPI_STATUS AcpiOsWaitSemaphore (
         (void)Handle;
         (void)Units;
         (void)Timeout;
+        return 0;
 }
 
 ACPI_THREAD_ID AcpiOsGetThreadId(void){return 0;}
@@ -171,11 +172,7 @@ ACPI_STATUS AcpiOsReadPort (
         )
 {
         (void)Width;
-        static unsigned char in;
-        Value = &in;
-#ifdef __x86_64__
-        in = inb(Address);
-#endif
+        *Value = (uint32_t)inb(Address);
         return 0;
 }
 
@@ -216,16 +213,14 @@ ACPI_STATUS AcpiOsReadMemory (
         UINT32 Width
         )
 {
-        static uint64_t value;
-        Value = &value;
         if(Width == 8 * sizeof(uint64_t))
-                value = *(uint64_t*)Address;
+                *Value = *(uint64_t*)Address;
         if(Width == 8 * sizeof(uint32_t))
-                value = *(uint32_t*)Address;
+                *Value = *(uint32_t*)Address;
         if(Width == 8 * sizeof(uint16_t))
-                value = *(uint16_t*)Address;
+                *Value = *(uint16_t*)Address;
         if(Width == 8 * sizeof(uint8_t))
-                value = *(uint8_t*)Address;
+                *Value = *(uint8_t*)Address;
         return 0;
 }
 

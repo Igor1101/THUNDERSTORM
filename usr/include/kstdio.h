@@ -16,6 +16,9 @@ extern "C" {
         void kprintf(const char *fmt, ...);
         void kvprintf(const char *fmt, va_list args);
         void kputchar(int8_t chr);
+        LIKELY int vsnprintf (char * s, size_t n, 
+                        const char * fmt, va_list args );
+        /* Legacy */
         LIKELY int kvsnprintf (char * s, size_t n, 
                         const char * fmt, va_list args );
         LIKELY void kputs(const char *s);

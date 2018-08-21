@@ -22,6 +22,7 @@ LIKELY int verify_addr(uint32_t * addr)
         return 0;
 }
 
+/* TODO : optimize clear screen function: remove putpixel here */
 LIKELY void fb_clear_screen(void)
 {
         for(uint32_t y = 0; y < sysfb.height; y++) {

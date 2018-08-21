@@ -13,7 +13,7 @@
 #ifndef EXPORT_SYMBOL
 #define EXPORT_SYMBOL
 #endif
-
+#define AcpiOsPrintf(...) pr_cont(__VA_ARGS__)
 /* 
  * ROOT POINTERS (initialized in bootinfo())
  * */
@@ -22,11 +22,6 @@ extern void* RSDP_2;
 
 char* acpi_strerror(ACPI_STATUS st);
 
-void ACPI_INTERNAL_VAR_XFACE
-AcpiOsPrintf (
-const char *Format,
-...
-);
 
 
 FORCE_INLINE void * AcpiOsMapMemory 

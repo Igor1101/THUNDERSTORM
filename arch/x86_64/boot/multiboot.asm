@@ -47,12 +47,11 @@ framebuffer_tag:
   dd 0 ;bpp
 .end:
 %endif
-module_alignment_tag:
-  dw 6
-  dw 1
+;module_alignment_tag:
+;  dw 6
+;  dw 1
 tags_end:
 ; terminate tags:
-;  dw 0
   dw 0
   dd 8
 multiboot_end:

@@ -21,7 +21,7 @@ void* last_addr(void)
 static uint32_t mmap_current = KERNEL_MEM_END + 1;
 
 #define PR_MAP "MAP: "
-#if (1)
+#if (0)
 #define pr_map(...) pr_debug(PR_MAP __VA_ARGS__)
 #else
 #define pr_map(...)

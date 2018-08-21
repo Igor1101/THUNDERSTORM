@@ -188,7 +188,6 @@ FORCE_INLINE int framebuffer_info(volatile void *ebx)
 }
 
 
-/* TODO : connect these functions with ACPI */
 FORCE_INLINE int acpi_2_process(volatile void *ebx)
 {        /* verify if it really is provided info */
         if(*(int32_t *) (ebx + sizeof(uint32_t)) <= 0) {
@@ -196,7 +195,7 @@ FORCE_INLINE int acpi_2_process(volatile void *ebx)
         }
 
         RSDP_2 = (void*)(ebx + 2*sizeof(uint32_t) );
-        pr_debug("ACPI new ROOT pointer 0x%x", RSDP_2);
+        pr_debug("ACPIv2 ROOT pointer 0x%x", RSDP_2);
         return EXIT_SUCCESS;
 }
 
@@ -206,7 +205,7 @@ FORCE_INLINE int acpi_1_process(volatile void *ebx)
                 return EXIT_FAILURE;
         }
         RSDP_1 = (void*)((uint32_t*)(ebx + 2*sizeof(uint32_t) ) ) ;
-        pr_debug("ACPI old ROOT pointer 0x%x", RSDP_1);
+        pr_debug("ACPIv1 ROOT pointer 0x%x", RSDP_1);
         return EXIT_SUCCESS;
 }
 

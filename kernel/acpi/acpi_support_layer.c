@@ -26,31 +26,27 @@ char* acpi_strerror(ACPI_STATUS st)
 
 ACPI_PHYSICAL_ADDRESS AcpiOsGetRootPointer()
 {
-	ACPI_PHYSICAL_ADDRESS  Ret;
-        if(RSDP_2 != NULL)
+	ACPI_PHYSICAL_ADDRESS  Ret = 0;
+        /* if it`s old x64 system (we assume we don`t know it) */
+	if(AcpiFindRootPointer(&Ret) == AE_OK) {
+	        return Ret;
+        }
+        AcpiOsPrintf("RSDP could not be found automatically\n ");
+        if(RSDP_2 != NULL) {
+                AcpiOsPrintf("RSDPv2\n ");
                 return (ACPI_PHYSICAL_ADDRESS)RSDP_2;
-        if(RSDP_1 != NULL)
+        }
+        if(RSDP_1 != NULL) {
+                AcpiOsPrintf("RSDPv1\n ");
                 return (ACPI_PHYSICAL_ADDRESS)RSDP_1;
-        /* last chance to get it! */
-	Ret = 0;
-	AcpiFindRootPointer(&Ret);
-	return Ret;
+        }
+        pr_crit("RSDP not found");
+        return 0;
 }
 ACPI_STATUS AcpiOsInitialize(void){return 0;}
 ACPI_STATUS AcpiOsTerminate(void){return 0;}
 
-void ACPI_INTERNAL_VAR_XFACE
-AcpiOsPrintf (
-const char *Format,
-...
-)
-{
-        va_list args;
 
-        va_start(args, Format);
-        vprintk_default(Format, args);
-        va_end(args);
-}
 void AcpiOsVprintf(const char *Format, va_list args)
 {
         vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, Format, args);
@@ -119,7 +115,7 @@ ACPI_STATUS AcpiOsPhysicalTableOverride (
 {
         (void)ExistingTable;
         (void)NewAddress;
-        (void)NewTableLength;
+        *NewTableLength = 0;
         return 0;
 }
 
@@ -139,7 +135,7 @@ ACPI_STATUS AcpiOsTableOverride (
         )
 {
         (void)ExistingTable;
-        (void)NewTable;
+        *NewTable = NULL;
         return 0;
 }
 

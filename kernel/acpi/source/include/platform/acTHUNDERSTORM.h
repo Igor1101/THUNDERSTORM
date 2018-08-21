@@ -247,6 +247,7 @@
 /*
  * Overrides for in-kernel ACPICA
  */
+#define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsPrintf
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocate
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsAllocateZeroed
 #define ACPI_USE_ALTERNATE_PROTOTYPE_AcpiOsFree

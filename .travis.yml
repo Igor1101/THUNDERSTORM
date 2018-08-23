@@ -1,4 +1,4 @@
-matrix:
+language: C
   include:
     # works on Precise and Trusty
     - os: linux

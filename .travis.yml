@@ -1,6 +1,6 @@
 before_install:
         - sudo apt-get update -qq
-        - sudo apt-get install -y nasm gcc grub2
+        - sudo apt-get install -y nasm gcc-7 grub2
 language: c
 script: make all
 include:
@@ -11,8 +11,8 @@ include:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - gcc
+            - gcc-7
             - nasm
             - grub2
       env:
-            - MATRIX_EVAL="CC=gcc"
+            - MATRIX_EVAL="CC=gcc-7"

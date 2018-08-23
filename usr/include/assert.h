@@ -7,7 +7,7 @@ extern "C" {
 
 #include <compiler_opt.h>
 #include <kstdio.h>
-#include <TH/printk.h>
+#include <TH/kernel.h>
 
 FORCE_INLINE void aFailed(char* file, int line)
 {
@@ -16,8 +16,8 @@ FORCE_INLINE void aFailed(char* file, int line)
 
 FORCE_INLINE void aFailed_release(char* file, int line)
 {
-        pr_err("\
-                        \nWe are so sorry, but it looks like \nthis release is not stable(assertion failed) : \
+        pr_err(KERN_NAME "\
+                        \nkernel bug detected: \
                         \n file: %s, line: %d \
                         \nif you are just user and see this error, \
                         \nplease contact <igor.muravyov.2015@gmail.com> ",

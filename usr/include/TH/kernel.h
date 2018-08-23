@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <TH/printk.h>
+#include <TH/sysinfo.h>
 #include <compiler_opt.h>
 #include <TH/ifaces_allowed.h>
 #include <uapi/linux/kernel.h>

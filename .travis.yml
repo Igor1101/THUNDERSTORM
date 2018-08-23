@@ -1,7 +1,6 @@
-THUNDERSTORM:
-  language: generic
-  script: make all
-  include:
+language: c
+script: make all
+include:
     # works on Precise and Trusty
     - os: linux
       addons:

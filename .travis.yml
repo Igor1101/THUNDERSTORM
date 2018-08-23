@@ -16,4 +16,4 @@ include:
             - nasm
             - grub2
       env:
-            - MATRIX_EVAL="CC=gcc"
+            - MATRIX_EVAL="CC=gcc-7"

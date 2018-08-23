@@ -101,7 +101,7 @@ iso: kernel
 	mkdir /tmp/.THUNDERSTORM;\
 	cp -r ./boot /tmp/.THUNDERSTORM;\
 	$$MKISOIMAGE  \
-		-o $(CDROMIMAGE) /tmp/.THUNDERSTORM 2> /dev/null
+		-o $(CDROMIMAGE) /tmp/.THUNDERSTORM 
 	rm -r /tmp/.THUNDERSTORM
 run_qemu: $(CDROMIMAGE)
 	@if [ -f $(BIOS) ]; then \

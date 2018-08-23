@@ -1,5 +1,5 @@
 THUNDERSTORM:
-  language: C
+  language: generic
   script: make all
   include:
     # works on Precise and Trusty

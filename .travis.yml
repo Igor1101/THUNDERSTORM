@@ -1,0 +1,14 @@
+matrix:
+  include:
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc
+            - nasm
+            - grub2
+      env:
+            - MATRIX_EVAL="CC=gcc"

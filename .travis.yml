@@ -1,4 +1,6 @@
-language: C
+THUNDERSTORM:
+  language: C
+  script: make all
   include:
     # works on Precise and Trusty
     - os: linux

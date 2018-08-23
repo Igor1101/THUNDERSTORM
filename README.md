@@ -1,4 +1,5 @@
 ![THUNDERSTORM_LOGO](boot/TH.jpg)
+[![Build Status](https://travis-ci.com/Igor1101/THUNDERSTORM.svg?branch=experimental)](https://travis-ci.com/Igor1101/THUNDERSTORM)
 **Is an embedded UNIX-like system**, which aims 
 to be as portable as possible and use modern hardware features when possible.
 Have similar to UNIX sources tree:

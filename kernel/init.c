@@ -115,6 +115,14 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         }
         printk("clearing kernel stacks: ");
         clear_kernel_stacks();
+#ifdef ACPI_ALLOWED
+        ACPI_STATUS acpi_status = AcpiInitializeTables(NULL, 1, 0);
+        if(acpi_status != AE_OK) {
+                pr_err(ACPI_MSG_ERROR "%s", acpi_strerror(acpi_status));
+                kpanic(ACPI_MSG_ERROR);
+        }
+
+#endif
         init_interrupts();
                 /*
         asm volatile (" exc: \n"
@@ -127,9 +135,5 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $11, %r11\n"
                       " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
         //local_irq_enable();
-#ifdef ACPI_ALLOWED
-        ACPI_STATUS acpi_status = AcpiInitializeTables(NULL, 1, 0);
-        printk(acpi_strerror(acpi_status));
-#endif
         while(1);
 }

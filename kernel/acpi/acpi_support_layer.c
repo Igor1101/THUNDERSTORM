@@ -1,4 +1,5 @@
 
+#include <assert.h>
 #include <kstdio.h>
 #include <TH/kernel.h>
 #include <TH/acpi_support.h>
@@ -12,13 +13,17 @@
 
 char* acpi_strerror(ACPI_STATUS st)
 {
+        /* We are not giving garbage to ACPI, aren`t we ? ;) */
+        ASSERT(st == AE_BAD_PARAMETER);
         switch(st) {
                 case AE_OK: 
-                        return "op successfull";
+                        return "OP SUCCESSFULL";
                 case AE_NOT_FOUND:
                         return "NOT FOUND";
                 case AE_NO_MEMORY:
-                        return "Insufficient dynamic memory to complete the operation";
+                        return "INSUFFICIENT DYNAMIC MEMORY TO COMPLETE THE OPERATION";
+                case AE_NO_ACPI_TABLES:
+                        return "NO ACPI TABLES";
                 default:
                         return "UNKNOWN ERROR";
         }

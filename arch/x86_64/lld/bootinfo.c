@@ -19,6 +19,7 @@ char kcmdline[KCMDLINE_SIZE];
 
 uint32_t ram_entries;
 
+/* ACPI */
 void* RSDP_1 = NULL;
 void* RSDP_2 = NULL;
 

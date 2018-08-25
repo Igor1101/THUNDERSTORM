@@ -8,11 +8,11 @@ extern kernel_phys_base
 extern early_kernel_init
 extern tss_table
 extern die
+extern p4_table
+extern p3_table
+extern p2_table
+extern p1_table
 
-global p4_table
-global p3_table
-global p2_table
-global p1_table
 global GDT_tss_desc; <-- for further initialization
 global GDT_tss_sel
 global init_paging; 
@@ -28,8 +28,8 @@ global stack_top
 GREEN equ 0x2
 RED equ 0x4f
 
-STK_SIZE equ 1024 * 4 ; 4KB for kernel initialization stack
-PG_SIZE equ 512 * 8; in bytes
+STK_SIZE equ 4096; 4KB for kernel initialization stack
+PG_SIZE equ (4096); in bytes
 PG_SIZE_QW equ PG_SIZE/8
 global _start; EBX <-- pointer to boot information format
 bits 32
@@ -258,16 +258,6 @@ boot_info:      dq  0
 ; bss:
 section .bss
 
-;pgs info:
-  alignb PG_SIZE
-p4_table:
-  resb PG_SIZE
-p3_table:
-  resb PG_SIZE
-p2_table:
-  resb PG_SIZE
-p1_table:
-  resb PG_SIZE
  ; memory, reserved for STACK:
   alignb PG_SIZE
 stack_bottom: ; 

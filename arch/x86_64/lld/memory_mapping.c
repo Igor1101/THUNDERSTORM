@@ -9,6 +9,11 @@
 #include <TH/kernel.h>
 #include <asm/memory_mapping.h>
 
+uintptr_t p4_table[PG_SIZE_QW] ALIGNED(PG_SIZE);
+uintptr_t p3_table[PG_SIZE_QW] ALIGNED(PG_SIZE);
+uintptr_t p2_table[PG_SIZE_QW] ALIGNED(PG_SIZE);
+uintptr_t p1_table[PG_SIZE_QW] ALIGNED(PG_SIZE);
+
 /**
  * void* last_addr(void)
  * return: last mapped kernel address
@@ -60,8 +65,8 @@ LIKELY void *kmmap(void *addr, size_t length)
         }
         void* virt_addr = (void*)(uintptr_t)(_2MBYTE * mmap_current + offset);
         uint32_t mmap_old = mmap_current;
-        length = _2MBYTE_ALIGN(length);
-        pr_map("align len to 0x%x", length);
+        length = _2MBYTE_ALIGN(length + offset);
+        pr_map("align len to 0x%x per 2M", length);
         size_t _2mbyte_length = length / _2MBYTE;
         while(_2mbyte_length-- > 0) {
                 pr_map("to addr 0x%x", p2_table[mmap_current]);

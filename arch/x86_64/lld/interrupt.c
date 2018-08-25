@@ -2,7 +2,6 @@
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
 #include <assert.h>
-#include <acpi.h>
 #include <asm/traps.h>
 #include <asm/kpanic.h>
 #include <x86_64/IDT.h>
@@ -10,6 +9,7 @@
 #include <x86_64/cpu_management.h>
 #include <x86_64/APIC.h>
 #include <x86_64/PIC.h>
+#include <asm/kpanic.h>
 #include <asm/int_handler.h>
 
 /* *INDENT-OFF* */
@@ -107,14 +107,6 @@ UNLIKELY void init_interrupts(void)
                 kpanic("APIC is not present");
 #endif
         }
-        /* 
-         * Assume that ACPI table is already loaded! 
-         * Any ACPI errors here are fatal
-         * */
-        ACPI_TABLE_HEADER *APICp;
-        ACPI_STATUS acstat = AcpiGetTable("APIC", 1, &APICp);
-        if(acstat != AE_OK) {
-                pr_crit(ACPI_MSG_ERROR "%s", acpi_strerror(acstat));
-                kpanic(ACPI_MSG_ERROR);
-        }
+        apic_get_info_ACPI();
+        boot_lapic_enable();
 }

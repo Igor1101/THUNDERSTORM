@@ -1,8 +1,10 @@
 ![THUNDERSTORM_LOGO](boot/TH.jpg)
+##### Build status 
+*Master* branch:
+[![Build Status](https://travis-ci.com/Igor1101/THUNDERSTORM.svg?branch=master)](https://travis-ci.com/Igor1101/THUNDERSTORM)
+*Experimental* branch:
 [![Build Status](https://travis-ci.com/Igor1101/THUNDERSTORM.svg?branch=experimental)](https://travis-ci.com/Igor1101/THUNDERSTORM)
-**Is an embedded UNIX-like system**, which aims 
-to be as portable as possible and use modern hardware features when possible.
-Have similar to UNIX sources tree:
+##### Sources tree:
 ```
 src/ # System programs sources
 bin/ #system programs binaries
@@ -25,13 +27,11 @@ binutils,
 coreutils,
 Unix shell(sh),
 qemu-system-x86_64(optional),
+bochs(optional),
 OVMF(optional), 
 grub-mkrescue,
 xorriso
-#### compilation have been verified under:
-Arch linux,
-FreeBSD 11
-#### Running it on qemu!
+##### Running it on qemu!
 please consult make tasks:
 ```
 make help
@@ -44,11 +44,12 @@ Note, that THUNDERSTORM aims to be BIOS independent,
 but it is much better in qemu to run it with UEFI BIOS, since
 it is better supported.
 
-#### TODO up to 2019 (in case someone want`s to contribute):
+##### TODO up to 2019 (in case someone want`s to contribute):
 NOTE: to see full list of TODOs please run `grep -r -n TODO\ :` in target folder
 - [ ] port multitasking from [THUNDERSTORM-OLD](http://github.com/Igor1101/THUNDERSTORM-OLD)
-- [ ] ACPI support and power management
-- [ ] PIC management
+- [ ] ACPI support 
+- [ ] Power management
+- [X] PIC management
 - [ ] local and IO APIC initialization \ management
 - [ ] basic POSIX system calls
 - [ ] add modules support

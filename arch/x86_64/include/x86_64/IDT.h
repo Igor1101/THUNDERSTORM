@@ -9,6 +9,7 @@
 #include <kstring.h>
 #include <kstdio.h>
 #include <TH/kernel.h>
+#include <TH/sysvars.h>
 #include <x86_64/cpu_management.h>
 #define NUM_OF_EXCEPTIONS 32
 #define NUM_OF_DESC 256
@@ -53,7 +54,7 @@ FORCE_INLINE void idt_clear_vectors(void)
 {
         pr_notice("clearing vectors:");
         kmemset_show(idt_table, 0, sizeof(idt_table));
-        kputchar('\n');
+        text.putchar('\n');
 }
 
 FORCE_INLINE void idt_set_trap(uint8_t num, uint64_t addr, uint8_t ist)

@@ -13,7 +13,56 @@
 
 #ifdef USE_VESA
 
-LIKELY int verify_addr(uint32_t * addr)
+/*
+ * fb initialization
+ */
+
+static LIKELY int fb_verify_addr(uint32_t * addr);
+static LIKELY void fb_clear_screen(void);
+static LIKELY void fb_putchar_to(
+                        /* unicode character */
+                        unsigned short int c,
+                        /* cursor position on screen in characters */
+                        uint32_t row, uint32_t column,
+                        /* foreground and background colors */
+                        uint32_t fg, uint32_t bg,
+                        /* character attributes */
+                        uint32_t attr);
+static LIKELY void fb_display_update(void);
+static LIKELY void fb_char_invert(text_t row, text_t column);
+static UNLIKELY text_t fb_determine_rows(void);
+static UNLIKELY text_t fb_determine_columns(void);
+static UNLIKELY void fb_cursor_enable(text_t cursor_start, text_t cursor_end);
+static LIKELY void fb_make_newline(void);
+static LIKELY void fb_cursor_update(text_t row, text_t col);
+static UNLIKELY void fb_print_video_info(void);
+static LIKELY void fb_char_copy(
+                        /* cursor position on screen in characters 
+                         * for destination */
+                        text_t d_row, text_t d_column,
+                        text_t s_row, text_t s_column
+                );
+
+/* 
+ * make an object of ... class sysfb ;) 
+ * */
+void fb_init(void)
+{
+        sysfb.print_video_info = fb_print_video_info;
+        sysfb.verify_addr = fb_verify_addr;
+        sysfb.clear_screen = fb_clear_screen;
+        sysfb.putchar_to = fb_putchar_to;
+        sysfb.update_screen = fb_display_update;
+        sysfb.char_invert = fb_char_invert;
+        sysfb.char_copy = fb_char_copy;
+        sysfb.make_newline = fb_make_newline;
+        sysfb.cursor_enable = fb_cursor_enable;
+        sysfb.cursor_update = fb_cursor_update;
+        sysfb.make_newline = fb_make_newline;
+        sysfb.determine_rows = fb_determine_rows;
+        sysfb.determine_columns = fb_determine_columns;
+}
+static LIKELY int fb_verify_addr(uint32_t * addr)
   /* verify if we are writing to permissible address */
 {
         if (addr >= (uint32_t *) sysfb.virtaddr + sysfb.width * sysfb.height) {
@@ -23,7 +72,7 @@ LIKELY int verify_addr(uint32_t * addr)
 }
 
 /* TODO : optimize clear screen function: remove putpixel here */
-LIKELY void fb_clear_screen(void)
+static LIKELY void fb_clear_screen(void)
 {
         for(uint32_t y = 0; y < sysfb.height; y++) {
                 for(uint32_t x = 0; x < sysfb.width; x++) {
@@ -32,10 +81,8 @@ LIKELY void fb_clear_screen(void)
         }
         fb_display_update();
 }
-/* This function has been copied from 
- * wiki.OSdev.org
- */
-LIKELY void kputchar_to(
+
+static LIKELY void fb_putchar_to(
                         /* unicode character */
                         unsigned short int c,
                         /* cursor position on screen in characters */
@@ -77,7 +124,7 @@ LIKELY void kputchar_to(
                 for (x = 0; x < font->width + 1; x++) {
                         vaddr = (uint32_t *) sysfb.virtaddr + line;
                         copy = (uint32_t*) sysfb.copy + line;
-                        if (verify_addr(vaddr) == 0) {
+                        if (fb_verify_addr(vaddr) == 0) {
                                 if (attr == TRANSPARENT) {
                                         *vaddr |=
                                             ((uint32_t) *
@@ -111,7 +158,7 @@ LIKELY void kputchar_to(
         }
 }
 
-LIKELY void fb_display_update(void)
+static LIKELY void fb_display_update(void)
 {
         uintptr_t offset = text.lines_offset * 
                 font -> height * sysfb.pitch ;
@@ -125,7 +172,7 @@ LIKELY void fb_display_update(void)
 }
 
 
-LIKELY void invert_char(uint32_t row, uint32_t column)
+static LIKELY void fb_char_invert(text_t row, text_t column)
 {
         if ((sysfb.video_initialized == false) ||
             (row >= text.rows) || (column >= text.columns)) {
@@ -152,7 +199,7 @@ LIKELY void invert_char(uint32_t row, uint32_t column)
                 for (x = 0; x < font->width; x++) {
                         vaddr = (uint32_t *) sysfb.virtaddr + line;
                         //copy = (uint32_t *) sysfb.copy + line;
-                        if (verify_addr(vaddr) == 0) {
+                        if (fb_verify_addr(vaddr) == 0) {
                                         *vaddr = ~ ( *vaddr );
                                         /*
                                         if(sysfb.copy != NULL) {
@@ -172,11 +219,11 @@ LIKELY void invert_char(uint32_t row, uint32_t column)
         }
 }
 
-LIKELY void copy_char(
+static LIKELY void fb_char_copy(
                         /* cursor position on screen in characters 
                          * for destination */
-                        uint32_t d_row, uint32_t d_column,
-                        uint32_t s_row, uint32_t s_column
+                        text_t d_row, text_t d_column,
+                        text_t s_row, text_t s_column
                 )
 {
         if ((sysfb.video_initialized == false) ||
@@ -215,7 +262,7 @@ LIKELY void copy_char(
         }
 }
 
-UNLIKELY uint32_t determine_rows(void)
+static UNLIKELY text_t fb_determine_rows(void)
 {
         /* system font should already be processed
          * */
@@ -226,7 +273,7 @@ UNLIKELY uint32_t determine_rows(void)
         return row - 1;
 }
 
-UNLIKELY uint32_t determine_columns(void)
+static UNLIKELY text_t fb_determine_columns(void)
 {
         /* system font should already be processed
          * */
@@ -237,7 +284,7 @@ UNLIKELY uint32_t determine_columns(void)
         return column - 1;
 }
 
-UNLIKELY void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
+static UNLIKELY void fb_cursor_enable(text_t cursor_start, text_t cursor_end)
 {
         /* getting rid of compiler warnings */
         (void)cursor_start;
@@ -269,7 +316,7 @@ LIKELY void make_newline(void)
         }
 }*/
 
-LIKELY void make_newline(void)
+static LIKELY void fb_make_newline(void)
 {
         if (sysfb.video_initialized == false)
                 return;
@@ -296,21 +343,21 @@ LIKELY void make_newline(void)
                     sysfb.width * sysfb.height * sysfb.bpp / 8 
                     - 1 * (font -> height * sysfb.pitch / 8) );
         for(text_t col=0; col<=text.columns; col++) {
-                kputchar_to(0, text.rows - 1, col, 
+                fb_putchar_to(0, text.rows - 1, col, 
                                 DefaultBG, DefaultBG, NOTRANSPARENT);
         }
         fb_display_update();
 }
 
-LIKELY void update_cursor(int row, int col)
+static LIKELY void fb_cursor_update(text_t row, text_t col)
 {
         static int oldrow;
         static int oldcol;
         if (sysfb.cursor_enabled == true) {
-                invert_char(row, col);
+                fb_char_invert(row, col);
         }
         if( (!text.cursor_not_clear) && (sysfb.cursor_enabled) ){
-                invert_char(oldrow, oldcol);
+                fb_char_invert(oldrow, oldcol);
         }
         text.cursor_not_clear = false;
         oldrow = row;
@@ -319,7 +366,7 @@ LIKELY void update_cursor(int row, int col)
 
 #endif                          /* USE_VESA */
 
-UNLIKELY void print_video_info(void)
+UNLIKELY void fb_print_video_info(void)
 {
         kprintf("Resolution: %dx%d\n", sysfb.width, sysfb.height);
         kprintf("chars per row: %d\n", text.columns);

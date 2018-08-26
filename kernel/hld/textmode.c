@@ -9,40 +9,60 @@
 #include <TH/sysvars.h>
 #include <asm/serial.h>
 #define BEGINNING 0
-struct Text_mode_pointer text;
+
+static void do_nothing(int color)
+{
+       (void)color;
+}
+
+struct Text_mode_pointer text = (struct Text_mode_pointer){
+       /* prevent from crashing due to NULL pointer */
+       .select_fgcolor = do_nothing,
+       .select_bgcolor = do_nothing,
+       .putchar = (void(*)(int chr))do_nothing
+};
+
+static void text_select_fgcolor(int color);
+static void text_select_bgcolor(int color);
+static void text_putchar(int chr);
+
 void tui_init(text_t lines_offset)
 {
+        fb_init();
         text.lines_offset = lines_offset;
         text.row = BEGINNING + text.lines_offset;
         text.col = BEGINNING;
         text.fgcolor = DefaultFG;
         text.bgcolor = DefaultBG;
-        enable_cursor(BEGINNING, text.rows);
-        text.columns = determine_columns();
-        text.rows = determine_rows();
+        sysfb.cursor_enable(BEGINNING, text.rows);
+        text.columns = sysfb.determine_columns();
+        text.rows = sysfb.determine_rows();
         text.is_initialized = true;
+        text.select_fgcolor = text_select_fgcolor;
+        text.select_bgcolor = text_select_bgcolor;
+        text.putchar = text_putchar;
         /* clearing screen */
-        fb_clear_screen();
+        sysfb.clear_screen();
 }
 
-void select_fgcolor(int color)
+static void text_select_fgcolor(int color)
 {
         text.fgcolor = color;
 }
 
-void select_bgcolor(int color)
+static void text_select_bgcolor(int color)
 {
         text.bgcolor = color;
 }
 
-void newline(void)
+static void newline(void)
 {
         if (text.row >= text.rows - 1) {
 #ifdef USE_VESA
                 if(sysfb.copy == NULL) 
-                        invert_char(text.row, text.col);
+                        sysfb.char_invert(text.row, text.col);
 #endif /* USE_VESA */
-                make_newline();
+                sysfb.make_newline();
                 text.col = BEGINNING;
                 text.cursor_not_clear = true;
                 return;
@@ -51,12 +71,13 @@ void newline(void)
         text.col = BEGINNING;
 }
 
-void kputchar(int8_t chr)
+static void text_putchar(int chr)
 {
 #ifdef USE_SERIAL
         /* even if tui not initialized, 
          * it is possible to write to serial port through tui
          */
+        chr = (int8_t)chr;
         serial_write_asyn(SERIAL_MAIN, chr);
         if (chr == '\n')
                 serial_write_asyn(SERIAL_MAIN, '\r');
@@ -67,30 +88,30 @@ void kputchar(int8_t chr)
         switch (chr) {
         case '\n':
                 newline();
-                update_cursor(text.row, text.col);
+                sysfb.cursor_update(text.row, text.col);
                 return;
         case '\r':
                 text.col = BEGINNING;
-                update_cursor(text.row, text.col + 1);
+                sysfb.cursor_update(text.row, text.col + 1);
                 return;
         case '\b':
                 text.col--;
-                update_cursor(text.row, text.col + 1);
+                sysfb.cursor_update(text.row, text.col + 1);
                 return;
         case '\t':
                 text.col += text.col % 2 + 2;/* now tab=2spaces */
-                update_cursor(text.row, text.col + 1);
+                sysfb.cursor_update(text.row, text.col + 1);
                 return;
         default:
                 break;
         }
-        update_cursor(text.row, text.col + 1);
-        kputchar_to(chr, text.row, text.col,
+        sysfb.cursor_update(text.row, text.col + 1);
+        sysfb.putchar_to(chr, text.row, text.col,
                     text.fgcolor, text.bgcolor, NOTRANSPARENT);
         if (text.col >= text.columns && text.row < text.rows) {
                 newline();
         } else if (text.row >= text.rows && text.col >= text.columns) {
-                make_newline();
+                sysfb.make_newline();
                 text.col = BEGINNING;
                 text.row = text.rows - 1;
         } else {

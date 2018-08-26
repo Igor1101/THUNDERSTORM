@@ -39,25 +39,25 @@ extern "C" {
         static FORCE_INLINE void fb_clear_screen(void){};
 #else /* use standard color pallete */
         enum Color {
-                Black = 0,
-                Blue = 0x6495ED,/* CornflowerBlue */
-                Green = 0x008000,
-                Cyan = 0x00FFFF,
-                Red = 0xFF0000,
-                Magenta = 0xFF00FF,
-                Brown = 0xA52A2A,
-                LightGray = 0xD3D3D3,
-                DarkGray = 0xA9A9A9,
-                LightBlue = 0xADD8E6,
-                LightGreen = 0x90EE90,
-                LightCyan = 0xE0FFFF,
-                LightRed = 0xFF0000,
-                Pink = 0xFFC0CB,
-                Yellow = 0xFFFF00,
-                White = 0xFFFFFF,
-                DefaultFG = 0x9E839D,
-                DefaultBG = 0x130815,
-                DefaultLogFG = Green
+                Black           = 0,
+                Blue            = 0x6495ED,/* CornflowerBlue */
+                Green           = 0x008000,
+                Cyan            = 0x00FFFF,
+                Red             = 0xFF0000,
+                Magenta         = 0xFF00FF,
+                Brown           = 0xA52A2A,
+                LightGray       = 0xD3D3D3,
+                DarkGray        = 0xA9A9A9,
+                LightBlue       = 0xADD8E6,
+                LightGreen      = 0x90EE90,
+                LightCyan       = 0xE0FFFF,
+                LightRed        = 0xFF0000,
+                Pink            = 0xFFC0CB,
+                Yellow          = 0xFFFF00,
+                White           = 0xFFFFFF,
+                DefaultFG       = 0x9E839D,
+                DefaultBG       = 0x130815,
+                DefaultLogFG    = Green
         };
 
 
@@ -71,9 +71,6 @@ extern "C" {
                 NOTRANSPARENT
         };
 
-#ifdef USE_VESA
-        void invert_char(uint32_t row, uint32_t column);
-#endif                          /*USE_VESA */
 
 /* suitable with VGA and VESA */
         typedef uint32_t text_t;
@@ -87,6 +84,9 @@ extern "C" {
                 text_t columns;       /* in chars */
                 bool cursor_not_clear; /* (true) will not clear cursor one time */
                 text_t lines_offset;
+                void (*select_fgcolor)(int color);
+                void (*select_bgcolor)(int color);
+                void (*putchar)(int chr);
         };
 
 /* video framebuffer */
@@ -109,27 +109,53 @@ extern "C" {
                 uint32_t type;
                 uint32_t colorinfo;
                 bool cursor_enabled;
+                void (*print_video_info)(void);
+                /* determines does this virtual 
+                 * addr belong to
+                 * framebuffer display
+                 */
+                int (*verify_addr)(uint32_t* addr);
+                void (*clear_screen)(void);
+                void (*putchar_to)(
+                        /* unicode character */
+                        unsigned short int c,
+                        /* cursor position on screen in characters */
+                        uint32_t row, uint32_t column,
+                        /* foreground and background colors */
+                        uint32_t fg, uint32_t bg,
+                        /* character attributes */
+                        uint32_t attr);
+                void (*update_screen)(void);
+                void (*char_invert)(text_t row, text_t column);
+                void (*char_copy)(
+                        /* cursor position on screen in characters
+                         * for destination */
+                        text_t d_row, text_t d_column,
+                        text_t s_row, text_t s_column
+                );
+                void (*cursor_enable)(text_t cursor_start, text_t cursor_end);
+                void (*cursor_update)(text_t row, text_t col);
+                void (*make_newline)(void);
+                text_t (*determine_rows)(void);
+                text_t (*determine_columns)(void);
         };
 
+        void fb_init(void);
+
         void tui_init(text_t lines_offset);
-        void select_fgcolor(int color);
-        void select_bgcolor(int color);
 
 /* VIDEO */
         void kputpixel(uint32_t x, uint32_t y, uint32_t color);
-        void print_video_info(void);
 
 /* return true if op successful */
         bool init_video(void);
         int font_info(void);
 #ifndef NO_VIDEOMODE
-        void fb_clear_screen(void);
         void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
         uint32_t determine_columns(void);
         uint32_t determine_rows(void);
         void update_cursor(int row, int col);
         void make_newline(void);
-        void fb_display_update(void);
         void kputchar_to(
                                 /* unicode character */
                                 unsigned short int c,
@@ -190,10 +216,12 @@ LIKELY void copy_char(
                 (void)cursor_start;
                 (void)cursor_end;
         }
+
         FORCE_INLINE uint32_t determine_columns(void)
         {
                 return 0;
         }
+
         FORCE_INLINE uint32_t determine_rows(void)
         {
                 return 0;

@@ -11,12 +11,13 @@
 #include <kstdlib.h>
 #include <kstdio.h>
 #include <TH/lld.h>
+#include <TH/sysvars.h>
 #include <compiler_opt.h>
 
 LIKELY void kputs(const char *s)
 {
         while (*s) {
-                kputchar(*s++);
+                text.putchar(*s++);
         }
 }
 
@@ -25,7 +26,7 @@ LIKELY void kputs_pad(const char *s, char c, size_t p)
         size_t d = strlen(s);
         if (d < p) {
                 for (size_t i = 0; i < p - d; ++i) {
-                        kputchar(c);
+                        text.putchar(c);
                 }
         }
         kputs(s);
@@ -44,7 +45,7 @@ LIKELY void kdump(const void *block, size_t count)
                         c = v[i + off];
                         itoap(cbuf, 2, 16, c);
                         kputs(cbuf);
-                        kputchar(' ');
+                        text.putchar(' ');
                 }
 
                 kputs("   ");
@@ -52,14 +53,14 @@ LIKELY void kdump(const void *block, size_t count)
                 for (size_t i = 0; i < 16 && off + i < count; ++i) {
                         c = v[i + off];
                         if (!c) {
-                                kputchar('.');
+                                text.putchar('.');
                         } else if (c > 32 && c < 0x7F) {
-                                kputchar(c);
+                                text.putchar(c);
                         } else {
-                                kputchar('?');
+                                text.putchar('?');
                         }
                 }
-                kputchar('\n');
+                text.putchar('\n');
         }
 }
 
@@ -83,12 +84,12 @@ LIKELY WEAK int vsnprintf (char * s, size_t n,
         int padn;
         char*buf_p = s;
 
-        auto int kputchar_buf(char c);
-        auto int kputs_pad_buf(const char *s, char c, size_t p);
-        auto int kputchar_buf(char c);
-        auto int kputs_buf(const char *s);
+        auto int putchar_buf(char c);
+        auto int puts_pad_buf(const char *s, char c, size_t p);
+        auto int putchar_buf(char c);
+        auto int puts_buf(const char *s);
 
-        auto int kputchar_buf(char c)
+        auto int putchar_buf(char c)
         {
                 *(buf_p++) = c;
                 if( (uintptr_t)(buf_p - s) >= n )
@@ -96,26 +97,26 @@ LIKELY WEAK int vsnprintf (char * s, size_t n,
                 return EXIT_SUCCESS;
         }
 
-        auto int kputs_pad_buf(const char *s, char c, size_t p)
+        auto int puts_pad_buf(const char *s, char c, size_t p)
         {
                 size_t d = strlen(s);
                 if (d < p) {
                         for (size_t i = 0; i < p - d; ++i) {
-                                if(kputchar_buf(c) == EXIT_FAILURE) {
+                                if(putchar_buf(c) == EXIT_FAILURE) {
                                         return EXIT_FAILURE;
                                 }
                         }
                 }
-                if(kputs_buf(s) == EXIT_FAILURE) {
+                if(puts_buf(s) == EXIT_FAILURE) {
                         return EXIT_FAILURE;
                 }
                 return EXIT_SUCCESS;
         }
 
-        auto int kputs_buf(const char *s)
+        auto int puts_buf(const char *s)
         {
                 while (*s) {
-                        if(kputchar_buf(*s++) == EXIT_FAILURE) {
+                        if(putchar_buf(*s++) == EXIT_FAILURE) {
                                 return EXIT_FAILURE;
                         }
                 }
@@ -145,16 +146,16 @@ LIKELY WEAK int vsnprintf (char * s, size_t n,
                                 case 'x':
                                         vp = va_arg(args, uintptr_t);
                                         itoa(cbuf, 16, vp);
-                                        if(kputs_pad_buf(cbuf, padc, padn) 
+                                        if(puts_pad_buf(cbuf, padc, padn) 
                                                         == EXIT_FAILURE) {
                                                 return (buf_p - s);
                                         }
                                         break;
                                 default:
-                                        if(kputchar_buf('%') == EXIT_FAILURE ) {
+                                        if(putchar_buf('%') == EXIT_FAILURE ) {
                                                 return (buf_p - s);
                                         }
-                                        if(kputchar_buf(c) == EXIT_FAILURE ) {
+                                        if(putchar_buf(c) == EXIT_FAILURE ) {
                                                 return (buf_p - s);
                                         }
                                         break;
@@ -164,47 +165,47 @@ LIKELY WEAK int vsnprintf (char * s, size_t n,
                                 case 'a':
                                         vp = va_arg(args, uintptr_t);
                                         itoa(cbuf, 16, vp);
-                                        if(kputs_buf("0x") == EXIT_FAILURE)
+                                        if(puts_buf("0x") == EXIT_FAILURE)
                                                 return (buf_p - s);
-                                        if(kputs_pad_buf(cbuf, '0', 8) == EXIT_FAILURE)
+                                        if(puts_pad_buf(cbuf, '0', 8) == EXIT_FAILURE)
                                                 return (buf_p - s);
                                         break;
                                 case 'd':
                                         vp = va_arg(args, uintptr_t);
                                         itoa(cbuf, 10, vp);
-                                        if(kputs_buf(cbuf) == EXIT_FAILURE) 
+                                        if(puts_buf(cbuf) == EXIT_FAILURE) 
                                                 return (buf_p - s);
                                         break;
                                 case 'x':
                                         vp = va_arg(args, uintptr_t);
                                         itoa(cbuf, 16, vp);
-                                        if(kputs_buf(cbuf) == EXIT_FAILURE)
+                                        if(puts_buf(cbuf) == EXIT_FAILURE)
                                                 return (buf_p - s);
                                         break;
                                 case 'u':
                                         vp = va_arg(args, uintptr_t);
                                         utoa(cbuf, vp);
-                                        if(kputs_buf(cbuf) == EXIT_FAILURE)
+                                        if(puts_buf(cbuf) == EXIT_FAILURE)
                                                 return (buf_p - s);
                                         break;
                                 case 's':
                                         vp = (uintptr_t) va_arg(args,
                                                                 const char *);
-                                        if(kputs_buf(vp ? (const char *)vp : "(NULL)")
+                                        if(puts_buf(vp ? (const char *)vp : "(NULL)")
                                                         == EXIT_FAILURE)
                                                 return (buf_p - s);
                                         break;
                                 default:
-                                        if(kputchar_buf('%') == EXIT_FAILURE)
+                                        if(putchar_buf('%') == EXIT_FAILURE)
                                                 return (buf_p - s);
-                                        if(kputchar_buf(c) == EXIT_FAILURE)
+                                        if(putchar_buf(c) == EXIT_FAILURE)
                                                 return (buf_p - s);
                                         break;
                                 }
                         }
                         break;
                 default:
-                        if(kputchar_buf(c) == EXIT_FAILURE) 
+                        if(putchar_buf(c) == EXIT_FAILURE) 
                                 return (buf_p - s);
                         break;
                 }
@@ -249,8 +250,8 @@ LIKELY void kvprintf(const char *fmt, va_list args)
                                         kputs_pad(cbuf, padc, padn);
                                         break;
                                 default:
-                                        kputchar('%');
-                                        kputchar(c);
+                                        text.putchar('%');
+                                        text.putchar(c);
                                         break;
                                 }
                         } else {
@@ -282,14 +283,14 @@ LIKELY void kvprintf(const char *fmt, va_list args)
                                         kputs(vp ? (const char *)vp : "(null)");
                                         break;
                                 default:
-                                        kputchar('%');
-                                        kputchar(c);
+                                        text.putchar('%');
+                                        text.putchar(c);
                                         break;
                                 }
                         }
                         break;
                 default:
-                        kputchar(c);
+                        text.putchar(c);
                         break;
                 }
                 ++fmt;

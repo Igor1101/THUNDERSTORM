@@ -28,6 +28,7 @@
 #include <TH/kernel.h>
 #include <TH/kern_levels.h>
 #include <TH/lld.h>
+#include <TH/sysvars.h>
 
 #define CONFIG_LOG_BUF_SHIFT 17
 #define CONFIG_PRINTK
@@ -203,7 +204,7 @@ static size_t log_output(int facility, int level,
                 enum log_flags lflags, 
                 const char *dict, 
                 size_t dictlen, 
-                char *text, 
+                char *__text, 
                 size_t text_len)
 {
         (void)facility;
@@ -217,37 +218,37 @@ static size_t log_output(int facility, int level,
                 case LOGLEVEL_DEBUG:
                 case LOGLEVEL_INFO:
                 case LOGLEVEL_NOTICE:
-                        select_fgcolor(DefaultLogFG);
-                        select_bgcolor(DefaultBG);
+                        text.select_fgcolor(DefaultLogFG);
+                        text.select_bgcolor(DefaultBG);
                         break;
                 case LOGLEVEL_WARNING:
-                        select_fgcolor(Pink);
-                        select_bgcolor(DefaultBG);
+                        text.select_fgcolor(Pink);
+                        text.select_bgcolor(DefaultBG);
                         break;
                 case LOGLEVEL_ERR:
-                        select_fgcolor(Red);
-                        select_bgcolor(DefaultBG);
+                        text.select_fgcolor(Red);
+                        text.select_bgcolor(DefaultBG);
                         break;
                 case LOGLEVEL_CRIT:
-                        select_fgcolor(Red);
-                        select_bgcolor(DefaultBG);
+                        text.select_fgcolor(Red);
+                        text.select_bgcolor(DefaultBG);
                         break;
                 case LOGLEVEL_ALERT:
-                        select_fgcolor(Yellow);
-                        select_bgcolor(DefaultBG);
+                        text.select_fgcolor(Yellow);
+                        text.select_bgcolor(DefaultBG);
                         break;
                 case LOGLEVEL_EMERG:
-                        select_fgcolor(Yellow);
-                        select_bgcolor(DefaultBG);
+                        text.select_fgcolor(Yellow);
+                        text.select_bgcolor(DefaultBG);
                         break;
         }
-        int writelength = write(WRITE, text, text_len);
+        int writelength = write(WRITE, __text, text_len);
 
 	if ((lflags & LOG_NEWLINE) || (lflags & LOG_CONT) == 0 ) {
-                kputchar('\n');
+                text.putchar('\n');
 	}
-        select_fgcolor(DefaultFG);
-        select_bgcolor(DefaultBG);
+        text.select_fgcolor(DefaultFG);
+        text.select_bgcolor(DefaultBG);
         return writelength;
 }
 

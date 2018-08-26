@@ -29,7 +29,6 @@ PSF_font *font;
 int font_info(void)
 {
         volatile int ret = 0;
-        select_fgcolor(Cyan);
         printk("fonts info:");
         font = (PSF_font *) & _font_start;
         if (PSF_FONT_MAGIC == font->magic) {
@@ -44,6 +43,5 @@ int font_info(void)
         printk("numglyph %d\n", font->numglyph);
         printk("height %d\n", font->height);
         printk("width %d\n", font->width);
-        select_fgcolor(DefaultFG);
         return ret;
 }

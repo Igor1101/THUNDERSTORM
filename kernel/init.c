@@ -70,7 +70,6 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         tui_init(OFFSET_FROM_TOP);
         pr_warning
             (DEPRECATED "Note, that VGA mode is Legacy, used only for debbuging and text");
-        select_fgcolor(DefaultFG);
 #endif/* USE_VGA */
         static char verifier = 100;
         if (verifier != 100) {
@@ -96,12 +95,12 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         if (init_video() == true) {
                 tui_init(OFFSET_FROM_TOP); // <----earliest init
                 pr_notice("videomode successfully started");
-                print_video_info();
+                sysfb.print_video_info();
                 /* verifying bounds of display */
-                kputchar_to('\0', text.rows - 1, text.columns - 1,
+                sysfb.putchar_to('\0', text.rows - 1, text.columns - 1,
                             Red, Red, NOTRANSPARENT);
-                kputchar_to('\0', 0, text.columns - 1, Red, Red, NOTRANSPARENT);
-                kputchar_to('\0', text.rows - 1, 0, Red, Red, NOTRANSPARENT);
+                sysfb.putchar_to('\0', 0, text.columns - 1, Red, Red, NOTRANSPARENT);
+                sysfb.putchar_to('\0', text.rows - 1, 0, Red, Red, NOTRANSPARENT);
 
                 printk(SMALL_SYS_EMBLEM);
         }
@@ -134,6 +133,6 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                       " mov $10, %r10\n"
                       " mov $11, %r11\n"
                       " mov $-1, %rsi\n" " .quad 0xFFFFFFFFFFFFFFFF");*/
-        //local_irq_enable();
+        local_irq_enable();
         while(1);
 }

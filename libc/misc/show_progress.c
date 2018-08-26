@@ -5,35 +5,36 @@
 #include <kstdio.h>
 #include <TH/kernel.h>
 #include <TH/lld.h>
+#include <TH/sysvars.h>
 
 /*declared in kstdlib.h */
 void show_progress(void)
 {
-        select_fgcolor(DefaultLogFG);
-        kputchar('\b');
+        text.select_fgcolor(DefaultLogFG);
+        text.putchar('\b');
         static uint8_t stat;
         switch (stat) {
         case 0:
-                kputchar('\\');
+                text.putchar('\\');
                 stat++;
                 break;
         case 1:
-                kputchar('|');
+                text.putchar('|');
                 stat++;
                 break;
         case 2:
-                kputchar('/');
+                text.putchar('/');
                 stat++;
                 break;
         case 3:
-                kputchar('-');
+                text.putchar('-');
                 stat = 0;
                 break;
         default:
-                kputchar('+');
+                text.putchar('+');
                 stat = 0;
         }
-        select_fgcolor(DefaultFG);
+        text.select_fgcolor(DefaultFG);
 }
 
 void init_progress(void)

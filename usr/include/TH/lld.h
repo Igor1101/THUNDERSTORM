@@ -140,7 +140,6 @@ extern "C" {
                 text_t (*determine_columns)(void);
         };
 
-        void fb_init(void);
 
         void tui_init(text_t lines_offset);
 
@@ -150,84 +149,18 @@ extern "C" {
 /* return true if op successful */
         bool init_video(void);
         int font_info(void);
-#ifndef NO_VIDEOMODE
-        void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
-        uint32_t determine_columns(void);
-        uint32_t determine_rows(void);
-        void update_cursor(int row, int col);
-        void make_newline(void);
-        void kputchar_to(
-                                /* unicode character */
-                                unsigned short int c,
-                                /* cursor position on screen in characters  */
-                                uint32_t row, uint32_t column,
-                                /* foreground and background colors */
-                                uint32_t fg, uint32_t bg,
-                                /* character attributes */
-                                uint32_t attr);
-LIKELY void copy_char(
-                        /* cursor position on screen in characters 
-                         * for destination */
-                        uint32_t d_row, uint32_t d_column,
-                        /* cursor position on screen in characters 
-                         * for source */
-                        uint32_t s_row, uint32_t s_column
-                );
-
-#endif /* VIDEOMODE exists*/
 
 /* miscelaneous */
 /* cpu management */
         void kpause(void);      /* for debug */
 
 #ifdef NO_VIDEOMODE
-
-        /* videomode funcs stubs */
-        FORCE_INLINE void kputchar_to(
-                                /* unicode character */
-                                unsigned short int c,
-                                /* cursor position on screen in characters  */
-                                uint32_t row, uint32_t column,
-                                /* foreground and background colors */
-                                uint32_t fg, uint32_t bg,
-                                /* character attributes */
-                                uint32_t attr)
+        FORCE_INLINE void fb_init(void)
         {
-                (void)c;
-                (void)row;
-                (void)column;
-                (void)fg;
-                (void)bg;
-                (void)attr;
         }
-
-        FORCE_INLINE void make_newline(void){};
-
-        static FORCE_INLINE void fb_clear_screen(void){};
-
-        FORCE_INLINE void update_cursor(int row, int col)
-        {
-                (void)row;
-                (void)col;
-        }
-        
-        FORCE_INLINE void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
-        {
-                (void)cursor_start;
-                (void)cursor_end;
-        }
-
-        FORCE_INLINE uint32_t determine_columns(void)
-        {
-                return 0;
-        }
-
-        FORCE_INLINE uint32_t determine_rows(void)
-        {
-                return 0;
-        }
-
-#endif /* NO_VIDEOMODE */
+#else
+        void fb_init(void);
+#endif
 
 #ifdef __cplusplus
 }

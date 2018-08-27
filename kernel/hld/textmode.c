@@ -10,16 +10,78 @@
 #include <asm/serial.h>
 #define BEGINNING 0
 
-static void do_nothing(int color)
-{
-       (void)color;
-}
+static void text_select_fgcolor(int color);
+static void text_select_bgcolor(int color);
+static void text_putchar(int chr);
 
 struct Text_mode_pointer text = (struct Text_mode_pointer){
        /* prevent from crashing due to NULL pointer */
-       .select_fgcolor = do_nothing,
-       .select_bgcolor = do_nothing,
-       .putchar = (void(*)(int chr))do_nothing
+       .select_fgcolor = text_select_bgcolor,
+       .select_bgcolor = text_select_fgcolor,
+       .putchar = text_putchar
+};
+ static void putchar_to(/* unicode character */
+                 unsigned short int c,
+                         uint32_t row, uint32_t column,
+                         uint32_t fg, uint32_t bg,
+                         uint32_t attr)
+{
+         (void)c;
+         (void)row;
+         (void)column;
+         (void)fg;
+         (void)bg;
+         (void)attr;
+ }
+static void make_newline(void){};
+ static void clear_screen(void){};
+static void cursor_update(text_t row, text_t col) 
+ {
+         (void)row;
+         (void)col;
+ }
+static void cursor_enable(text_t cursor_start, text_t cursor_end) 
+{                                            
+         (void)cursor_start;
+         (void)cursor_end;
+}
+static uint32_t determine_columns(void) { return 0;} 
+ static uint32_t determine_rows(void) { return 0; }
+static void char_invert(text_t row, text_t column)
+{
+        (void)row;
+        (void)column;
+}
+
+static void char_copy(
+       /* cursor position on screen in characters
+        * for destination */
+        text_t d_row, text_t d_column,
+        text_t s_row, text_t s_column
+       )
+{
+        (void)d_row;
+        (void)s_row; 
+        (void)d_column;
+        (void)s_column;
+}
+void update_screen(void){}
+int verify_addr(text_t*addr){(void)*addr;return 0;}
+static void print_video_info(void) { }
+
+struct Framebuffer sysfb = {
+        .print_video_info = print_video_info,
+        .verify_addr = verify_addr,
+        .clear_screen = clear_screen,
+        .putchar_to = putchar_to,
+        .update_screen = update_screen,
+        .char_invert = char_invert,
+        .char_copy = char_copy,
+        .cursor_enable = cursor_enable,
+        .cursor_update = cursor_update,
+        .make_newline = make_newline,
+        .determine_rows = determine_rows,
+        .determine_columns = determine_columns
 };
 
 static void text_select_fgcolor(int color);

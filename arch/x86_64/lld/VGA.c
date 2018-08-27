@@ -10,24 +10,50 @@
 #include <stdint.h>
 #include <kstring.h>
 #include <TH/lld.h>
+#include <TH/sysvars.h>
 #include <x86_64/cpu_management.h>
 #include <x86_64/VGA.h>
 
-uint32_t determine_columns(void)
+static uint32_t vga_determine_columns(void);
+static uint32_t vga_determine_rows(void);
+static void vga_update_cursor(text_t row, text_t col);
+static void vga_enable_cursor(text_t cursor_start, text_t cursor_end);
+static void vga_putchar_to(
+                        /* unicode character */
+                        unsigned short int c,
+                        /* cursor position on screen in characters  */
+                        uint32_t cx, uint32_t cy,
+                        /* foreground and background colors */
+                        uint32_t fg, uint32_t bg,
+                        /* useless here */
+                        uint32_t attr);
+static void vga_make_newline(void);
+
+void fb_init(void)
+{
+        sysfb.putchar_to = vga_putchar_to;
+        sysfb.make_newline = vga_make_newline;
+        sysfb.cursor_enable = vga_enable_cursor;
+        sysfb.cursor_update = vga_update_cursor;
+        sysfb.determine_rows = vga_determine_rows;
+        sysfb.determine_columns = vga_determine_columns;
+}
+
+static uint32_t vga_determine_columns(void)
 {
         /* these functions added to provide portability,
            encapsulation */
         return COLUMNS;
 }
 
-uint32_t determine_rows(void)
+static uint32_t vga_determine_rows(void)
 {
         /* these functions added to provide portability,
            encapsulation */
         return ROWS;
 }
 
-void update_cursor(int row, int col)
+static void vga_update_cursor(text_t row, text_t col)
 {
         uint16_t offset = (row * COLUMNS) + col;
         outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
@@ -36,7 +62,7 @@ void update_cursor(int row, int col)
         outb(FB_DATA_PORT, offset & 0x00FF);
 }
 
-void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
+static void vga_enable_cursor(text_t cursor_start, text_t cursor_end)
 {
         outb(FB_COMMAND_PORT, 0x0A);
         outb(FB_DATA_PORT, (inb(FB_DATA_PORT) & 0xC0) | cursor_start);
@@ -45,7 +71,7 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
         (void)cursor_end;
 }
 
-void kputchar_to(
+static void vga_putchar_to(
                         /* unicode character */
                         unsigned short int c,
                         /* cursor position on screen in characters  */
@@ -61,12 +87,12 @@ void kputchar_to(
         *vga_addr = (uint16_t) c | ((uint16_t) fg) << 8;
 }
 
-void make_newline(void)
+static void vga_make_newline(void)
 {
 #ifdef DEBUG
         //kpause();
 #endif
-        memcpy((void *)VGAADDR, (void *)VGAADDR + 160,
+        memmove((void *)VGAADDR, (void *)VGAADDR + 160,
                ROWS * COLUMNS * 2 + COLUMNS * 2);
 }
 

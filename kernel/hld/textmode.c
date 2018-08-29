@@ -2,11 +2,14 @@
  * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com> 
  * THUNDERSTORM VGA HL DRIVER *
  */
+#include <stddef.h>
+#include <kstream.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <TH/lld.h>
 #include <TH/sysvars.h>
+#include <TH/kernel.h>
 #include <asm/serial.h>
 #define BEGINNING 0
 
@@ -110,6 +113,15 @@ void tui_init(text_t lines_offset)
 static void text_select_fgcolor(int color)
 {
         text.fgcolor = color;
+        if(color == Red) {/* Make serial red ! */
+                write(SERIAL_ONLY, "\e[31m", 5);
+        }
+        else if(color == DefaultLogFG) {
+                write(SERIAL_ONLY, "\e[32m", 5);
+        }
+        else if(color == DefaultFG) {
+                write(SERIAL_ONLY, "\e[39m", 5);
+        }
 }
 
 static void text_select_bgcolor(int color)

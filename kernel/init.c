@@ -65,11 +65,6 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         serial_configure_baud_rate(SERIAL_MAIN, 1);     // 115200 
 #endif                          /* RELEASE */
 #endif                          /* USE_SERIAL */
-#ifdef USE_VGA
-        tui_init(OFFSET_FROM_TOP);
-        pr_warning
-            (DEPRECATED "Note, that VGA mode is Legacy, used only for debbuging and text");
-#endif/* USE_VGA */
         static char verifier = 100;
         if (verifier != 100) {
                 die("GOT error");/* GOT is not working, 
@@ -91,6 +86,13 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                                 cannot be used");
         }
 
+#ifdef USE_VGA
+        tui_init(OFFSET_FROM_TOP); // <----earliest init
+        pr_warning
+            (DEPRECATED "Note, that VGA mode is Legacy, used only for debbuging and text");
+#elif defined NO_VIDEOMODE/* USE_VGA */
+        tui_init(OFFSET_FROM_TOP); // <----earliest init
+#endif /* USE VGA */
         if (init_video() == true) {
                 tui_init(OFFSET_FROM_TOP); // <----earliest init
                 pr_notice("videomode successfully started");

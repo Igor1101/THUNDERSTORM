@@ -7,8 +7,8 @@
 #include <x86_64/APIC.h>
 
 /* local APIC CPU 32-bit addr */
-static uint64_t* boot_lapic_phys_addr = NULL;
-static uint64_t* boot_lapic_virt_addr = NULL;
+static void* boot_lapic_phys_addr = NULL;
+static void* boot_lapic_virt_addr = NULL;
 
 /** returns a 'true' value if the CPU supports APIC
  *  and if the local APIC hasn't been disabled in MSRs
@@ -28,17 +28,22 @@ bool apic_present(void)
  */
 void boot_lapic_enable(void)
 {
-        uint64_t lapic_base = rdmsr(LAPIC_MSR);
+        /* Base addr register */
+        uint64_t lapic_BAR = rdmsr(LAPIC_MSR);
         /*
         if(boot_lapic_virt_addr == NULL || 
                         boot_lapic_phys_addr == NULL) {
                 return EXIT_FAILURE;
         }*/
+        pr_debug("LAPIC:0x%X", lapic_BAR);
         /* Are we sure we running on BOOTSTRAP CORE ? */
-        pr_debug("LAPIC:0x%X", lapic_base);
-        ASSERT( (lapic_base & LAPIC_BSC) == LAPIC_BSC );
-        wrmsr(LAPIC_MSR, lapic_base | LAPIC_AE);
-        printk("LAPIC IS INITIALIZED!");
+        ASSERT( (lapic_BAR & LAPIC_BSC) == LAPIC_BSC );
+        
+        void * lapic_BASE = (void*) (lapic_BAR & ~( (1<<12) - 1) );
+        ASSERT((uint32_t)(uint64_t)boot_lapic_phys_addr 
+                        == (uint32_t)(uint64_t)lapic_BASE);
+        wrmsr(LAPIC_MSR, lapic_BAR | LAPIC_AE);
+        pr_debug("LAPIC IS INITIALIZED!");
 }
 
 void apic_get_info_ACPI(void)
@@ -54,9 +59,9 @@ void apic_get_info_ACPI(void)
                 kpanic(ACPI_MSG_ERROR);
         }
         /* findout LAPIC */
-        boot_lapic_phys_addr =  (uint64_t*)(uint32_t*)((void*)APICp + 36);
+        boot_lapic_phys_addr =  (void*)*(uint64_t*)(uint32_t*)((void*)APICp + 36);
         boot_lapic_virt_addr = 
-                (uint64_t*)kmmap(boot_lapic_phys_addr, sizeof(boot_lapic_phys_addr));
+                kmmap(boot_lapic_phys_addr, 0x600/* sizeof LAPIC struct */);
         if(boot_lapic_virt_addr == NULL) {
                 pr_crit("INSUFFICIENT DYNAMIC MEMORY");
                 kpanic("INSUFFICIENT DYNAMIC MEMORY");

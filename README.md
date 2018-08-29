@@ -22,7 +22,7 @@ arch/$(ARCH)/include/$(ARCH) # specific to machine symbols/namespaces
 ##### Dependencies:
 GNU make,
 nasm,
-gcc(version >=7), 
+gcc(version >= 8), 
 binutils, 
 coreutils,
 Unix shell(sh),

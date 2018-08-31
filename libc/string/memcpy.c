@@ -22,7 +22,7 @@ LIKELY void *memcpy(void *dest, const void *src, size_t len)
  * copy correctly only uintptr_t * 16 aligned data;
  * used for copying videomemory areas
  */
-LIKELY void *kmemcpy_ptr(void *dest, const void *src, size_t len)
+WEAK LIKELY void *kmemcpy_ptr(void *dest, const void *src, size_t len)
 {
         register volatile uint32_t length = len / sizeof(uintptr_t) / 16;       /* size in ptrs * 16 */
         register volatile uintptr_t *d = dest;

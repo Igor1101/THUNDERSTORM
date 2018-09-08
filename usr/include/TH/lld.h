@@ -13,7 +13,7 @@ extern "C" {
 #include <stdbool.h>
 
 
-#if defined USE_VGA 
+#if defined CONFIG_USE_VGA 
         enum Color {
                 Black = 0,
                 Blue = 1,
@@ -61,7 +61,7 @@ extern "C" {
         };
 
 
-#endif                          /*USE_VGA */
+#endif                          /*CONFIG_USE_VGA */
 
         enum char_attributes {
                 /*
@@ -154,7 +154,7 @@ extern "C" {
 /* cpu management */
         void kpause(void);      /* for debug */
 
-#ifdef NO_VIDEOMODE
+#ifdef CONFIG_NO_VIDEOMODE
         FORCE_INLINE void fb_init(void)
         {
         }

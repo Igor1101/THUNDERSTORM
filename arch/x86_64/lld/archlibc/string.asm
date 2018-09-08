@@ -1,4 +1,6 @@
 
+%ifdef CONFIG_USE_ARCH_LIBC
+
 global kmemcpy_ptr
 kmemcpy_ptr:  
   push rcx 
@@ -15,3 +17,5 @@ kmemcpy_ptr:
   pop rsi 
   pop rcx 
   ret
+
+%endif ;/* CONFIG_USE_ARCH_LIBC */

@@ -29,7 +29,7 @@ __________________________________________________________________________/_____
 /* High level TH kernel initialization */
 
 /* indentation from top of display in chars*/
-#define OFFSET_FROM_TOP 8
+#define OFFSET_FROM_TOP 0
 
 #include <kstring.h>
 #include <kstdlib.h>
@@ -56,7 +56,7 @@ struct RAM_MAP ram_map[MAX_RAM_ENTRIES];
 
 NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 {
-#ifdef USE_SERIAL
+#ifdef CONFIG_USE_SERIAL
         serial_disable_ints(SERIAL_MAIN);
         serial_configure_fifo(SERIAL_MAIN);
         serial_configure_line(SERIAL_MAIN);
@@ -64,7 +64,7 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
         /* baud rates setting faults on some x86_64 emulators */
         serial_configure_baud_rate(SERIAL_MAIN, 1);     // 115200 
 #endif                          /* RELEASE */
-#endif                          /* USE_SERIAL */
+#endif                          /* CONFIG_USE_SERIAL */
         static char verifier = 100;
         if (verifier != 100) {
                 die("GOT error");/* GOT is not working, 
@@ -86,11 +86,11 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
                                 cannot be used");
         }
 
-#ifdef USE_VGA
+#ifdef CONFIG_USE_VGA
         tui_init(OFFSET_FROM_TOP); // <----earliest init
         pr_warning
             (DEPRECATED "Note, that VGA mode is Legacy, used only for debbuging and text");
-#elif defined NO_VIDEOMODE/* USE_VGA */
+#elif defined NO_VIDEOMODE/* CONFIG_USE_VGA */
         tui_init(OFFSET_FROM_TOP); // <----earliest init
 #endif /* USE VGA */
         if (init_video() == true) {

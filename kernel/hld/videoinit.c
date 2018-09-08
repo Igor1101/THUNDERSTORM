@@ -33,7 +33,7 @@ bool init_video(void)
                 sysfb.video_initialized = false;
                 return false;
         }
-#ifdef USE_VESA
+#ifdef CONFIG_USE_VESA
         sysfb.video_initialized = true;
         /* low level map this address
          * to somewhere in kernel memory */

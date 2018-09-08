@@ -5,7 +5,7 @@
  * for debbuging only purposes
  * */
 
-#ifdef USE_VGA
+#ifdef CONFIG_USE_VGA
 #include <compiler_opt.h>
 #include <stdint.h>
 #include <kstring.h>

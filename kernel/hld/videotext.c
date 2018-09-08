@@ -11,7 +11,7 @@
 #include <TH/sysvars.h>
 #include <TH/font.h>
 
-#ifdef USE_VESA
+#ifdef CONFIG_USE_VESA
 
 /*
  * fb initialization
@@ -364,7 +364,7 @@ static LIKELY void fb_cursor_update(text_t row, text_t col)
         oldcol = col;
 }
 
-#endif                          /* USE_VESA */
+#endif                          /* CONFIG_USE_VESA */
 
 UNLIKELY void fb_print_video_info(void)
 {

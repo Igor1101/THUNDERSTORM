@@ -132,10 +132,10 @@ static void text_select_bgcolor(int color)
 static void newline(void)
 {
         if (text.row >= text.rows - 1) {
-#ifdef USE_VESA
+#ifdef CONFIG_USE_VESA
                 if(sysfb.copy == NULL) 
                         sysfb.char_invert(text.row, text.col);
-#endif /* USE_VESA */
+#endif /* CONFIG_USE_VESA */
                 sysfb.make_newline();
                 text.col = BEGINNING;
                 text.cursor_not_clear = true;
@@ -147,7 +147,7 @@ static void newline(void)
 
 static void text_putchar(int chr)
 {
-#ifdef USE_SERIAL
+#ifdef CONFIG_USE_SERIAL
         /* even if tui not initialized, 
          * it is possible to write to serial port through tui
          */

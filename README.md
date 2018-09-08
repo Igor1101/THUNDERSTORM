@@ -31,6 +31,7 @@ bochs(optional),
 OVMF(optional), 
 grub-mkrescue,
 xorriso
+mtools
 ##### Running it on qemu!
 please consult make tasks:
 ```

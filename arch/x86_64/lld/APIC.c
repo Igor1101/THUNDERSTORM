@@ -2,6 +2,7 @@
 #include <acpi.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <TH/die.h>
 #include <asm/kpanic.h>
 #include <x86_64/cpuid.h>
 #include <x86_64/APIC.h>
@@ -56,7 +57,8 @@ void apic_get_info_ACPI(void)
         ACPI_STATUS acstat = AcpiGetTable("APIC", 1, &APICp);
         if(acstat != AE_OK) {
                 pr_crit(ACPI_MSG_ERROR "%s", acpi_strerror(acstat));
-                kpanic(ACPI_MSG_ERROR);
+                pr_crit("Could not get APIC info");
+                die("Could not get APIC info");
         }
         /* findout LAPIC */
         boot_lapic_phys_addr =  (void*)*(uint64_t*)(uint32_t*)((void*)APICp + 36);
@@ -64,7 +66,7 @@ void apic_get_info_ACPI(void)
                 kmmap(boot_lapic_phys_addr, 0x600/* sizeof LAPIC struct */);
         if(boot_lapic_virt_addr == NULL) {
                 pr_crit("INSUFFICIENT DYNAMIC MEMORY");
-                kpanic("INSUFFICIENT DYNAMIC MEMORY");
+                die("INSUFFICIENT DYNAMIC MEMORY");
         }
         pr_debug(
                         "APIC table sig %s, len %d lapicaddr 0x%X", 

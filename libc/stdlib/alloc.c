@@ -7,6 +7,7 @@
 
 #define PG_SIZE 4096
 #define ALIGN_PG(X)     ALIGN(X, PG_SIZE)
+#define pr_alloc(...) pr_debug("ALLOC_INIT:" __VA_ARGS__)
 struct RAM_POINTERS
 {
         void *beginning;
@@ -17,6 +18,8 @@ static uint32_t RAM_pointers_used = 0;
 /* current alloc pointer */
 static char* current_mem_p;
 static char* end;
+static int RAM_selected = 0;
+static void*latest_addr = NULL;
 /**
  * int kalloc_init(void)
  * @return: SUCCESS if OK
@@ -24,12 +27,31 @@ static char* end;
  */
 int kalloc_init(void)
 {
+        ptrdiff_t reg_size = 
+                usable_ram_map[0].end_addr 
+                - usable_ram_map[0].base_addr;
+        /* select biggest region */
+        pr_alloc("finding out biggest RAM region");
+        for(uint32_t RAM_s=0; RAM_s < usable_ram_entries; RAM_s++) {
+                pr_alloc("reg %d size 0x%X", RAM_s, 
+                        usable_ram_map[RAM_s].end_addr 
+                        - usable_ram_map[RAM_s].base_addr);
+                if(reg_size <
+                        usable_ram_map[RAM_s].end_addr 
+                        - usable_ram_map[RAM_s].base_addr) {
+                        reg_size = 
+                                usable_ram_map[RAM_s].end_addr 
+                                - usable_ram_map[RAM_s].base_addr;
+                        RAM_selected = RAM_s;
+                        pr_alloc("reg %d bigger than last one", RAM_s);
+                }
+        }
         memset(RAM_pointers, 0, sizeof RAM_pointers);
-        if(usable_ram_map[0].base_addr == NULL || 
-        usable_ram_map[0].end_addr == NULL)
+        if(usable_ram_map[RAM_selected].base_addr == NULL || 
+        usable_ram_map[RAM_selected].end_addr == NULL)
                 return EXIT_FAILURE;
-        current_mem_p = usable_ram_map[0].base_addr;
-        end = usable_ram_map[0].end_addr;
+        current_mem_p = usable_ram_map[RAM_selected].base_addr;
+        end = usable_ram_map[RAM_selected].end_addr;
         return EXIT_SUCCESS;
 }
 
@@ -52,10 +74,18 @@ void *kcalloc(size_t size)
                         size
                    );
         RAM_pointers_used++;
+        latest_addr = ret;
         return ret;
 }
 
-/* TODO : reimplement alloc so this function could be easily implemented */
-LIKELY void kfree(void *addr) {
-        (void)addr;
+/* TODO : reimplement alloc and free func */
+LIKELY void kfree(void *addr) 
+{
+        if(latest_addr == NULL)
+                return;
+        if(addr == latest_addr) {
+                current_mem_p = latest_addr;
+                pr_alloc("freed memory");
+        }
+
 }

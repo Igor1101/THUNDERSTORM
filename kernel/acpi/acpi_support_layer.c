@@ -14,7 +14,7 @@
 char* acpi_strerror(ACPI_STATUS st)
 {
         /* We are not giving garbage to ACPI, aren`t we ? ;) */
-        ASSERT(st == AE_BAD_PARAMETER);
+        ASSERT(st != AE_BAD_PARAMETER);
         switch(st) {
                 case AE_OK: 
                         return "OP SUCCESSFULL";

@@ -118,8 +118,8 @@ NORET VISIBLE int start_kernel(uintptr_t boot_magic, void *pcinfo)
 #ifdef ACPI_ALLOWED
         ACPI_STATUS acpi_status = AcpiInitializeTables(NULL, 1, 0);
         if(acpi_status != AE_OK) {
-                pr_err(ACPI_MSG_ERROR "%s", acpi_strerror(acpi_status));
-                kpanic(ACPI_MSG_ERROR);
+                pr_crit(ACPI_MSG_ERROR "%s", acpi_strerror(acpi_status));
+                die("ACPI COULD NOT BE INITIALIZED");
         }
 
 #endif

@@ -15,7 +15,7 @@
  * Rewrote bits to get rid of console_lock
  *	01Mar01 Andrew Morton
  * Stripped down to use under THUNDERSTORM
- *	2018 Igor1101
+ *	2018-2019 Igor1101
  *	<igor.muravyov.2015@gmail.com>
  */
 

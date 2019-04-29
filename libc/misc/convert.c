@@ -1,7 +1,7 @@
 #include <stdint.h>
 
 /*
- * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ * Copyright (C) 2018-2019  Igor Muravyov <igor.muravyov.2015@gmail.com>
  * These all functions are about to 
  * convert endiannes
  */

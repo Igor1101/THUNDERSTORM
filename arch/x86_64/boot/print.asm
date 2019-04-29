@@ -1,4 +1,4 @@
-; Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+; Copyright (C) 2018-2019  Igor Muravyov <igor.muravyov.2015@gmail.com>
 ; early x86 kernel output(works only if VGA supported)
 VGAROWS equ 25
 VGA equ 0xb8000

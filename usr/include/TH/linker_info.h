@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ * Copyright (C) 2018-2019  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
 #ifndef LINKER_INFO_H
 #define LINKER_INFO_H

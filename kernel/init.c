@@ -9,7 +9,7 @@
 __________________________________________________________________________/___________
  
                        Embedded operating system
-    Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+    Copyright (C) 2018-2019  Igor Muravyov <igor.muravyov.2015@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

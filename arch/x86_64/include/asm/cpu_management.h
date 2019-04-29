@@ -1,7 +1,7 @@
 #ifndef CPU_HL_MANAGMENT
 #define CPU_HL_MANAGMENT
 /*
- * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ * Copyright (C) 2018-2019  Igor Muravyov <igor.muravyov.2015@gmail.com>
  */
 
 #include <TH/kernel.h>

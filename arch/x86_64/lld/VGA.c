@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+ * Copyright (C) 2018-2019  Igor Muravyov <igor.muravyov.2015@gmail.com>
  * THUNDERSTORM VGA LL DRIVER 
  * Note, that VGA 0xb8000 text support is provided 
  * for debbuging only purposes

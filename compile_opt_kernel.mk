@@ -1,4 +1,4 @@
-#Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+#Copyright (C) 2018-2019  Igor Muravyov <igor.muravyov.2015@gmail.com>
 
 # here choose one of output modes "CONFIG_USE_VESA", "CONFIG_USE_VGA", "CONFIG_NO_VIDEOMODE":
 # CONFIG_USE_VESA - default

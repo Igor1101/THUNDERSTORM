@@ -1,4 +1,4 @@
-; Copyright (C) 2018  Igor Muravyov <igor.muravyov.2015@gmail.com>
+; Copyright (C) 2018-2019  Igor Muravyov <igor.muravyov.2015@gmail.com>
 ; CPU initialization for THUNDERSTORM kernel 
 ; USES MULTIBOOT 2 SPEC AND VGA OUTPUT
 ; constants:
